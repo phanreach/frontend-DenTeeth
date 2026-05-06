@@ -67,6 +67,8 @@
   --secondary: #EFF4FF; /* teal */
   --secondary-foreground: oklch(0.2 0.02 240);
 
+  --success: #14B8A6; /* teal */
+  --success-foreground: oklch(0.2 0.02 240);
   /* MUTED */
   --muted: oklch(0.96 0.01 240);
   --muted-foreground: oklch(0.5 0.02 240);

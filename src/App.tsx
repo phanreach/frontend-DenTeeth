@@ -3,6 +3,7 @@ import Dashboard from "./dentist/pages/dashboard";
 import Home from "./user/pages/home";
 import Landing from "./landing/landing";
 import SignUp from "./auth/signup";
+import Login from "./auth/login";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/home" element={<Home />} />
       <Route path="/" element={<Landing />} />
       <Route path="/sign-up" element={<SignUp />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }
