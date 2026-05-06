@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   ChevronDown,
   Lock,
@@ -19,18 +19,20 @@ export default function SignUp() {
     gender: "",
   });
 
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFile = (f) => f && setFile(f);
+  const handleFile = (f: File | undefined) => f && setFile(f);
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
     handleFile(e.dataTransfer.files[0]);
@@ -215,7 +217,7 @@ export default function SignUp() {
               ref={inputRef}
               type="file"
               className="hidden"
-              onChange={(e) => handleFile(e.target.files[0])}
+              onChange={(e) => handleFile(e.target.files?.[0])}
             />
           </div>
         )}
