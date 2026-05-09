@@ -4,6 +4,8 @@ import Home from "./user/pages/home";
 import Landing from "./landing/landing";
 import SignUp from "./auth/signup";
 import Login from "./auth/login";
+import ProtectedRoute from "./protect-route";
+import AdminDashboard from "./super-admin/page/admin-dashboard";
 
 function App() {
   return (
@@ -13,6 +15,10 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
+
+      <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      </Route>
     </Routes>
   );
 }

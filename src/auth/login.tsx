@@ -1,21 +1,44 @@
 import { useState } from "react";
-import { Lock, Mail, Shield, Zap } from "lucide-react";
+import { Eye, EyeClosed, Lock, Shield, User, Zap } from "lucide-react";
 import Navbar from "../components/nav-bar";
+import { useNavigate } from "react-router-dom";
+import useLogin from "../components/hook/auth/use-login";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  loginSchema,
+  type LoginSchema,
+} from "../components/lib/schema/login-schema";
+import { useForm } from "react-hook-form";
+import Cookies from "js-cookie";
 
 export default function Login() {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
+  const navigate = useNavigate();
+  const loginMutation = useLogin();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    // handle login
+  const onSubmit = async (data: LoginSchema) => {
+    try {
+      await loginMutation.mutateAsync(data);
+
+      const role = Cookies.get("role");
+
+      if (role?.includes("ADMIN")) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch {
+      // error handled in hook
+    }
   };
 
   return (
@@ -34,58 +57,72 @@ export default function Login() {
 
         {/* Form Card */}
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-          {/* Email */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="john@example.com"
-                className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-gray-700">
-                Password
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* Username */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Username
               </label>
-              <a
-                href="/forgot-password"
-                className="text-xs text-blue-500 hover:underline"
-              >
-                Forgot password?
-              </a>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="john_doe"
+                  {...register("username")}
+                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                />
+                {errors.username && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.username.message}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              />
+
+            {/* Password */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <a
+                  href="/forgot-password"
+                  className="text-xs text-blue-500 hover:underline"
+                >
+                  Forgot password?
+                </a>
+              </div>
+              <div className="relative mb-2">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 focus:outline-none"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Login Button */}
-          <button
-            onClick={handleSubmit}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 rounded-xl transition-all duration-200"
-          >
-            Sign In
-          </button>
-
+            {/* Login Button */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 rounded-xl transition-all duration-200"
+            >
+              Sign In
+            </button>
+          </form>
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200" />
