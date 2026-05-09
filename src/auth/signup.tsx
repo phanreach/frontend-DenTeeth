@@ -8,6 +8,7 @@ import {
   MoveRight,
   Eye,
   EyeClosed,
+  Stethoscope,
 } from "lucide-react";
 
 import Navbar from "../components/nav-bar";
@@ -43,28 +44,44 @@ export default function SignUp() {
     }
   };
 
+  const isDentist = role === "DENTIST";
+
   return (
     <div>
       <Navbar />
 
-      <div className="max-w-xl mx-auto space-y-10 py-20">
+      <div className="max-w-xl mx-auto space-y-10 py-20 px-4">
         <div className="text-center space-y-3">
-          <h1 className="font-semibold text-3xl tracking-tight text-gray-900">
+          <div className="flex justify-center mb-4">
+            <div
+              className={`w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg transition-all duration-500 ease-in-out ${
+                isDentist ? "rotate-12" : "-rotate-12"
+              }`}
+            >
+              <span className="text-white text-2xl flex items-center justify-center">
+                {isDentist ? "🦷" : <Stethoscope className="w-8 h-8" />}
+              </span>
+            </div>
+          </div>
+
+          <h1 className="font-bold text-3xl tracking-tight text-gray-900">
             Create Your Account
           </h1>
 
-          <p className="text-gray-500 text-sm">
-            Clinical intelligence with Human Touch
+          <p className="text-sm font-medium transition-all duration-500 text-primary">
+            {isDentist
+              ? "Join as a dental professional"
+              : "Clinical intelligence with a human touch"}
           </p>
 
           <div className="flex justify-center pt-2">
-            <div className="bg-gray-100 p-1 rounded-xl flex gap-1">
+            <div className="bg-gray-100 p-1 rounded-2xl flex gap-1 shadow-inner">
               <button
                 type="button"
                 onClick={() => setRole("PATIENT")}
-                className={`px-5 py-2 text-sm rounded-lg font-medium transition-all duration-200 ${
-                  role === "PATIENT"
-                    ? "bg-white shadow-sm text-gray-900"
+                className={`px-6 py-2 text-sm rounded-xl font-semibold transition-all duration-300 ${
+                  !isDentist
+                    ? "bg-primary text-white shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
@@ -74,9 +91,9 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={() => setRole("DENTIST")}
-                className={`px-5 py-2 text-sm rounded-lg font-medium transition-all duration-200 ${
-                  role === "DENTIST"
-                    ? "bg-white shadow-sm text-gray-900"
+                className={`px-6 py-2 text-sm rounded-xl font-semibold transition-all duration-300 ${
+                  isDentist
+                    ? "bg-primary text-white shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
@@ -88,124 +105,129 @@ export default function SignUp() {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-6"
+          className="bg-white/80 backdrop-blur-sm border shadow-xl rounded-3xl p-8 space-y-6 transition-all duration-500"
         >
+          <div
+            className={`h-1 rounded-full mx-auto transition-all duration-500 ${
+              isDentist ? "w-20 bg-primary" : "w-12 bg-primary"
+            }`}
+          />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="group">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 First Name
               </label>
-
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-
+                <User
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300 text-primary"
+                />
                 <input
                   {...register("firstName")}
-                  placeholder="Enter first name"
-                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="First name"
+                  className="w-full bg-gray-50 border rounded-xl py-2.5 pl-10 pr-3 text-sm outline-none transition-all duration-300 placeholder:text-gray-300 focus:border-primary"
                 />
               </div>
-
               {errors.firstName && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-400 text-xs mt-1.5">
                   {errors.firstName.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="group">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 Last Name
               </label>
-
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-
+                <User
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300 text-primary"
+                />
                 <input
                   {...register("lastName")}
-                  placeholder="Enter last name"
-                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="Last name"
+                  className="w-full bg-gray-50 border rounded-xl py-2.5 pl-10 pr-3 text-sm outline-none transition-all duration-300 placeholder:text-gray-300 focus:border-primary"
                 />
               </div>
-
               {errors.lastName && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-400 text-xs mt-1.5">
                   {errors.lastName.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="group">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 Username
               </label>
-
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-
+                <User
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300 text-primary"
+                />
                 <input
                   {...register("username")}
-                  placeholder="Enter username"
-                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="Username"
+                  className="w-full bg-gray-50 border rounded-xl py-2.5 pl-10 pr-3 text-sm outline-none transition-all duration-300 placeholder:text-gray-300 focus:border-primary"
                 />
               </div>
-
               {errors.username && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-400 text-xs mt-1.5">
                   {errors.username.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="group">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 Email
               </label>
-
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-
+                <Mail
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300 text-primary"
+                />
                 <input
                   type="email"
                   {...register("email")}
-                  placeholder="Enter email"
-                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="you@example.com"
+                  className="w-full bg-gray-50 border rounded-xl py-2.5 pl-10 pr-3 text-sm outline-none transition-all duration-300 placeholder:text-gray-300 focus:border-primary"
                 />
               </div>
-
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-400 text-xs mt-1.5">
                   {errors.email.message}
                 </p>
               )}
             </div>
 
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="md:col-span-2 group">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 Password
               </label>
-
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-
+                <Lock
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300 text-primary"
+                />
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
                   placeholder="••••••••"
-                  className="w-full border border-gray-300 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 border rounded-xl py-2.5 pl-10 pr-11 text-sm outline-none transition-all duration-300 placeholder:text-gray-300 focus:border-primary"
                 />
-
                 <button
                   type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300 text-gray-500"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+                  {showPassword ? <Eye size={18} /> : <EyeClosed size={18} />}
                 </button>
               </div>
-
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-400 text-xs mt-1.5">
                   {errors.password.message}
                 </p>
               )}
@@ -215,41 +237,62 @@ export default function SignUp() {
           <button
             type="submit"
             disabled={signup.isPending}
-            className="w-full bg-primary py-3 rounded-xl flex items-center justify-center gap-2 text-white font-medium text-sm hover:opacity-90"
+            className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2.5 text-white font-semibold text-sm tracking-wide shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed bg-primary"
           >
-            {signup.isPending ? "Creating..." : "Create Account"}
-
-            <MoveRight className="w-4 h-4" />
+            {signup.isPending ? (
+              <>
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
+                </svg>
+                Creating account...
+              </>
+            ) : (
+              <>
+                Create Account
+                <MoveRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 
-        <div className="text-center">
-          <p>
-            Already have account?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Login
-            </a>
-          </p>
+        <div className="text-center text-sm text-gray-500">
+          Already have an account?{" "}
+          <a
+            href="/login"
+            className="font-semibold transition-colors duration-300 hover:underline underline-offset-2 text-primary"
+          >
+            Log in
+          </a>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex flex-wrap justify-center gap-4">
           {[
-            {
-              icon: <Shield className="text-success w-5 h-5" />,
-              label: "SECURE DATA",
-            },
-            {
-              icon: <Zap className="text-success w-5 h-5" />,
-              label: "AI POWERED",
-            },
+            { icon: <Shield className="w-4 h-4" />, label: "Secure Data" },
+            { icon: <Zap className="w-4 h-4" />, label: "AI Powered" },
           ].map(({ icon, label }) => (
             <div
               key={label}
-              className="flex items-center gap-3 p-4 bg-white/50 rounded-lg border justify-center w-full md:w-auto md:min-w-48"
+              className="flex items-center gap-2.5 px-5 py-3 bg-white/70 backdrop-blur-sm rounded-xl border transition-all duration-500 text-primary"
             >
               {icon}
-
-              <span className="text-xs font-semibold tracking-widest uppercase">
+              <span className="text-xs font-bold tracking-widest uppercase text-gray-600">
                 {label}
               </span>
             </div>
