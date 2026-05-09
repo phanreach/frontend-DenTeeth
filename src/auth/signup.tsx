@@ -48,7 +48,6 @@ export default function SignUp() {
       <Navbar />
 
       <div className="max-w-xl mx-auto space-y-10 py-20">
-        {/* Header */}
         <div className="text-center space-y-3">
           <h1 className="font-semibold text-3xl tracking-tight text-gray-900">
             Create Your Account
@@ -58,7 +57,6 @@ export default function SignUp() {
             Clinical intelligence with Human Touch
           </p>
 
-          {/* Role Switch */}
           <div className="flex justify-center pt-2">
             <div className="bg-gray-100 p-1 rounded-xl flex gap-1">
               <button
@@ -88,13 +86,11 @@ export default function SignUp() {
           </div>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-6"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* First Name */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 First Name
@@ -117,7 +113,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Last Name */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Last Name
@@ -140,7 +135,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Username */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Username
@@ -163,7 +157,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Email */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Email
@@ -187,7 +180,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Password */}
             <div className="md:col-span-2">
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Password
@@ -220,7 +212,6 @@ export default function SignUp() {
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={signup.isPending}
@@ -232,7 +223,6 @@ export default function SignUp() {
           </button>
         </form>
 
-        {/* Footer */}
         <div className="text-center">
           <p>
             Already have account?{" "}
@@ -242,7 +232,6 @@ export default function SignUp() {
           </p>
         </div>
 
-        {/* Badges */}
         <div className="flex flex-wrap justify-center gap-6">
           {[
             {

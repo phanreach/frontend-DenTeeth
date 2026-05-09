@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeClosed, Lock, Shield, User, Zap } from "lucide-react";
 import Navbar from "../components/nav-bar";
-import { useNavigate } from "react-router-dom";
 import useLogin from "../components/hook/auth/use-login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,10 +8,8 @@ import {
   type LoginSchema,
 } from "../components/lib/schema/login-schema";
 import { useForm } from "react-hook-form";
-import Cookies from "js-cookie";
 
 export default function Login() {
-  const navigate = useNavigate();
   const loginMutation = useLogin();
 
   const {
@@ -71,7 +68,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-sm font-medium text-gray-700">
@@ -107,7 +103,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 rounded-xl transition-all duration-200"
@@ -115,7 +110,6 @@ export default function Login() {
               Sign In
             </button>
           </form>
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200" />
             <span className="text-xs text-gray-400 font-medium">OR</span>
@@ -146,7 +140,6 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Sign up link */}
         <div className="text-center">
           <p className="text-sm text-gray-500">
             Don't have an account?{" "}
@@ -156,7 +149,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Badges */}
         <div className="flex flex-wrap justify-center gap-6">
           {[
             {
