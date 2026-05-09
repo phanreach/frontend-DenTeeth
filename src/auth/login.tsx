@@ -28,14 +28,6 @@ export default function Login() {
   const onSubmit = async (data: LoginSchema) => {
     try {
       await loginMutation.mutateAsync(data);
-
-      const role = Cookies.get("role");
-
-      if (role?.includes("ADMIN")) {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/");
-      }
     } catch {
       // error handled in hook
     }

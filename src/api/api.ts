@@ -17,9 +17,12 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = Cookies.get("token");
-    const isLoginRequest = config.url?.includes("/login");
+    const publicAuthPaths = [API_ENDPOINT.LOGIN, API_ENDPOINT.SIGNUP];
+    const isPublicAuthRequest = publicAuthPaths.some((path) =>
+      config.url?.includes(path),
+    );
 
-    if (!token && !isLoginRequest) {
+    if (!token && !isPublicAuthRequest) {
       return Promise.reject(
         new axios.Cancel("Redirected to login: No auth token"),
       );

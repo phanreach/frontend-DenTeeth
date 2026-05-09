@@ -10,14 +10,20 @@ import AdminDashboard from "./super-admin/page/admin-dashboard";
 function App() {
   return (
     <Routes>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/home" element={<Home />} />
       <Route path="/" element={<Landing />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
 
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={["PATIENT"]} />}>
+        <Route path="/home" element={<Home />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={["DENTIST"]} />}>
+        <Route path="/dentist/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   );
