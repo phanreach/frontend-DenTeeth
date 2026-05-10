@@ -6,6 +6,7 @@ import SignUp from "./auth/signup";
 import Login from "./auth/login";
 import ProtectedRoute from "./protect-route";
 import AdminDashboard from "./super-admin/page/admin-dashboard";
+import VerifyEmail from "./auth/verify-email";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
-
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Route>

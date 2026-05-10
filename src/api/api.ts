@@ -17,7 +17,12 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = Cookies.get("token");
-    const publicAuthPaths = [API_ENDPOINT.LOGIN, API_ENDPOINT.SIGNUP];
+    const publicAuthPaths = [
+      API_ENDPOINT.LOGIN,
+      API_ENDPOINT.SIGNUP,
+      API_ENDPOINT.VERIFY_EMAIL,
+      API_ENDPOINT.CHECK_VERIFICATION,
+    ];
     const isPublicAuthRequest = publicAuthPaths.some((path) =>
       config.url?.includes(path),
     );

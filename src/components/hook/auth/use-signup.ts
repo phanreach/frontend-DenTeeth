@@ -62,13 +62,7 @@ export default function useSignup() {
 
       toast.success(response.message);
 
-      if (data.roles.includes("ADMIN")) {
-        navigate("/admin/dashboard");
-      } else if (data.roles.includes("DENTIST")) {
-        navigate("/dentist/dashboard");
-      } else {
-        navigate("/home");
-      }
+      navigate("/verify-email");
     },
 
     onError: (error: unknown) => {
