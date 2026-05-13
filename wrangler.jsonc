@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "breakout-room",
+  "name": "denteeth",
   "compatibility_date": "2026-03-20",
   "assets": {
     "directory": "./dist"
