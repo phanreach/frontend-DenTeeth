@@ -2,6 +2,7 @@ import Footer from "../components/footer";
 import Navbar from "../components/nav-bar";
 import Hero from "./hero";
 import Feature from "./feature";
+import AboutUs from "./about-us";
 
 export default function Landing() {
   return (
@@ -9,6 +10,12 @@ export default function Landing() {
       <Navbar />
       <Hero />
       <Feature />
+
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+      </div>
+
+      <AboutUs />
       <Footer />
     </div>
   );
