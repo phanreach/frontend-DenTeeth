@@ -13,6 +13,11 @@ import UploadImage from "./upload-image";
 export default function AIScan() {
   const [file, setFile] = useState<File | null>(null);
 
+  const handleDiagnosis = () => {
+    if (!file) return;
+    console.log("Selected file:", file);
+  };
+
   return (
     <div className="min-h-screen overflow-hidden bg-[#eef3ff]">
       <Navbar />
@@ -88,8 +93,8 @@ export default function AIScan() {
           <div className="w-full max-w-xl">
             <UploadImage
               onImageChange={(uploadedFile) => setFile(uploadedFile)}
+              onStartScan={handleDiagnosis}
             />
-
             <div className="mt-5 rounded-3xl border border-amber-100 bg-white/90 p-5 shadow-sm backdrop-blur-sm">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50">

@@ -9,13 +9,18 @@ import { useRef, useState, useCallback } from "react";
 
 interface UploadImageProps {
   onImageChange?: (file: File | null, preview?: string | null) => void;
+  onStartScan?: () => void;
 }
 
-export default function UploadImage({ onImageChange }: UploadImageProps) {
+export default function UploadImage({
+  onImageChange,
+  onStartScan,
+}: UploadImageProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-
+  const [file, setFile] = useState<File | null>(null);
+  console.log(file);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(
@@ -26,6 +31,7 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
 
       setPreview(url);
       setFileName(file.name);
+      setFile(file);
 
       onImageChange?.(file, url);
     },
@@ -37,6 +43,7 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
 
     setPreview(null);
     setFileName(null);
+    setFile(null);
 
     onImageChange?.(null, null);
 
@@ -55,11 +62,7 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
 
   return (
     <div className="w-full max-w-xl overflow-hidden rounded-4xl border border-blue-100 bg-white shadow-md">
-      {/* Header */}
       <div className="relative overflow-hidden bg-primary px-7 py-6">
-        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
-        <div className="absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-white/5" />
-
         <div className="relative flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-md">
             <Sparkles className="h-6 w-6 text-white" />
@@ -75,9 +78,7 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-6">
-        {/* Upload Area */}
         <div
           onClick={() => !preview && inputRef.current?.click()}
           onDragOver={(e) => {
@@ -103,7 +104,6 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
                 className="h-full w-full object-contain p-5"
               />
 
-              {/* Remove */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -114,7 +114,6 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
                 <X className="h-4 w-4 text-slate-500 hover:text-red-500" />
               </button>
 
-              {/* Status */}
               <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow-lg">
                 <CheckCircle2 className="h-4 w-4" />
                 Ready for AI diagnosis
@@ -148,7 +147,6 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
           )}
         </div>
 
-        {/* File Name */}
         {fileName && (
           <div className="mt-4 flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
@@ -167,7 +165,6 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
           </div>
         )}
 
-        {/* Tips */}
         {!preview && (
           <div className="mt-5 grid grid-cols-2 gap-3">
             {[
@@ -187,25 +184,26 @@ export default function UploadImage({ onImageChange }: UploadImageProps) {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="mt-6 space-y-3">
-          <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95">
-            <Sparkles className="h-4 w-4" />
-            START AI DIAGNOSIS
-          </button>
-
-          {preview && (
+        {preview && (
+          <div className="mt-4 flex gap-3">
             <button
               onClick={() => inputRef.current?.click()}
-              className="w-full rounded-2xl border border-blue-200 bg-white py-3 text-sm font-semibold text-primary transition hover:bg-blue-50"
+              className="flex-1 rounded-2xl border border-blue-200 bg-white py-3 text-sm font-semibold text-primary transition hover:bg-blue-50"
             >
               Replace image
             </button>
-          )}
-        </div>
+
+            <button
+              onClick={onStartScan}
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95"
+            >
+              <Sparkles className="h-4 w-4" />
+              Start Scan
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Hidden Input */}
       <input
         ref={inputRef}
         type="file"
