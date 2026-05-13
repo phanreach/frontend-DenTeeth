@@ -33,7 +33,7 @@ function Navbar() {
           {[
             ["Home", "/"],
             ["AI Scan", "/scan"],
-            ["History", "/history"],
+            ["Dentist", "/dentist"],
           ].map(([label, to]) => (
             <NavLink key={to} to={to}>
               {label}
