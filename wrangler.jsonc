@@ -3,6 +3,7 @@
   "name": "denteeth",
   "compatibility_date": "2026-05-15",
   "pages_build_output_dir": "./dist",
+  "account_id": "c1f54b84b961e1c4106d2725b9e62188",
   "vars": {
     "VITE_BASE_URL": "https://denteeth-api.panhayuthoeun.dev"
   }
