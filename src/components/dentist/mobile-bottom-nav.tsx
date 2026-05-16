@@ -1,0 +1,31 @@
+import { CalendarDays, ClipboardList, LayoutGrid, NotebookTabs } from "lucide-react";
+
+export default function MobileBottomNav() {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white lg:hidden">
+      <div className="mx-auto grid h-16 max-w-md grid-cols-4 px-2">
+        <button className="flex flex-col items-center justify-center gap-0.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-violet-100 text-indigo-700">
+            <LayoutGrid className="h-4 w-4" />
+          </span>
+          <span className="text-[10px] font-medium text-indigo-700">Dashboard</span>
+        </button>
+
+        <button className="flex flex-col items-center justify-center gap-0.5 text-slate-500">
+          <ClipboardList className="h-4 w-4" />
+          <span className="text-[10px] font-medium">Bookings</span>
+        </button>
+
+        <button className="flex flex-col items-center justify-center gap-0.5 text-slate-500">
+          <CalendarDays className="h-4 w-4" />
+          <span className="text-[10px] font-medium">Calendar</span>
+        </button>
+
+        <button className="flex flex-col items-center justify-center gap-0.5 text-slate-500">
+          <NotebookTabs className="h-4 w-4" />
+          <span className="text-[10px] font-medium">Services</span>
+        </button>
+      </div>
+    </nav>
+  );
+}
