@@ -3,6 +3,7 @@ import Navbar from "../components/nav-bar";
 import Hero from "./hero";
 import Feature from "./feature";
 import AboutUs from "./about-us";
+import Vision from "./vision";
 
 export default function Landing() {
   return (
@@ -16,6 +17,7 @@ export default function Landing() {
       </div>
 
       <AboutUs />
+      <Vision />
       <Footer />
     </div>
   );
