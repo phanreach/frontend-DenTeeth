@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { API_ENDPOINT } from "../../../api/endpoint";
 import api from "../../../api/api";
-import Cookies from "js-cookie";
+import { COOKIE_KEYS, setCookie } from "../../../utils/cookies";
 import { toast } from "sonner";
 import axios from "axios";
 
@@ -48,18 +48,17 @@ export default function useSignup() {
       const data = response.data;
 
       if (data.token) {
-        Cookies.set("token", data.token);
+        setCookie(COOKIE_KEYS.token, data.token);
       }
 
       if (data.expiration) {
-        Cookies.set("expiration", data.expiration);
+        setCookie(COOKIE_KEYS.expiration, data.expiration);
       }
 
-      Cookies.set("username", data.username);
-      Cookies.set("roles", data.roles.join(","));
-      Cookies.set("email", data.email);
-      Cookies.set("permissions", data.permissions.join(","));
-
+      setCookie(COOKIE_KEYS.username, data.username);
+      setCookie(COOKIE_KEYS.roles, data.roles.join(","));
+      setCookie(COOKIE_KEYS.email, data.email);
+      setCookie(COOKIE_KEYS.permissions, data.permissions.join(","));
       toast.success(response.message);
 
       navigate("/verify-email");

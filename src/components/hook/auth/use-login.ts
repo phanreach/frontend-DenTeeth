@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { API_ENDPOINT } from "../../../api/endpoint";
 import api from "../../../api/api";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { COOKIE_KEYS, setCookie } from "../../../utils/cookies";
 
 export type LoginPayload = {
   username: string;
@@ -40,12 +40,11 @@ export default function useLogin() {
     onSuccess: (response: LoginApiResponse) => {
       const data = response.data;
 
-      Cookies.set("token", data.token);
-      Cookies.set("username", data.username);
-      Cookies.set("expiration", data.expiration);
-      Cookies.set("roles", data.roles.join(","));
-      Cookies.set("email", data.email);
-      Cookies.set("permissions", data.permissions.join(","));
+      setCookie(COOKIE_KEYS.token, data.token);
+      setCookie(COOKIE_KEYS.username, data.username);
+      setCookie(COOKIE_KEYS.roles, data.roles.join(","));
+      setCookie(COOKIE_KEYS.email, data.email);
+      setCookie(COOKIE_KEYS.permissions, data.permissions.join(","));
 
       toast.success(response.message);
 

@@ -1,20 +1,41 @@
 // admin-dashboard.tsx
 
-import {
-  Activity,
-  Calendar,
-  Users,
-  Stethoscope,
-  TrendingUp,
-} from "lucide-react";
+import { TrendingUp } from "lucide-react";
+import CardStat from "../../components/card-stat";
+import { COOKIE_KEYS, getCookie } from "../../utils/cookies";
 
 export default function AdminDashboard() {
+  const username = getCookie(COOKIE_KEYS.username);
+  const stats = [
+    {
+      id: "patients",
+      title: "Total Patients",
+      value: 150,
+      icon: "users" as const,
+      iconColor: "text-green-500",
+    },
+    {
+      id: "dentists",
+      title: "Total Dentists",
+      value: 99,
+      icon: "Stethoscope" as const,
+      iconColor: "text-blue-500",
+    },
+    {
+      id: "ai-scan",
+      title: "AI Scans Performed",
+      value: 15000,
+      icon: "Microscope" as const,
+      iconColor: "text-red-500",
+    },
+  ];
   return (
     <div className="space-y-8">
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-900">
+            Welcome back {username}
+          </h1>
 
           <p className="text-slate-500 mt-1">
             Monitor your AI dental platform performance.
@@ -25,57 +46,9 @@ export default function AdminDashboard() {
           Generate Report
         </button>
       </div>
-
-      {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-        {[
-          {
-            title: "Total Users",
-            value: "2,450",
-            icon: Users,
-          },
-          {
-            title: "AI Scans",
-            value: "8,120",
-            icon: Activity,
-          },
-          {
-            title: "Appointments",
-            value: "324",
-            icon: Calendar,
-          },
-          {
-            title: "Dentists",
-            value: "28",
-            icon: Stethoscope,
-          },
-        ].map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500">{item.title}</p>
-
-                  <h2 className="text-3xl font-bold text-slate-900 mt-2">
-                    {item.value}
-                  </h2>
-                </div>
-
-                <div className="w-14 h-14 rounded-2xl bg-[#1a3cff]/10 flex items-center justify-center">
-                  <Icon className="w-7 h-7 text-[#1a3cff]" />
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div>
+        <CardStat stats={stats} isLoading={false} />
       </div>
-
-      {/* CONTENT */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* RECENT SCANS */}
         <div className="xl:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

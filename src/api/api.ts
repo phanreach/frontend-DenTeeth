@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { API_ENDPOINT } from "./endpoint";
+import { COOKIE_KEYS, getCookie, setCookie } from "../utils/cookies";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -16,7 +16,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token");
+    const token = getCookie(COOKIE_KEYS.token);
     const publicAuthPaths = [
       API_ENDPOINT.LOGIN,
       API_ENDPOINT.SIGNUP,
@@ -69,7 +69,7 @@ export const meApi = () => api.get(API_ENDPOINT.PROFILE);
 
 export const refreshToken = async (): Promise<string | null> => {
   try {
-    const token = Cookies.get("token");
+    const token = getCookie(COOKIE_KEYS.token);
     if (!token) return null;
 
     const response = await axios.post(`${VITE_BASE_URL}/auth/refresh`, {
@@ -78,7 +78,7 @@ export const refreshToken = async (): Promise<string | null> => {
 
     const newAccessToken = response.data?.accessToken;
     if (newAccessToken) {
-      Cookies.set("token", newAccessToken);
+      setCookie(COOKIE_KEYS.token, newAccessToken);
       return newAccessToken;
     }
 

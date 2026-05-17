@@ -8,10 +8,12 @@ import {
   Stethoscope,
   UserRound,
   Users,
+  ClipboardClock,
+  Microscope,
   X,
 } from "lucide-react";
-import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router-dom";
+import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
 
 type UserRole = "ADMIN" | "DENTIST" | "PATIENT";
 type NavIcon = typeof LayoutDashboard;
@@ -39,7 +41,7 @@ function parseRoles(cookieValue: string | undefined): string[] {
       return parsed.map((role) => String(role).trim()).filter(Boolean);
     }
   } catch {
-    // ignore invalid JSON and fall back to comma-split
+    //
   }
 
   return cookieValue
@@ -52,7 +54,9 @@ function getActiveRole(pathname: string): UserRole {
   if (pathname.startsWith("/admin")) return "ADMIN";
   if (pathname.startsWith("/dentist")) return "DENTIST";
 
-  const roles = parseRoles(Cookies.get("roles") || Cookies.get("role"));
+  const roles = parseRoles(
+    getCookie(COOKIE_KEYS.roles) || getCookie(COOKIE_KEYS.role),
+  );
 
   if (roles.includes("ADMIN")) return "ADMIN";
   if (roles.includes("DENTIST")) return "DENTIST";
@@ -70,7 +74,8 @@ export default function SideBar({
 
   const currentPage = location.pathname;
   const activeRole = getActiveRole(currentPage);
-  const username = Cookies.get("username") ?? "User";
+
+  const username = getCookie(COOKIE_KEYS.username) ?? "User";
   const firstLetter = username.charAt(0).toUpperCase();
 
   const roleLabels: Record<UserRole, string> = {
@@ -88,10 +93,10 @@ export default function SideBar({
         active: currentPage.startsWith("/admin/dashboard"),
       },
       {
-        label: "Users",
+        label: "Patient",
         icon: Users,
-        path: "/admin/users",
-        active: currentPage.startsWith("/admin/users"),
+        path: "/admin/patients",
+        active: currentPage.startsWith("/admin/patients"),
       },
       {
         label: "Dentists",
@@ -99,7 +104,20 @@ export default function SideBar({
         path: "/admin/dentists",
         active: currentPage.startsWith("/admin/dentists"),
       },
+      {
+        label: "Appointments",
+        icon: ClipboardClock,
+        path: "/admin/appointment",
+        active: currentPage.startsWith("/admin/appointments"),
+      },
+      {
+        label: "AI Scans",
+        icon: Microscope,
+        path: "/admin/ai-scans",
+        active: currentPage.startsWith("/admin/ai-scans"),
+      },
     ],
+
     DENTIST: [
       {
         label: "Dashboard",
@@ -120,6 +138,7 @@ export default function SideBar({
         active: currentPage.startsWith("/dentist/patients"),
       },
     ],
+
     PATIENT: [
       {
         label: "Home",
@@ -154,56 +173,54 @@ export default function SideBar({
   };
 
   const handleLogout = () => {
-    Cookies.remove("role");
-    Cookies.remove("roles");
-    Cookies.remove("username");
+    clearAuthCookies();
+
     navigate("/login");
   };
 
   return (
     <>
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-xl z-40 flex items-center justify-between px-4 border-b border-slate-200">
+        <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl">
           <button
             onClick={() => setCollapsed(false)}
-            className="p-2 rounded-xl hover:bg-slate-100 transition"
-            aria-label="Open sidebar"
+            className="rounded-xl p-2 transition hover:bg-secondary"
           >
-            <Menu className="w-5 h-5 text-slate-700" />
+            <Menu className="h-5 w-5 text-slate-700" />
           </button>
 
           <button
             onClick={() => handleNavigate(homePath)}
-            className="text-lg font-bold text-[#1a3cff]"
+            className="font-serif text-xl text-primary"
           >
             DenTeeth
           </button>
 
           <div className="flex items-center gap-3">
-            <button
-              className="relative p-2 rounded-xl hover:bg-slate-100 transition"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5 text-slate-600" />
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500" />
+            <button className="relative rounded-xl p-2 transition hover:bg-secondary">
+              <Bell className="h-5 w-5 text-slate-600" />
+
+              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
             </button>
 
-            <div className="w-9 h-9 rounded-full bg-[#1a3cff] text-white flex items-center justify-center text-sm font-semibold shadow-md">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white shadow-lg">
               {firstLetter}
             </div>
           </div>
         </div>
       )}
 
+      {/* Mobile Overlay */}
       {isMobile && !collapsed && (
         <div
           onClick={() => setCollapsed(true)}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-[#0f172a] border-r border-white/10 z-50 flex flex-col transition-all duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 flex h-screen flex-col border-r border-slate-200 bg-white/90 backdrop-blur-xl transition-all duration-300 ${
           isMobile
             ? collapsed
               ? "-translate-x-full w-72"
@@ -213,15 +230,19 @@ export default function SideBar({
               : "w-72"
         }`}
       >
-        <div className="h-20 px-5 flex items-center justify-between border-b border-white/10">
+        {/* Logo */}
+        <div className="flex h-20 items-center justify-between border-b border-slate-100 px-5">
           {!collapsed && (
             <button
               onClick={() => handleNavigate(homePath)}
               className="flex items-center gap-3"
             >
               <div className="text-left">
-                <h1 className="text-white font-bold text-lg">DenTeeth</h1>
-                <p className="text-xs text-slate-400">AI Dental Platform</p>
+                <h1 className="font-bold text-xl text-primary">DenTeeth</h1>
+
+                <p className="text-xs tracking-wide text-slate-500">
+                  AI Dental Platform
+                </p>
               </div>
             </button>
           )}
@@ -230,14 +251,14 @@ export default function SideBar({
             onClick={() =>
               isMobile ? setCollapsed(true) : setCollapsed(!collapsed)
             }
-            className="p-2 rounded-xl text-slate-300 hover:bg-white/10 transition"
-            aria-label={isMobile ? "Close sidebar" : "Toggle sidebar"}
+            className="rounded-xl p-2 transition hover:bg-secondary hover:text-primary"
           >
             {isMobile ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto px-3 py-6">
           <div className="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -246,16 +267,18 @@ export default function SideBar({
                 <button
                   key={item.label}
                   onClick={() => handleNavigate(item.path)}
-                  className={`group relative flex items-center w-full rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  className={`group relative flex w-full items-center rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-300 ${
                     item.active
-                      ? "bg-gradient-to-r from-[#1a3cff] to-[#4f6dff] text-white shadow-lg"
-                      : "text-slate-300 hover:bg-white/5 hover:text-white"
+                      ? "bg-primary text-white shadow-lg shadow-primary/20"
+                      : "text-slate-600 hover:bg-secondary hover:text-primary"
                   }`}
                 >
-                  <Icon className="w-5 h-5 shrink-0" />
+                  <Icon className="h-5 w-5 shrink-0" />
+
                   {!collapsed && <span className="ml-3">{item.label}</span>}
-                  {item.active && (
-                    <div className="absolute right-3 w-2 h-2 rounded-full bg-white" />
+
+                  {item.active && !collapsed && (
+                    <div className="absolute right-4 h-2 w-2 rounded-full bg-white" />
                   )}
                 </button>
               );
@@ -263,19 +286,21 @@ export default function SideBar({
           </div>
         </div>
 
-        <div className="p-4 border-t border-white/10">
+        {/* Bottom User */}
+        <div className="border-t border-slate-100 p-4">
           {!collapsed ? (
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+            <div className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1a3cff] to-[#4f6dff] text-white flex items-center justify-center font-bold shadow-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary font-bold text-white shadow-lg">
                   {firstLetter}
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-slate-800">
                     {username}
                   </p>
-                  <p className="text-xs text-slate-400">
+
+                  <p className="text-xs text-slate-500">
                     {roleLabels[activeRole]}
                   </p>
                 </div>
@@ -283,19 +308,18 @@ export default function SideBar({
 
               <button
                 onClick={handleLogout}
-                className="mt-4 flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition text-sm font-medium"
+                className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-red-500/10 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="h-4 w-4" />
                 Logout
               </button>
             </div>
           ) : (
             <button
               onClick={() => handleNavigate(homePath)}
-              className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#1a3cff] to-[#4f6dff] text-white flex items-center justify-center font-bold shadow-lg"
-              aria-label={`${roleLabels[activeRole]} home`}
+              className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20"
             >
-              <UserRound className="w-6 h-6" />
+              <UserRound className="h-6 w-6" />
             </button>
           )}
         </div>

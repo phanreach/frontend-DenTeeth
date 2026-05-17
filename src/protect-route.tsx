@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import Cookies from "js-cookie";
+import { COOKIE_KEYS, getCookie } from "./utils/cookies";
 
 interface ProtectedRouteProps {
   allowedRoles: string[];
@@ -28,7 +28,8 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const rolesCookie = Cookies.get("roles") || Cookies.get("role");
+    const rolesCookie =
+      getCookie(COOKIE_KEYS.roles) || getCookie(COOKIE_KEYS.role);
     const userRoles = parseRoles(rolesCookie);
 
     if (userRoles.length === 0) {

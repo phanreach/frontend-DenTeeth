@@ -10,6 +10,8 @@ import VerifyEmail from "./auth/verify-email";
 import Layout from "./layout";
 import Dentist from "./landing/dentist";
 import AIScan from "./landing/ai-scan";
+import Patient from "./super-admin/page/patients";
+import Dentists from "./super-admin/page/dentists";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
         <Route element={<Layout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/patients" element={<Patient />} />
+          <Route path="/admin/dentists" element={<Dentists />} />
         </Route>
       </Route>
 

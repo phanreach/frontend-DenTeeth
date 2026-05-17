@@ -4,16 +4,16 @@ import Navbar from "../components/nav-bar";
 import Footer from "../components/footer";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import checkVerification from "../components/hook/auth/check-verification";
+import { COOKIE_KEYS, getCookie } from "../utils/cookies";
 
 export default function VerifyEmail() {
   const [resent, setResent] = useState(false);
 
   const navigate = useNavigate();
 
-  const email = Cookies.get("email");
-  const roles = Cookies.get("roles");
+  const email = getCookie(COOKIE_KEYS.email);
+  const roles = getCookie(COOKIE_KEYS.roles);
 
   const { data } = useQuery({
     queryKey: ["check-verification", email],

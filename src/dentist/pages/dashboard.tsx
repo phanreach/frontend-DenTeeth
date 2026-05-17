@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { AlertCircle, Calendar, LogOut, Star, Users } from "lucide-react";
-import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import KpiCard from "../../components/dentist/kpi-card";
 import PeriodTabs from "../../components/dentist/period-tabs";
@@ -19,21 +18,16 @@ import {
   TOP_CONDITIONS,
   type AnalyticsPeriod,
 } from "../constants/dashboard-data";
+import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../../utils/cookies";
 
 export default function Dashboard() {
   const [period, setPeriod] = useState<AnalyticsPeriod>("month");
   const navigate = useNavigate();
 
-  const username = Cookies.get("username") || "Dr. Miller";
+  const username = getCookie(COOKIE_KEYS.username) || "Dr. Miller";
   const data = useMemo(() => PERIOD_DATA[period], [period]);
   const handleLogout = () => {
-    Cookies.remove("token");
-    Cookies.remove("expiration");
-    Cookies.remove("role");
-    Cookies.remove("roles");
-    Cookies.remove("username");
-    Cookies.remove("email");
-    Cookies.remove("permissions");
+    clearAuthCookies();
     navigate("/login");
   };
 
