@@ -25,7 +25,7 @@ const bars = [
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[#eef3ff] flex items-center">
+    <section className="relative overflow-hidden bg-secondary flex items-center">
       <div className="relative mx-auto w-full max-w-7xl px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div className="relative z-10 flex flex-col gap-8">
           <div className="self-start flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200 bg-white/80 backdrop-blur-xl text-primary text-xs font-bold tracking-[0.18em] uppercase shadow-sm">
@@ -34,10 +34,7 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <h1
-              className="text-6xl sm:text-7xl font-extrabold leading-[1.02] tracking-tight text-slate-900"
-              style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
-            >
+            <h1 className="text-6xl sm:text-7xl font-extrabold leading-[1.02] tracking-tight text-slate-900 font-serif">
               Spot{" "}
               <span className="relative inline-block text-primary">Issues</span>
               <br />
