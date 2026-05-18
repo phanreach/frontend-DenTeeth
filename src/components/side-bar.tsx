@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Newspaper,
   Stethoscope,
   UserRound,
   Users,
@@ -154,16 +153,10 @@ export default function SideBar({
         active: currentPage === "/home",
       },
       {
-        label: "Calendar",
-        icon: Calendar,
-        path: "/calendar",
-        active: currentPage.startsWith("/calendar"),
-      },
-      {
-        label: "News",
-        icon: Newspaper,
-        path: "/news",
-        active: currentPage.startsWith("/news"),
+        label: "Appointments",
+        icon: ClipboardClock,
+        path: "/appointments",
+        active: currentPage.startsWith("/appointments"),
       },
     ],
   };

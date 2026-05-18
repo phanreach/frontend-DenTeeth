@@ -23,6 +23,7 @@ api.interceptors.request.use(
       API_ENDPOINT.VERIFY_EMAIL,
       API_ENDPOINT.CHECK_VERIFICATION,
       API_ENDPOINT.RESEND_VERIFICATION,
+      API_ENDPOINT.DENTIST,
     ];
     const isPublicAuthRequest = publicAuthPaths.some((path) =>
       config.url?.includes(path),

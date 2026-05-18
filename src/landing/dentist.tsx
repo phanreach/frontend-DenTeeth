@@ -3,17 +3,39 @@ import DentistCard from "./dentist-card";
 import Footer from "../components/footer";
 import Navbar from "../components/nav-bar";
 import Pagination from "../components/pagination";
-import { dentists } from "../components/constants/data-dummy";
+import UseDentistQuery from "../components/hook/use-dentist-query";
 
 export default function Dentist() {
   const itemsPerPage = 6;
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(dentists.length / itemsPerPage);
+  const { data = [], isLoading, isError } = UseDentistQuery();
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentDentists = dentists.slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const visiblePage =
+    totalPages > 0 ? Math.min(currentPage, totalPages) : currentPage;
+
+  const startIndex = (visiblePage - 1) * itemsPerPage;
+
+  const currentDentists = data.slice(startIndex, startIndex + itemsPerPage);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Failed to load dentists
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#eef3ff]">
@@ -30,16 +52,22 @@ export default function Dentist() {
         </div>
 
         {/* Dentist Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {currentDentists.map((dentist) => (
-            <DentistCard key={dentist.id} data={dentist} />
-          ))}
-        </div>
+        {currentDentists.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {currentDentists.map((dentist) => (
+              <DentistCard key={dentist.id} data={dentist} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-blue-100 bg-white p-8 text-center text-gray-500">
+            No dentists available yet.
+          </div>
+        )}
 
         {/* Pagination */}
         <div className="mt-12">
           <Pagination
-            currentPage={currentPage}
+            currentPage={visiblePage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
