@@ -12,6 +12,7 @@ import Dentist from "./landing/dentist";
 import AIScan from "./landing/ai-scan";
 import Patient from "./super-admin/page/patients";
 import Dentists from "./super-admin/page/dentists";
+import Roles from "./super-admin/page/roles";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/patients" element={<Patient />} />
           <Route path="/admin/dentists" element={<Dentists />} />
+          <Route path="/admin/roles" element={<Roles />} />
         </Route>
       </Route>
 

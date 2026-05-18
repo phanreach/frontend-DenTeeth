@@ -6,11 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import checkVerification from "../components/hook/auth/check-verification";
 import { COOKIE_KEYS, getCookie } from "../utils/cookies";
+import useResendVerification from "../components/hook/auth/resend-verification";
 
 export default function VerifyEmail() {
-  const [resent, setResent] = useState(false);
+  const [countdown, setCountdown] = useState(60);
+  const [resendError, setResendError] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { resendVerification, loading, error, success } =
+    useResendVerification();
 
   const email = getCookie(COOKIE_KEYS.email);
   const roles = getCookie(COOKIE_KEYS.roles);
@@ -26,8 +30,10 @@ export default function VerifyEmail() {
     },
   });
   console.log("email from cookie:", email);
+  const isVerified = data?.data === true;
+
   useEffect(() => {
-    if (data?.data === true) {
+    if (isVerified) {
       setTimeout(() => {
         if (roles?.includes("ADMIN")) {
           navigate("/admin/dashboard");
@@ -38,16 +44,34 @@ export default function VerifyEmail() {
         }
       }, 1200);
     }
-  }, [data, roles, navigate]);
+  }, [isVerified, roles, navigate]);
 
-  const handleResend = () => {
-    setResent(true);
-    setTimeout(() => {
-      setResent(false);
-    }, 3000);
+  useEffect(() => {
+    if (isVerified || countdown <= 0) return;
+
+    const timer = setInterval(() => {
+      setCountdown((seconds) => Math.max(seconds - 1, 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown, isVerified]);
+
+  const handleResend = async () => {
+    if (!email) {
+      setResendError("Email address is missing. Please sign up again.");
+      return;
+    }
+
+    try {
+      setResendError(null);
+      await resendVerification(email);
+      setCountdown(60);
+    } catch {
+      setResendError(null);
+    }
   };
 
-  const isVerified = data?.data === true;
+  const canResend = !!email && countdown === 0 && !loading;
 
   return (
     <div>
@@ -119,11 +143,27 @@ export default function VerifyEmail() {
 
                 <button
                   onClick={handleResend}
-                  disabled={resent}
+                  disabled={!canResend}
                   className="w-full py-2 px-4 text-sm font-medium rounded-lg border border-primary text-primary hover:bg-blue-600 hover:text-white disabled:opacity-60 transition-colors cursor-pointer"
                 >
-                  {resent ? "Sent!" : "Resend verification email"}
+                  {loading
+                    ? "Sending..."
+                    : countdown > 0
+                      ? `Resend available in ${countdown}s`
+                      : "Resend verification email"}
                 </button>
+
+                {success && (
+                  <p className="mt-3 text-center text-sm text-green-600">
+                    {success}
+                  </p>
+                )}
+
+                {(error || resendError) && (
+                  <p className="mt-3 text-center text-sm text-red-600">
+                    {error || resendError}
+                  </p>
+                )}
               </div>
             </>
           )}

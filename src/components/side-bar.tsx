@@ -11,6 +11,7 @@ import {
   ClipboardClock,
   Microscope,
   X,
+  UserKey,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
@@ -115,6 +116,12 @@ export default function SideBar({
         icon: Microscope,
         path: "/admin/ai-scans",
         active: currentPage.startsWith("/admin/ai-scans"),
+      },
+      {
+        label: "Roles",
+        icon: UserKey,
+        path: "/admin/roles",
+        active: currentPage.startsWith("/admin/roles"),
       },
     ],
 

@@ -5,4 +5,5 @@ export const API_ENDPOINT = {
   LOGOUT: "/auth/logout",
   VERIFY_EMAIL: "/auth/verify",
   CHECK_VERIFICATION: "/auth/check-verification",
+  RESEND_VERIFICATION: "/auth/resend-verification",
 };

@@ -11,6 +11,7 @@ import {
   Stethoscope,
   Camera,
   Microscope,
+  UserKey,
 } from "lucide-react";
 
 const iconMap = {
@@ -26,6 +27,7 @@ const iconMap = {
   Stethoscope: Stethoscope,
   Camera: Camera,
   Microscope: Microscope,
+  UserKey: UserKey,
 };
 
 export default function CardStat({
