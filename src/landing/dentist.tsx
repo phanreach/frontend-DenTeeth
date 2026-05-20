@@ -42,16 +42,14 @@ export default function Dentist() {
       <Navbar />
 
       <div className="mx-auto w-full max-w-7xl px-6 py-10">
-        {/* Header */}
         <div className="mb-8 space-y-3">
-          <h1 className="text-4xl font-bold text-slate-900">
+          <h1 className="text-4xl font-bold text-slate-900 font-serif">
             Recommended Dental Care
           </h1>
 
           <p className="text-gray-500">Meet professionals in your area</p>
         </div>
 
-        {/* Dentist Grid */}
         {currentDentists.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {currentDentists.map((dentist) => (
@@ -64,7 +62,6 @@ export default function Dentist() {
           </div>
         )}
 
-        {/* Pagination */}
         <div className="mt-12">
           <Pagination
             currentPage={visiblePage}

@@ -21,14 +21,12 @@ function Navbar() {
       } backdrop-blur-md border-b border-slate-100`}
     >
       <div className="mx-auto flex items-center justify-between px-6 py-3.5">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <span className="font-semibold text-xl text-primary tracking-tight">
+          <h1 className="font-bold text-xl text-primary tracking-tight">
             DenTeeth
-          </span>
+          </h1>
         </Link>
 
-        {/* Desktop menu */}
         <div className="hidden lg:flex items-center gap-1">
           {[
             ["Home", "/"],
@@ -41,7 +39,6 @@ function Navbar() {
           ))}
         </div>
 
-        {/* Right side */}
         <div className="flex items-center gap-3">
           <Link to="/sign-up" className="hidden sm:block">
             <button className="bg-primary text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-all shadow-sm shadow-primary/20 active:scale-95">

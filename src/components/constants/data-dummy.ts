@@ -1,3 +1,4 @@
+import type { Appointment } from "@/types/api";
 import type { dentist } from "../../dentist/types/api";
 
 export const dentists: dentist[] = [
@@ -210,5 +211,48 @@ export const dentists: dentist[] = [
     hours: "Mon–Thu 8:00 AM – 4:00 PM",
     availability: "Available",
     consultationFee: "$110 – $140",
+  },
+];
+
+export const appointments: Appointment[] = [
+  {
+    id: "APT-001",
+    date: "2025-04-10",
+    time: "09:00 AM",
+    dentist: "Dr. Sarah Johnson",
+    service: "Teeth Cleaning",
+    status: "Completed",
+  },
+  {
+    id: "APT-002",
+    date: "2025-03-22",
+    time: "02:30 PM",
+    dentist: "Dr. Mark Lee",
+    service: "Cavity Filling",
+    status: "Completed",
+  },
+  {
+    id: "APT-003",
+    date: "2025-02-15",
+    time: "11:00 AM",
+    dentist: "Dr. Sarah Johnson",
+    service: "Root Canal",
+    status: "Cancelled",
+  },
+  {
+    id: "APT-004",
+    date: "2025-01-08",
+    time: "10:00 AM",
+    dentist: "Dr. Emily Tan",
+    service: "Braces Adjustment",
+    status: "Completed",
+  },
+  {
+    id: "APT-005",
+    date: "2024-12-20",
+    time: "03:00 PM",
+    dentist: "Dr. Mark Lee",
+    service: "Teeth Whitening",
+    status: "Cancelled",
   },
 ];

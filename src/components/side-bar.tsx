@@ -11,6 +11,7 @@ import {
   Microscope,
   X,
   UserKey,
+  History,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
@@ -157,6 +158,12 @@ export default function SideBar({
         icon: ClipboardClock,
         path: "/appointments",
         active: currentPage.startsWith("/appointments"),
+      },
+      {
+        label: "History",
+        icon: History,
+        path: "/history",
+        active: currentPage.startsWith("/history"),
       },
     ],
   };

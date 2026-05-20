@@ -24,3 +24,18 @@ export type dentist = {
   availability: string;
   services: service[];
 };
+
+export type history = {
+  id: number;
+};
+
+export type AppointmentStatus = "Completed" | "Cancelled" | "Pending";
+
+export type Appointment = {
+  id: string;
+  date: string;
+  time: string;
+  dentist: string;
+  service: string;
+  status: AppointmentStatus;
+};

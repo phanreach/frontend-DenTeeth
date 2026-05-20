@@ -40,9 +40,7 @@ export default function Layout() {
         className={`min-h-screen transition-all duration-300
         ${isMobile ? "ml-0 pt-16" : collapsed ? "ml-24" : "ml-72"}`}
       >
-        <div className="p-4 lg:p-8">
-          <Outlet />
-        </div>
+        <Outlet />
       </main>
     </div>
   );
