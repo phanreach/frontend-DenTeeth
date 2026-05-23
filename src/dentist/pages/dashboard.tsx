@@ -165,7 +165,7 @@ export default function Dashboard() {
         />
       </section>
 
-      <MobileBottomNav />
+      <MobileBottomNav active="dashboard" />
     </main>
   );
 }
