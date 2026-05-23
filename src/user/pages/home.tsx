@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const username = getCookie(COOKIE_KEYS.username);
+
   const stats = [
     {
       id: "appointment",
@@ -29,37 +30,43 @@ export default function Home() {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate(`/find-dentist`);
+    navigate("/find-dentist");
   };
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-8 p-4 sm:p-6 lg:p-8">
+      {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
           Welcome back {username}
         </h1>
 
-        <p className="text-slate-500 mt-1">
+        <p className="mt-1 text-sm text-slate-500 sm:text-base">
           Monitor your AI dental platform performance.
         </p>
       </div>
 
+      {/* STATS */}
       <div>
         <CardStat stats={stats} isLoading={false} />
       </div>
-      <div className="grid grid-cols-3">
-        <div className="col-span-2">
+
+      {/* AI SCAN */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
           <Scan />
         </div>
       </div>
+
+      {/* DENTIST SECTION */}
       <div>
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
             Find your dentists
           </h1>
 
           <button
-            className="flex items-center gap-2 font-medium text-gray-500 transition hover:text-primary"
+            className="flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-primary sm:text-base"
             onClick={handleNavigate}
           >
             <span>See more</span>
@@ -67,7 +74,9 @@ export default function Home() {
             <MoveRight className="h-5 w-5" />
           </button>
         </div>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        {/* DENTIST GRID */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {data.slice(0, 4).map((dentist) => (
             <DentistCard key={dentist.id} data={dentist} />
           ))}

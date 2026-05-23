@@ -206,7 +206,7 @@ export default function SideBar({
 
           <button
             onClick={() => handleNavigate(homePath)}
-            className="font-serif text-xl text-primary"
+            className="font-bold text-xl text-primary"
           >
             DenTeeth
           </button>
@@ -235,7 +235,7 @@ export default function SideBar({
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 flex h-screen flex-col border-r border-slate-200 bg-white/90 backdrop-blur-xl transition-all duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-slate-200 bg-white/90 backdrop-blur-xl transition-all duration-300 ${
           isMobile
             ? collapsed
               ? "-translate-x-full w-72"
