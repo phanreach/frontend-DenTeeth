@@ -1,4 +1,4 @@
-export default function Appointment() {
+export default function AiScan() {
   return (
     <div>
       <div className="border-b bg-white">

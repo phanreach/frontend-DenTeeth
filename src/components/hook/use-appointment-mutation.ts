@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QUERY_KEY_ENUM } from "../constants/query-key-enums";
 
-export type appointmentPayload = {
+export type AppointmentPayload = {
   dentistId: number;
   serviceId: number;
   hourId: number;
@@ -12,25 +12,43 @@ export type appointmentPayload = {
   remarks: string;
 };
 
+type AppointmentApiResponse<T = unknown> = {
+  success: boolean;
+  code?: string;
+  status: number;
+  message: string;
+  data: T;
+};
+
 export default function useAppointmentMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: appointmentPayload) => {
-      const res = await api.post(API_ENDPOINT.CREATE_APPOINTMENT, payload);
-      return res.data.data;
+    mutationFn: async (payload: AppointmentPayload) => {
+      const res = await api.post<AppointmentApiResponse>(
+        API_ENDPOINT.CREATE_APPOINTMENT,
+        payload,
+      );
+      return res.data;
     },
     onMutate: () => {
-      const toastId = toast.loading("Create Appointment...");
+      const toastId = toast.loading("Creating appointment...");
       return { toastId };
     },
 
-    onSuccess: ({ toastId }) => {
-      toast.dismiss(toastId);
-      toast.success("Project added successfully", { id: toastId });
+    onSuccess: (response, _variables, context) => {
+      toast.success(response.message || "Appointment booked successfully", {
+        id: context?.toastId,
+      });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY_ENUM.APPOINTMENT],
       });
+    },
+
+    onError: (_error, _variables, context) => {
+      if (context?.toastId) {
+        toast.dismiss(context.toastId);
+      }
     },
   });
 }

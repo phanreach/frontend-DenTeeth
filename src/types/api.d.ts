@@ -48,3 +48,16 @@ export type Appointment = {
   service: string;
   status: AppointmentStatus;
 };
+
+export type AppointmentData = {
+  id: number;
+  appointmentDate: string;
+  price: number;
+  patientName: string;
+  dentistName: string;
+  serviceName: string;
+  startAt: string;
+  endAt: string;
+  status: "PENDING" | "COMPLETED" | "CANCELLED";
+  remarks: string;
+};

@@ -1,4 +1,4 @@
-import { appointments } from "@/components/constants/data-dummy";
+import useAppointmentQuery from "@/components/hook/use-appointment-query";
 import {
   Table,
   TableBody,
@@ -7,15 +7,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { AppointmentStatus } from "@/types/api";
+import type { AppointmentData } from "@/types/api";
 
-const statusStyles: Record<AppointmentStatus, string> = {
-  Completed: "bg-green-100 text-green-700",
-  Cancelled: "bg-red-100 text-red-700",
-  Pending: "bg-yellow-100 text-yellow-700",
+const statusStyles: Record<AppointmentData["status"], string> = {
+  COMPLETED: "bg-green-100 text-green-700",
+  CANCELLED: "bg-red-100 text-red-700",
+  PENDING: "bg-yellow-100 text-yellow-700",
+};
+
+const formatTime = (time: string) => {
+  if (!time) return "-";
+
+  return new Date(`1970-01-01T${time}`).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const formatStatus = (status: AppointmentData["status"]) => {
+  return status.charAt(0) + status.slice(1).toLowerCase();
 };
 
 export default function History() {
+  const { data: appointments = [], isLoading, isError } = useAppointmentQuery();
+
   return (
     <div>
       <div className="border-b bg-white">
@@ -45,22 +60,49 @@ export default function History() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {appointments.map((appointment) => (
+              {isLoading && (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-gray-500">
+                    Loading appointments...
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-red-500">
+                    Failed to load appointments.
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!isLoading && !isError && appointments.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-gray-500">
+                    No appointments found.
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!isLoading && !isError && appointments.map((appointment) => (
                 <TableRow key={appointment.id}>
                   <TableCell className="text-gray-500">
                     {appointment.id}
                   </TableCell>
-                  <TableCell>{appointment.date}</TableCell>
-                  <TableCell>{appointment.time}</TableCell>
-                  <TableCell className="font-medium">
-                    {appointment.dentist}
+                  <TableCell>{appointment.appointmentDate}</TableCell>
+                  <TableCell>
+                    {formatTime(appointment.startAt)} -{" "}
+                    {formatTime(appointment.endAt)}
                   </TableCell>
-                  <TableCell>{appointment.service}</TableCell>
+                  <TableCell className="font-medium">
+                    {appointment.dentistName}
+                  </TableCell>
+                  <TableCell>{appointment.serviceName}</TableCell>
                   <TableCell>
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyles[appointment.status]}`}
                     >
-                      {appointment.status}
+                      {formatStatus(appointment.status)}
                     </span>
                   </TableCell>
                 </TableRow>

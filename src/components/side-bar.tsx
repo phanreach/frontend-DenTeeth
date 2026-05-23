@@ -13,6 +13,7 @@ import {
   UserKey,
   History,
   UserRoundSearch,
+  Camera,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
@@ -161,10 +162,10 @@ export default function SideBar({
         active: currentPage.startsWith("/find-dentist"),
       },
       {
-        label: "Appointments",
-        icon: ClipboardClock,
-        path: "/appointments",
-        active: currentPage.startsWith("/appointments"),
+        label: "AI Scan",
+        icon: Camera,
+        path: "/ai-scan",
+        active: currentPage.startsWith("/ai-scan"),
       },
       {
         label: "History",

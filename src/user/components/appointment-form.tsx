@@ -1,11 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { dentist } from "@/types/api";
 import { MoveRight, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import useAppointmentMutation from "@/components/hook/use-appointment-mutation";
+import {
+  appointmentSchema,
+  type AppointmentSchema,
+} from "@/components/lib/schema/appointment-schema";
 
 interface AppointmentFormProps {
   data: dentist;
   selectedService: number | null;
 }
+
+type AppointmentFormErrors = Partial<Record<keyof AppointmentSchema, string>>;
 
 export default function AppointmentForm({
   data,
@@ -14,11 +22,18 @@ export default function AppointmentForm({
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [remarks, setRemarks] = useState("");
+  const [errors, setErrors] = useState<AppointmentFormErrors>({});
+  const appointmentMutation = useAppointmentMutation();
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setErrors((current) => ({ ...current, serviceId: undefined }));
+  }, [selectedService]);
 
   const selectedDay = useMemo(() => {
     if (!selectedDate) return "";
 
-    return new Date(selectedDate).toLocaleDateString("en-US", {
+    return new Date(`${selectedDate}T00:00:00`).toLocaleDateString("en-US", {
       weekday: "long",
     });
   }, [selectedDate]);
@@ -42,12 +57,37 @@ export default function AppointmentForm({
   );
 
   const handleBooking = () => {
-    console.log({
+    const parsed = appointmentSchema.safeParse({
       dentistId: data.id,
-      serviceId: selectedService,
-      operationHourId: selectedSlot,
+      serviceId: selectedService ?? 0,
+      hourId: selectedSlot ?? 0,
       appointmentDate: selectedDate,
       remarks,
+    });
+
+    if (!parsed.success) {
+      const nextErrors: AppointmentFormErrors = {};
+
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof AppointmentSchema | undefined;
+
+        if (field && !nextErrors[field]) {
+          nextErrors[field] = issue.message;
+        }
+      });
+
+      setErrors(nextErrors);
+      toast.error(parsed.error.issues[0]?.message || "Please check the form.");
+      return;
+    }
+
+    appointmentMutation.mutate(parsed.data, {
+      onSuccess: () => {
+        setSelectedDate("");
+        setSelectedSlot(null);
+        setRemarks("");
+        setErrors({});
+      },
     });
   };
 
@@ -82,6 +122,9 @@ export default function AppointmentForm({
               <p className="text-sm text-gray-400">Please select a service</p>
             )}
           </div>
+          {errors.serviceId && (
+            <p className="mt-2 text-sm text-red-500">{errors.serviceId}</p>
+          )}
         </div>
 
         <div>
@@ -92,9 +135,22 @@ export default function AppointmentForm({
           <input
             type="date"
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={(e) => {
+              setSelectedDate(e.target.value);
+              setSelectedSlot(null);
+              setErrors((current) => ({
+                ...current,
+                appointmentDate: undefined,
+                hourId: undefined,
+              }));
+            }}
             className="w-full rounded-xl border border-gray-200 px-4 py-2.5 outline-none focus:border-primary"
           />
+          {errors.appointmentDate && (
+            <p className="mt-2 text-sm text-red-500">
+              {errors.appointmentDate}
+            </p>
+          )}
         </div>
 
         <div>
@@ -104,7 +160,10 @@ export default function AppointmentForm({
 
           <select
             value={selectedSlot ?? ""}
-            onChange={(e) => setSelectedSlot(Number(e.target.value))}
+            onChange={(e) => {
+              setSelectedSlot(e.target.value ? Number(e.target.value) : null);
+              setErrors((current) => ({ ...current, hourId: undefined }));
+            }}
             className="w-full rounded-xl border border-gray-200 px-4 py-2.5 outline-none focus:border-primary"
           >
             <option value="">Select time slot</option>
@@ -115,6 +174,9 @@ export default function AppointmentForm({
               </option>
             ))}
           </select>
+          {errors.hourId && (
+            <p className="mt-2 text-sm text-red-500">{errors.hourId}</p>
+          )}
         </div>
 
         <div>
@@ -125,10 +187,16 @@ export default function AppointmentForm({
           <textarea
             rows={5}
             value={remarks}
-            onChange={(e) => setRemarks(e.target.value)}
+            onChange={(e) => {
+              setRemarks(e.target.value);
+              setErrors((current) => ({ ...current, remarks: undefined }));
+            }}
             placeholder="Describe any specific dental concerns..."
             className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-primary"
           />
+          {errors.remarks && (
+            <p className="mt-2 text-sm text-red-500">{errors.remarks}</p>
+          )}
         </div>
 
         <div className="flex items-center gap-4 rounded-xl bg-secondary p-4 text-sm text-primary">
@@ -142,9 +210,10 @@ export default function AppointmentForm({
 
         <button
           onClick={handleBooking}
-          className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-3 font-medium text-white transition hover:bg-blue-700"
+          disabled={appointmentMutation.isPending}
+          className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Confirm Appointment
+          {appointmentMutation.isPending ? "Booking..." : "Confirm Appointment"}
           <MoveRight className="h-5 w-5" />
         </button>
       </div>

@@ -12,4 +12,5 @@ export const API_ENDPOINT = {
 
   //appointment
   CREATE_APPOINTMENT: "/appointment/patient/create",
+  GET_PATIENT_APPOINTMENTS: "/appointment/my-appointments",
 };
