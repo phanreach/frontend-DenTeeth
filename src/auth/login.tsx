@@ -77,7 +77,7 @@ export default function Login() {
           {/* Username */}
           <div className="group">
             <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
-              Username
+              Username <span className="text-red-500">*</span>
             </label>
 
             <div className="relative">
@@ -105,7 +105,7 @@ export default function Login() {
           <div className="group">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Password
+                Password <span className="text-red-500">*</span>
               </label>
 
               <a

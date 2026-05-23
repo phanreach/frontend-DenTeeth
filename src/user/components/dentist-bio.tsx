@@ -1,12 +1,12 @@
 import type { dentist } from "@/types/api";
 import ServiceCard from "./service-card";
 import { Award, HeartHandshake, Star, UsersRound } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AppointmentForm from "./appointment-form";
 
 export default function DentistBio({ data }: { data: dentist }) {
   const [selectedService, setSelectedService] = useState<number | null>(null);
-
+  const appointmentRef = useRef<HTMLDivElement | null>(null);
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -97,7 +97,16 @@ export default function DentistBio({ data }: { data: dentist }) {
             {data.services?.map((service) => (
               <div
                 key={service.id}
-                onClick={() => setSelectedService(service.id)}
+                onClick={() => {
+                  setSelectedService(service.id);
+
+                  if (window.innerWidth < 1024) {
+                    appointmentRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                }}
                 className={`cursor-pointer rounded-2xl transition ${
                   selectedService === service.id ? "ring-2 ring-primary" : ""
                 }`}
@@ -109,7 +118,7 @@ export default function DentistBio({ data }: { data: dentist }) {
         </div>
       </div>
 
-      <div>
+      <div ref={appointmentRef}>
         <AppointmentForm data={data} selectedService={selectedService} />
       </div>
     </div>

@@ -104,7 +104,7 @@ export default function AppointmentForm({
       <div className="space-y-5 p-5">
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-500">
-            SELECTED SERVICE
+            SELECTED SERVICE <span className="text-red-500">*</span>
           </label>
 
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -129,7 +129,7 @@ export default function AppointmentForm({
 
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-500">
-            APPOINTMENT DATE
+            APPOINTMENT DATE <span className="text-red-500">*</span>
           </label>
 
           <input
@@ -155,7 +155,7 @@ export default function AppointmentForm({
 
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-500">
-            AVAILABLE TIME SLOTS
+            AVAILABLE TIME SLOTS <span className="text-red-500">*</span>
           </label>
 
           <select

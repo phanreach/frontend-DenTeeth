@@ -116,7 +116,7 @@ export default function SignUp() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="group">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
-                First Name
+                First Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <User
@@ -138,7 +138,7 @@ export default function SignUp() {
 
             <div className="group">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
-                Last Name
+                Last Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <User
@@ -160,7 +160,7 @@ export default function SignUp() {
 
             <div className="group">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
-                Username
+                Username <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <User
@@ -182,7 +182,7 @@ export default function SignUp() {
 
             <div className="group">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
-                Email
+                Email <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <Mail
@@ -205,7 +205,7 @@ export default function SignUp() {
 
             <div className="md:col-span-2 group">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
-                Password
+                Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <Lock
