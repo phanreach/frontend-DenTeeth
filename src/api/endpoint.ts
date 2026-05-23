@@ -9,4 +9,7 @@ export const API_ENDPOINT = {
 
   //dentist
   DENTIST: "/dental/public/service/all",
+
+  //appointment
+  CREATE_APPOINTMENT: "/appointment/patient/create",
 };

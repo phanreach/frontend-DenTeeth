@@ -4,7 +4,15 @@ export type service = {
   description: string;
   price: number;
   durationInMinutes: string;
-  imageUrl: string[];
+  imageUrl: string;
+};
+
+export type operationHours = {
+  id: number;
+  status: boolean;
+  dayOfWeek: string;
+  startAt: string;
+  endAt: string;
 };
 
 export type dentist = {
@@ -23,6 +31,7 @@ export type dentist = {
   hours: string;
   availability: string;
   services: service[];
+  operationHours: operationHours[];
 };
 
 export type history = {

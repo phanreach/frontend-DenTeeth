@@ -78,49 +78,46 @@ export default function CardStat({
   };
 
   return (
-    // <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <div className="-mx-6">
-      <div className="flex gap-4 overflow-x-auto px-6 lg:px-8 pb-2 scrollbar-hide snap-x snap-mandatory scroll-smooth overscroll-x-contain">
-        {stats.map((card) => {
-          const Icon = iconMap[card.icon];
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {stats.map((card) => {
+        const Icon = iconMap[card.icon];
 
-          return (
-            <div
-              key={card.id}
-              className="snap-center relative border border-gray-200 bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 w-72 h-36 shrink-0 overflow-hidden group hover:-translate-y-1"
-            >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        return (
+          <div
+            key={card.id}
+            className="relative h-36 overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group"
+          >
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-              <Icon
-                className={`absolute -top-1 -right-1 w-32 h-32 opacity-5 ${card.iconColor} group-hover:opacity-10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}
-              />
+            <Icon
+              className={`absolute -top-1 -right-1 w-32 h-32 opacity-5 ${card.iconColor} group-hover:opacity-10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}
+            />
 
-              <div className="relative z-10 space-y-6">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`p-2 rounded-lg  shadow-sm border border-gray-100`}
-                  >
-                    <Icon className={`w-4 h-4 ${card.iconColor}`} />
-                  </div>
-                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-                    {card.title}
-                  </p>
+            <div className="relative z-10 space-y-6">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`p-2 rounded-lg  shadow-sm border border-gray-100`}
+                >
+                  <Icon className={`w-4 h-4 ${card.iconColor}`} />
                 </div>
-                <p className="text-4xl font-bold bg-linear-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  {cardValue(card)}
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                  {card.title}
                 </p>
               </div>
-
-              <div
-                className={`absolute bottom-0 left-0 right-0 h-1 ${card.iconColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                style={{
-                  background: `linear-gradient(to right, transparent, currentColor, transparent)`,
-                }}
-              />
+              <p className="text-4xl font-bold bg-linear-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                {cardValue(card)}
+              </p>
             </div>
-          );
-        })}
-      </div>
+
+            <div
+              className={`absolute bottom-0 left-0 right-0 h-1 ${card.iconColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+              style={{
+                background: `linear-gradient(to right, transparent, currentColor, transparent)`,
+              }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

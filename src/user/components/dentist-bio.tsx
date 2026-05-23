@@ -1,0 +1,117 @@
+import type { dentist } from "@/types/api";
+import ServiceCard from "./service-card";
+import { Award, HeartHandshake, Star, UsersRound } from "lucide-react";
+import { useState } from "react";
+import AppointmentForm from "./appointment-form";
+
+export default function DentistBio({ data }: { data: dentist }) {
+  const [selectedService, setSelectedService] = useState<number | null>(null);
+
+  return (
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="space-y-6 lg:col-span-2">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="p-6">
+            <div className="flex items-end gap-4 mb-5">
+              <img
+                src={
+                  data.photoUrl ||
+                  "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=400&auto=format&fit=crop"
+                }
+                alt={data.name}
+                className="h-20 w-20 flex-shrink-0 rounded-full border-[3px] border-white object-cover"
+              />
+              <div className="flex-1 min-w-0 pb-1">
+                <h1 className="truncate text-xl font-semibold text-gray-900">
+                  {data.name}
+                </h1>
+                <p className="mt-0.5 text-sm text-primary">
+                  {data.profession ??
+                    "Senior Orthodontist & Cosmetic Specialist"}
+                </p>
+              </div>
+              <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 pb-2">
+                <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+                <span className="text-sm font-medium text-primary">
+                  {data.rating ?? "4.9"}
+                </span>
+                <span className="text-xs text-primary">· 120+ reviews</span>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-2.5">
+              <div className="flex flex-col gap-1.5 rounded-xl bg-gray-50 p-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">
+                  <Award className="h-4 w-4 text-primary" />
+                </div>
+                <p className="text-[10px] uppercase tracking-widest text-gray-400">
+                  Experience
+                </p>
+                <p className="text-base font-semibold text-gray-900">12+ yrs</p>
+              </div>
+
+              <div className="flex flex-col gap-1.5 rounded-xl bg-gray-50 p-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">
+                  <UsersRound className="h-4 w-4 text-primary" />
+                </div>
+                <p className="text-[10px] uppercase tracking-widest text-gray-400">
+                  Patients
+                </p>
+                <p className="text-base font-semibold text-gray-900">2.5k+</p>
+              </div>
+
+              <div className="flex flex-col gap-1.5 rounded-xl bg-gray-50 p-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">
+                  <HeartHandshake className="h-4 w-4 text-primary" />
+                </div>
+                <p className="text-[10px] uppercase tracking-widest text-gray-400">
+                  Satisfaction
+                </p>
+                <p className="text-base font-semibold text-gray-900">98%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">
+            Biography
+          </h2>
+
+          <p className="leading-relaxed text-gray-500">{data.biography}</p>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Available Services
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Browse available dental treatments and procedures.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {data.services?.map((service) => (
+              <div
+                key={service.id}
+                onClick={() => setSelectedService(service.id)}
+                className={`cursor-pointer rounded-2xl transition ${
+                  selectedService === service.id ? "ring-2 ring-primary" : ""
+                }`}
+              >
+                <ServiceCard data={service} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <AppointmentForm data={data} selectedService={selectedService} />
+      </div>
+    </div>
+  );
+}

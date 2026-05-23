@@ -1,7 +1,13 @@
 import { Calendar, Clock, MapPin } from "lucide-react";
 import type { dentist } from "../types/api";
+import { useNavigate } from "react-router-dom";
 
 export default function DentistCard({ data }: { data: dentist }) {
+  const navigate = useNavigate();
+
+  const handleNavigate = (dentistId: number) => {
+    navigate(`/find-dentist/${dentistId}`);
+  };
   return (
     <div className="max-w-xs overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md">
       <div className="relative">
@@ -72,10 +78,14 @@ export default function DentistCard({ data }: { data: dentist }) {
               ${data.priceRange?.[0] ?? 0} - ${data.priceRange?.[1] ?? 0}
             </p>
           </div>
-
-          <button className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-all duration-150 hover:bg-blue-800 active:scale-95">
-            View Detail
-          </button>
+          <div key={data.id}>
+            <button
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-all duration-150 hover:bg-blue-800 active:scale-95"
+              onClick={() => handleNavigate(data.id)}
+            >
+              Book Appointment
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -15,6 +15,8 @@ import Dentists from "./super-admin/page/dentists";
 import Roles from "./super-admin/page/roles";
 import Appointment from "./user/pages/appointment";
 import History from "./user/pages/history";
+import FindDentist from "./user/pages/find-dentist";
+import DentistDetail from "./user/pages/dentist-detail";
 
 function App() {
   return (
@@ -37,8 +39,10 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["PATIENT"]} />}>
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/find-dentist" element={<FindDentist />} />
           <Route path="/appointments" element={<Appointment />} />
           <Route path="/history" element={<History />} />
+          <Route path="/find-dentist/:dentistId" element={<DentistDetail />} />
         </Route>
       </Route>
 

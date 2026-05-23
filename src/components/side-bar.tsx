@@ -12,6 +12,7 @@ import {
   X,
   UserKey,
   History,
+  UserRoundSearch,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
@@ -152,6 +153,12 @@ export default function SideBar({
         icon: LayoutDashboard,
         path: "/home",
         active: currentPage === "/home",
+      },
+      {
+        label: "Find Dentist",
+        icon: UserRoundSearch,
+        path: "/find-dentist",
+        active: currentPage.startsWith("/find-dentist"),
       },
       {
         label: "Appointments",

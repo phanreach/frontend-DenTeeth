@@ -53,7 +53,6 @@ export default function Hero() {
             </p>
           </div>
 
-          {/* CTAs */}
           <div className="flex flex-wrap items-center gap-4">
             <button className="group relative overflow-hidden flex items-center gap-2.5 bg-primary text-white px-8 py-4 rounded-2xl font-bold text-sm active:translate-y-0 transition-all duration-300">
               <span className="relative flex items-center gap-2.5">
@@ -64,7 +63,6 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Stats row */}
           <div className="flex flex-wrap gap-8 pt-6 border-t border-slate-200/80">
             {stats.map(({ icon: Ico, value, label }) => (
               <div key={label} className="flex items-center gap-3">
@@ -84,13 +82,10 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* ══ RIGHT ══ */}
         <div className="relative flex justify-center lg:justify-end">
-          {/* Glow */}
           <div className="absolute inset-8 rounded-full bg-blue-400/20 blur-3xl" />
 
           <div className="relative w-full max-w-[500px]">
-            {/* Floating top badge */}
             <div className="absolute -top-5 -left-5 z-20 flex items-center gap-3 bg-white rounded-2xl border border-slate-100 px-4 py-3 shadow-xl">
               <span className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-xl shrink-0">
                 🦷
@@ -105,9 +100,7 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Main card */}
             <div className="relative rounded-[2rem] overflow-hidden border border-white/80 bg-white shadow-[0_32px_100px_rgba(26,60,255,0.18)]">
-              {/* Image */}
               <div className="relative">
                 <img
                   src="https://quintessencedental.com/wp-content/uploads/2025/07/Dental-Clinic-Interior-Design-jpg.webp"
@@ -115,13 +108,10 @@ export default function Hero() {
                   className="w-full h-64 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-                {/* Scan line */}
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-blue-500/70 shadow-[0_0_16px_rgba(59,130,246,0.8)] animate-pulse" />
               </div>
 
-              {/* Analysis panel */}
               <div className="bg-white px-5 pt-5 pb-6 flex flex-col gap-4">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
@@ -137,7 +127,6 @@ export default function Hero() {
                   </span>
                 </div>
 
-                {/* Bars */}
                 <div className="flex flex-col gap-3">
                   {bars.map(({ label, width, color, text }) => (
                     <div key={label} className="flex items-center gap-3">
@@ -156,7 +145,6 @@ export default function Hero() {
                   ))}
                 </div>
 
-                {/* Footer */}
                 <div className="flex items-center justify-between pt-1 border-t border-slate-100">
                   <span className="text-xs text-primary font-semibold cursor-pointer hover:underline">
                     View full report →
@@ -165,7 +153,6 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Accuracy badge */}
             <div className="absolute -bottom-5 -right-5 z-20 bg-primary text-white rounded-2xl px-6 py-4 shadow-[0_16px_48px_rgba(26,60,255,0.38)]">
               <p className="text-[10px] uppercase tracking-widest opacity-70 font-semibold">
                 Accuracy
