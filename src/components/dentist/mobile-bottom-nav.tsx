@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardList, LayoutGrid, NotebookTabs } from "lucide-react";
+import { CalendarDays, ClipboardList, LayoutGrid, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface MobileBottomNavProps {
@@ -56,9 +56,24 @@ export default function MobileBottomNav({ active = "dashboard" }: MobileBottomNa
           </span>
         </button>
 
-        <button className="flex flex-col items-center justify-center gap-0.5 text-slate-500">
-          <NotebookTabs className="h-4 w-4" />
-          <span className="text-[10px] font-medium">Services</span>
+        <button
+          onClick={() => navigate("/dentist/service-configuration")}
+          className="flex flex-col items-center justify-center gap-0.5"
+        >
+          <span
+            className={`flex h-7 w-7 items-center justify-center rounded-xl ${
+              active === "services" ? "bg-violet-100 text-indigo-700" : "text-slate-500"
+            }`}
+          >
+            <Settings className="h-4 w-4" />
+          </span>
+          <span
+            className={`text-[10px] font-medium ${
+              active === "services" ? "text-indigo-700" : "text-slate-500"
+            }`}
+          >
+            Services
+          </span>
         </button>
       </div>
     </nav>
