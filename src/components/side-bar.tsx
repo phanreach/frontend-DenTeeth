@@ -14,6 +14,7 @@ import {
   History,
   UserRoundSearch,
   Camera,
+  Settings,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
@@ -135,16 +136,22 @@ export default function SideBar({
         active: currentPage.startsWith("/dentist/dashboard"),
       },
       {
+        label: "Appointments",
+        icon: Users,
+        path: "/dentist/appointments",
+        active: currentPage.startsWith("/dentist/appointments"),
+      },
+      {
         label: "Calendar",
         icon: Calendar,
         path: "/dentist/calendar",
         active: currentPage.startsWith("/dentist/calendar"),
       },
       {
-        label: "Patients",
-        icon: Users,
-        path: "/dentist/patients",
-        active: currentPage.startsWith("/dentist/patients"),
+        label: "Service Config",
+        icon: Settings,
+        path: "/dentist/service-configuration",
+        active: currentPage.startsWith("/dentist/service-configuration"),
       },
     ],
 
