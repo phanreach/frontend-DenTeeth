@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "./dentist/pages/dashboard";
+import Calendar from "./dentist/pages/calendar";
 import Home from "./user/pages/home";
 import Landing from "./landing/landing";
 import SignUp from "./auth/signup";
@@ -49,6 +50,7 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["DENTIST"]} />}>
         <Route element={<Layout />}>
           <Route path="/dentist/dashboard" element={<Dashboard />} />
+          <Route path="/dentist/calendar" element={<Calendar />} />
         </Route>
       </Route>
     </Routes>
