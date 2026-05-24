@@ -163,6 +163,14 @@
   scrollbar-width: none;
 }
 
+.map-muted .leaflet-tile {
+  filter: grayscale(1) brightness(1.05) contrast(0.88);
+}
+
+.map-muted .leaflet-pane {
+  opacity: 0.95;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

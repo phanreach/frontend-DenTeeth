@@ -7,6 +7,7 @@ import {
   Compass,
   ImageIcon,
   MapPin,
+  MapPinned,
   Pencil,
   Plus,
   Save,
@@ -14,8 +15,10 @@ import {
   Stethoscope,
   type LucideIcon,
 } from "lucide-react";
+import L from "leaflet";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
 import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
 import {
   SERVICE_CONFIGURATION_DATA,
@@ -91,6 +94,72 @@ function EditableField({
   );
 }
 
+function ClinicMap({ lat, lon }: { lat: number; lon: number }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
+    }
+
+    const map = L.map(containerRef.current, {
+      center: [lat, lon],
+      zoom: 15,
+      zoomControl: false,
+      attributionControl: false,
+      scrollWheelZoom: false,
+      dragging: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+    });
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      subdomains: "abcd",
+    }).addTo(map);
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      subdomains: "abcd",
+      pane: "overlayPane",
+    }).addTo(map);
+
+    L.circleMarker([lat, lon], {
+      radius: 10,
+      fillColor: "#7C3AED",
+      color: "#ffffff",
+      weight: 3,
+      opacity: 1,
+      fillOpacity: 1,
+    }).addTo(map);
+
+    L.circleMarker([lat, lon], {
+      radius: 18,
+      fillColor: "#7C3AED",
+      color: "#7C3AED",
+      weight: 1,
+      opacity: 0.25,
+      fillOpacity: 0.12,
+    }).addTo(map);
+
+    mapRef.current = map;
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [lat, lon]);
+
+  return <div ref={containerRef} className="h-full w-full" />;
+}
+
 export default function ServiceConfiguration() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
@@ -131,6 +200,20 @@ export default function ServiceConfiguration() {
       }
     };
   }, [profileImage]);
+
+  const latitude = Number.parseFloat(identity.latitude);
+  const longitude = Number.parseFloat(identity.longitude);
+  const hasValidCoordinates =
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180;
+
+  const openStreetMapUrl = hasValidCoordinates
+    ? `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`
+    : "https://www.openstreetmap.org";
 
   return (
     <main className="mx-auto w-full max-w-md space-y-5 px-4 pb-24 lg:max-w-[1134px] lg:px-6 lg:pb-10">
@@ -311,6 +394,53 @@ export default function ServiceConfiguration() {
                 {service.enabled ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
               </button>
             ))}
+          </div>
+        </article>
+
+        <article className="h-80 overflow-hidden rounded-2xl border bg-white p-px">
+          <div className="flex h-16 items-center justify-between border-b px-5 py-3">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-7 place-items-center rounded-full bg-violet-100 text-violet-600">
+                <MapPinned className="size-3" />
+              </span>
+              <div>
+                <h2 className="text-sm font-semibold text-neutral-900">Clinic Location</h2>
+                <p className="font-mono text-xs text-slate-500">
+                  {hasValidCoordinates
+                    ? `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+                    : "Enter valid latitude and longitude to preview the map"}
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={openStreetMapUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={`inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-semibold ${
+                hasValidCoordinates
+                  ? "bg-violet-100 text-indigo-700"
+                  : "bg-slate-100 text-slate-500"
+              }`}
+            >
+              <MapPin className="size-3" />
+              Open in Maps
+            </a>
+          </div>
+
+          <div className="relative h-64 overflow-hidden bg-neutral-200">
+            {hasValidCoordinates ? (
+              <>
+                <ClinicMap lat={latitude} lon={longitude} />
+              </>
+            ) : (
+              <div className="grid h-full place-items-center px-6 text-center text-sm text-slate-500">
+                Latitude must be between -90 and 90, and longitude between -180 and 180.
+              </div>
+            )}
+            <div className="absolute bottom-1 right-2 bg-white/75 px-1.5 py-0.5 text-[10px] text-slate-400">
+              © OpenStreetMap, © CARTO
+            </div>
           </div>
         </article>
       </section>
