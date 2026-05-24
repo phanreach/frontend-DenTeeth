@@ -1,4 +1,19 @@
-import { ArrowLeft, Camera, Check, ImageIcon, Pencil, Plus, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Camera,
+  Check,
+  Clock3,
+  Compass,
+  ImageIcon,
+  MapPin,
+  Pencil,
+  Plus,
+  Save,
+  Send,
+  Stethoscope,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
@@ -7,10 +22,34 @@ import {
   type ClinicIdentity,
 } from "../constants/service-configuration-data";
 
-function ReadonlyField({ label, value }: { label: string; value: string }) {
+function FieldLabel({
+  label,
+  icon: Icon,
+}: {
+  label: string;
+  icon?: LucideIcon;
+}) {
+  return (
+    <p className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+      {Icon ? <Icon className="size-3.5" /> : null}
+      <span>{label}</span>
+      <span className="text-rose-500">*</span>
+    </p>
+  );
+}
+
+function ReadonlyField({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon?: LucideIcon;
+}) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-medium text-slate-500">{label}</p>
+      <FieldLabel label={label} icon={icon} />
       <div className="h-11 rounded-2xl bg-slate-100 px-3.5 py-3 text-sm text-neutral-900/60">
         {value}
       </div>
@@ -23,15 +62,17 @@ function EditableField({
   value,
   onChange,
   prefix,
+  icon,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   prefix?: string;
+  icon?: LucideIcon;
 }) {
   return (
     <label className="block space-y-1">
-      <span className="text-xs font-medium text-slate-500">{label}</span>
+      <FieldLabel label={label} icon={icon} />
       <div className="relative">
         {prefix ? (
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500">
@@ -164,33 +205,39 @@ export default function ServiceConfiguration() {
               <>
                 <EditableField
                   label="Clinic Name"
+                  icon={Building2}
                   value={identity.clinicName}
                   onChange={(value) => setIdentity((prev) => ({ ...prev, clinicName: value }))}
                 />
                 <EditableField
                   label="Specialty"
+                  icon={Stethoscope}
                   value={identity.specialty}
                   onChange={(value) => setIdentity((prev) => ({ ...prev, specialty: value }))}
                 />
                 <div className="md:col-span-2">
                   <EditableField
                     label="Clinic Address"
+                    icon={MapPin}
                     value={identity.address}
                     onChange={(value) => setIdentity((prev) => ({ ...prev, address: value }))}
                   />
                 </div>
                 <EditableField
                   label="Latitude"
+                  icon={Compass}
                   value={identity.latitude}
                   onChange={(value) => setIdentity((prev) => ({ ...prev, latitude: value }))}
                 />
                 <EditableField
                   label="Longitude"
+                  icon={Compass}
                   value={identity.longitude}
                   onChange={(value) => setIdentity((prev) => ({ ...prev, longitude: value }))}
                 />
                 <EditableField
                   label="Telegram Username"
+                  icon={Send}
                   value={identity.telegramUsername}
                   prefix="@"
                   onChange={(value) =>
@@ -199,21 +246,26 @@ export default function ServiceConfiguration() {
                 />
                 <EditableField
                   label="Available Hours"
+                  icon={Clock3}
                   value={identity.availableHours}
                   onChange={(value) => setIdentity((prev) => ({ ...prev, availableHours: value }))}
                 />
               </>
             ) : (
               <>
-                <ReadonlyField label="Clinic Name" value={identity.clinicName} />
-                <ReadonlyField label="Specialty" value={identity.specialty} />
+                <ReadonlyField label="Clinic Name" icon={Building2} value={identity.clinicName} />
+                <ReadonlyField label="Specialty" icon={Stethoscope} value={identity.specialty} />
                 <div className="md:col-span-2">
-                  <ReadonlyField label="Clinic Address" value={identity.address} />
+                  <ReadonlyField label="Clinic Address" icon={MapPin} value={identity.address} />
                 </div>
-                <ReadonlyField label="Latitude" value={identity.latitude} />
-                <ReadonlyField label="Longitude" value={identity.longitude} />
-                <ReadonlyField label="Telegram Username" value={`@${identity.telegramUsername}`} />
-                <ReadonlyField label="Available Hours" value={identity.availableHours} />
+                <ReadonlyField label="Latitude" icon={Compass} value={identity.latitude} />
+                <ReadonlyField label="Longitude" icon={Compass} value={identity.longitude} />
+                <ReadonlyField
+                  label="Telegram Username"
+                  icon={Send}
+                  value={`@${identity.telegramUsername}`}
+                />
+                <ReadonlyField label="Available Hours" icon={Clock3} value={identity.availableHours} />
               </>
             )}
           </div>
