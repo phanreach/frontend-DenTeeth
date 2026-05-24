@@ -32,7 +32,7 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-4 pb-24 lg:px-0 lg:pb-8">
+    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-8">
       <section className="flex items-start justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-teal-600">

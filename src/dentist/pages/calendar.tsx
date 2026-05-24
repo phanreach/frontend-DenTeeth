@@ -167,7 +167,7 @@ export default function Calendar() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-0 pb-24 lg:pb-10">
+    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
       <section className="flex flex-wrap items-center justify-between gap-3">
         <h1
           className="text-3xl font-bold leading-8 text-neutral-900 lg:text-4xl"

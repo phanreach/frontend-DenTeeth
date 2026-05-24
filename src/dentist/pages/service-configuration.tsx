@@ -216,7 +216,7 @@ export default function ServiceConfiguration() {
     : "https://www.openstreetmap.org";
 
   return (
-    <main className="mx-auto w-full max-w-md space-y-5 px-4 pb-24 lg:max-w-[1134px] lg:px-6 lg:pb-10">
+    <main className="mx-auto w-full max-w-md space-y-5 px-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
       <button
         onClick={() => navigate(-1)}
         className="inline-flex items-center gap-1 text-sm font-medium text-slate-500"
