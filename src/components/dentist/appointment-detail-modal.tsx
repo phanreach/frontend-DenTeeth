@@ -40,8 +40,14 @@ export default function AppointmentDetailModal({
   if (!appointment) return null;
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl">
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
           <h3 className="text-base font-semibold text-neutral-900">Patient Detail</h3>
           <button

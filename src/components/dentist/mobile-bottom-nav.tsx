@@ -31,9 +31,24 @@ export default function MobileBottomNav({ active = "dashboard" }: MobileBottomNa
           </span>
         </button>
 
-        <button className="flex flex-col items-center justify-center gap-0.5 text-slate-500">
-          <ClipboardList className="h-4 w-4" />
-          <span className="text-[10px] font-medium">Bookings</span>
+        <button
+          onClick={() => navigate("/dentist/appointments")}
+          className="flex flex-col items-center justify-center gap-0.5"
+        >
+          <span
+            className={`flex h-7 w-7 items-center justify-center rounded-xl ${
+              active === "bookings" ? "bg-violet-100 text-indigo-700" : "text-slate-500"
+            }`}
+          >
+            <ClipboardList className="h-4 w-4" />
+          </span>
+          <span
+            className={`text-[10px] font-medium ${
+              active === "bookings" ? "text-indigo-700" : "text-slate-500"
+            }`}
+          >
+            Bookings
+          </span>
         </button>
 
         <button
