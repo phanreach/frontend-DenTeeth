@@ -25,7 +25,9 @@ function parseAppointmentDate(value: string): Date {
 }
 
 export default function Appointments() {
-  const [appointments, setAppointments] = useState(APPOINTMENTS_PAGE_DATA.appointments);
+  const [appointments, setAppointments] = useState(
+    APPOINTMENTS_PAGE_DATA.appointments,
+  );
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -65,7 +67,8 @@ export default function Appointments() {
     return {
       all: appointments.length,
       pending: appointments.filter((item) => item.status === "pending").length,
-      confirmed: appointments.filter((item) => item.status === "confirmed").length,
+      confirmed: appointments.filter((item) => item.status === "confirmed")
+        .length,
       completed: 0,
       rejected: 0,
     };
@@ -96,26 +99,47 @@ export default function Appointments() {
     }
 
     if (filterMode === "month") {
-      const month = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getMonth();
-      result = result.filter((item) => parseAppointmentDate(item.date).getMonth() === month);
+      const month = parseAppointmentDate(
+        appointments[0]?.date ?? "May 8, 2026",
+      ).getMonth();
+      result = result.filter(
+        (item) => parseAppointmentDate(item.date).getMonth() === month,
+      );
     }
 
     if (filterMode === "year") {
-      const year = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getFullYear();
-      result = result.filter((item) => parseAppointmentDate(item.date).getFullYear() === year);
+      const year = parseAppointmentDate(
+        appointments[0]?.date ?? "May 8, 2026",
+      ).getFullYear();
+      result = result.filter(
+        (item) => parseAppointmentDate(item.date).getFullYear() === year,
+      );
     }
 
     if (sortMode === "name") {
       result.sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      result.sort((a, b) => parseAppointmentDate(a.date).getTime() - parseAppointmentDate(b.date).getTime());
+      result.sort(
+        (a, b) =>
+          parseAppointmentDate(a.date).getTime() -
+          parseAppointmentDate(b.date).getTime(),
+      );
     }
 
     return result;
-  }, [appointments, filterMode, searchTerm, selectedDateChip, sortMode, statusFilter]);
+  }, [
+    appointments,
+    filterMode,
+    searchTerm,
+    selectedDateChip,
+    sortMode,
+    statusFilter,
+  ]);
 
   const setStatus = (id: string, status: AppointmentItem["status"]) => {
-    setAppointments((prev) => prev.map((item) => (item.id === id ? { ...item, status } : item)));
+    setAppointments((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status } : item)),
+    );
   };
 
   const handleRescheduleSuggest = (newDateIso: string, newTime: string) => {
@@ -130,7 +154,9 @@ export default function Appointments() {
 
     setAppointments((prev) =>
       prev.map((item) =>
-        item.id === activeId ? { ...item, date: formattedDate, time: newTime, status: "pending" } : item,
+        item.id === activeId
+          ? { ...item, date: formattedDate, time: newTime, status: "pending" }
+          : item,
       ),
     );
 
@@ -152,11 +178,15 @@ export default function Appointments() {
           </p>
           <h1
             className="mt-1 text-2xl font-bold leading-8 text-neutral-900 lg:text-4xl"
-            style={{ fontFamily: "'Fraunces', 'DM Serif Display', Georgia, serif" }}
+            style={{
+              fontFamily: "'Fraunces', 'DM Serif Display', Georgia, serif",
+            }}
           >
             {APPOINTMENTS_PAGE_DATA.heading.title}
           </h1>
-          <p className="text-sm text-slate-500">{APPOINTMENTS_PAGE_DATA.heading.dateLabel}</p>
+          <p className="text-sm text-slate-500">
+            {APPOINTMENTS_PAGE_DATA.heading.dateLabel}
+          </p>
         </div>
 
         <button className="grid size-9 place-items-center rounded-2xl bg-slate-100 text-slate-500">
@@ -171,7 +201,9 @@ export default function Appointments() {
       </section>
 
       <section className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-tight text-slate-500">Filter by Date</p>
+        <p className="text-xs font-semibold uppercase tracking-tight text-slate-500">
+          Filter by Date
+        </p>
         <div className="flex rounded-xl bg-slate-100 p-0.5 text-xs font-semibold">
           {(["day", "month", "year"] as const).map((mode) => (
             <button
@@ -181,7 +213,9 @@ export default function Appointments() {
                 if (mode !== "day") setSelectedDateChip("all");
               }}
               className={`rounded-[10px] px-2.5 py-1 capitalize ${
-                filterMode === mode ? "bg-white text-neutral-900 shadow" : "text-slate-500"
+                filterMode === mode
+                  ? "bg-white text-neutral-900 shadow"
+                  : "text-slate-500"
               }`}
             >
               {mode}
@@ -195,7 +229,11 @@ export default function Appointments() {
           {APPOINTMENTS_PAGE_DATA.dateChips.map((item, index) => (
             <button
               key={`${item.dayLabel}-${item.dayNumber}-${index}`}
-              onClick={() => setSelectedDateChip(item.dayLabel === "All" ? "all" : item.dayNumber)}
+              onClick={() =>
+                setSelectedDateChip(
+                  item.dayLabel === "All" ? "all" : item.dayNumber,
+                )
+              }
               className="contents"
             >
               <AppointmentsDateChip
@@ -223,7 +261,9 @@ export default function Appointments() {
           />
         </div>
         <button
-          onClick={() => setSortMode((prev) => (prev === "date" ? "name" : "date"))}
+          onClick={() =>
+            setSortMode((prev) => (prev === "date" ? "name" : "date"))
+          }
           className="inline-flex h-10 items-center gap-1.5 rounded-2xl bg-slate-100 px-3.5 text-xs font-semibold text-slate-500"
         >
           <Funnel className="size-3.5" />
@@ -237,11 +277,15 @@ export default function Appointments() {
             key={tab.key}
             onClick={() => setStatusFilter(tab.key as StatusFilter)}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              statusFilter === tab.key ? "bg-indigo-700 text-white" : "bg-slate-100 text-slate-500"
+              statusFilter === tab.key
+                ? "bg-indigo-700 text-white"
+                : "bg-slate-100 text-slate-500"
             }`}
           >
             {tab.label}{" "}
-            <span className={`ml-1 rounded-full px-1.5 py-0.5 text-[10px] ${statusFilter === tab.key ? "bg-white/20" : "bg-black/10"}`}>
+            <span
+              className={`ml-1 rounded-full px-1.5 py-0.5 text-[10px] ${statusFilter === tab.key ? "bg-white/20" : "bg-black/10"}`}
+            >
               {tab.count}
             </span>
           </button>
@@ -268,7 +312,9 @@ export default function Appointments() {
       </section>
 
       <AppointmentDetailModal
-        appointment={showRescheduleModal || showRejectModal ? null : activeAppointment}
+        appointment={
+          showRescheduleModal || showRejectModal ? null : activeAppointment
+        }
         selectedDate={selectedDate}
         onClose={() => setActiveId(null)}
         onConfirm={() => {
@@ -283,7 +329,9 @@ export default function Appointments() {
         }}
         onMarkComplete={() => {
           if (!activeId) return;
-          setAppointments((prev) => prev.filter((item) => item.id !== activeId));
+          setAppointments((prev) =>
+            prev.filter((item) => item.id !== activeId),
+          );
           setActiveId(null);
         }}
       />
@@ -306,7 +354,9 @@ export default function Appointments() {
         }}
         onConfirm={() => {
           if (!activeId) return;
-          setAppointments((prev) => prev.filter((item) => item.id !== activeId));
+          setAppointments((prev) =>
+            prev.filter((item) => item.id !== activeId),
+          );
           setShowRejectModal(false);
           setActiveId(null);
         }}

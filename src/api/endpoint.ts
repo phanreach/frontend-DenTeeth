@@ -13,4 +13,6 @@ export const API_ENDPOINT = {
   //appointment
   CREATE_APPOINTMENT: "/appointment/patient/create",
   GET_PATIENT_APPOINTMENTS: "/appointment/my-appointments",
+  UPDATE_APPOINTMENT: (id: number) => `/appointment/patient/update/${id}`,
+  DELETE_APPOINTMENT: (id: number) => `/appointment/patient/delete/${id}`,
 };

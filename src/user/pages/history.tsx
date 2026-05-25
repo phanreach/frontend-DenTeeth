@@ -18,7 +18,11 @@ import {
   Pencil,
   Trash,
 } from "lucide-react";
-
+import EditAppointment from "../components/edit-appointment";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import useAppointmentDelete from "@/components/hook/use-appointment-delete";
+import { DeleteDialog } from "@/components/delete-dialog";
 const formatTime = (time: string) => {
   if (!time) return "-";
   return new Date(`1970-01-01T${time}`).toLocaleTimeString([], {
@@ -29,7 +33,7 @@ const formatTime = (time: string) => {
 
 const statusConfig: Record<
   AppointmentData["status"],
-  { label: string; icon: React.ReactNode; className: string }
+  { label: string; icon: ReactNode; className: string }
 > = {
   COMPLETED: {
     label: "Completed",
@@ -117,16 +121,66 @@ export default function History() {
 
   const isEmpty = !isLoading && !isError && appointments.length === 0;
   const hasData = !isLoading && !isError && appointments.length > 0;
+  const [openEdit, setOpenEdit] = useState(false);
+
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<AppointmentData | null>(null);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedDeleteAppointment, setSelectedDeleteAppointment] =
+    useState<AppointmentData | null>(null);
+
+  const { mutate: deleteAppointment, isPending: isDeleting } =
+    useAppointmentDelete();
 
   const handleEdit = (appointment: AppointmentData) => {
-    console.log("Edit:", appointment);
+    setSelectedAppointment(appointment);
+    setOpenEdit(true);
+  };
+  const handleDelete = (appointment: AppointmentData) => {
+    setSelectedDeleteAppointment(appointment);
+    setOpenDelete(true);
   };
 
-  const handleDelete = (appointment: AppointmentData) => {
-    console.log("Delete:", appointment);
+  const confirmDelete = () => {
+    if (!selectedDeleteAppointment) return;
+
+    deleteAppointment(selectedDeleteAppointment.id, {
+      onSuccess: () => {
+        setOpenDelete(false);
+        setSelectedDeleteAppointment(null);
+      },
+    });
   };
   return (
     <div>
+      <EditAppointment
+        open={openEdit}
+        onOpenChange={(open) => {
+          setOpenEdit(open);
+          if (!open) {
+            setSelectedAppointment(null);
+          }
+        }}
+        appointment={selectedAppointment}
+        onUpdated={() => setSelectedAppointment(null)}
+      />
+      <DeleteDialog
+        open={openDelete}
+        onOpenChange={(open) => {
+          setOpenDelete(open);
+
+          if (!open) {
+            setSelectedDeleteAppointment(null);
+          }
+        }}
+        title="Delete Appointment"
+        description={`Are you sure you want to delete appointment #${selectedDeleteAppointment?.id}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        onConfirm={confirmDelete}
+      />
+
       <div className="border-b bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3">
@@ -259,7 +313,6 @@ export default function History() {
                                 >
                                   <Pencil className="h-4 w-4 text-primary" />
                                 </button>
-
                                 <button
                                   className="rounded p-1 transition hover:bg-red-50"
                                   onClick={() => handleDelete(appointment)}
