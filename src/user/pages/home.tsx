@@ -76,7 +76,7 @@ export default function Home() {
         </div>
 
         {/* DENTIST GRID */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {data.slice(0, 4).map((dentist) => (
             <DentistCard key={dentist.id} data={dentist} />
           ))}
