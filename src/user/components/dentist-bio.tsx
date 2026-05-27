@@ -6,7 +6,12 @@ import AppointmentForm from "./appointment-form";
 
 export default function DentistBio({ data }: { data: dentist }) {
   const [selectedService, setSelectedService] = useState<number | null>(null);
+  const [showAllServices, setShowAllServices] = useState(false);
+
   const appointmentRef = useRef<HTMLDivElement | null>(null);
+  const displayedServices = showAllServices
+    ? data.services
+    : data.services?.slice(0, 4);
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -94,7 +99,7 @@ export default function DentistBio({ data }: { data: dentist }) {
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {data.services?.map((service) => (
+            {displayedServices?.map((service) => (
               <div
                 key={service.id}
                 onClick={() => {
@@ -115,6 +120,33 @@ export default function DentistBio({ data }: { data: dentist }) {
               </div>
             ))}
           </div>
+          {data.services && data.services.length > 4 && (
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setShowAllServices(!showAllServices)}
+                className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-primary/30 bg-primary/5 px-6 py-2.5 text-sm font-medium text-primary transition-all duration-300 hover:border-primary hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+              >
+                <span>
+                  {showAllServices ? "Show Less" : "View More Services"}
+                </span>
+                <svg
+                  className={`h-4 w-4 transition-transform duration-300 ${
+                    showAllServices ? "rotate-180" : "rotate-0"
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

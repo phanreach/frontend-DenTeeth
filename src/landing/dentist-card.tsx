@@ -5,12 +5,23 @@ import { useNavigate } from "react-router-dom";
 export default function DentistCard({ data }: { data: dentist }) {
   const navigate = useNavigate();
 
-  const handleNavigate = (dentistId: number) => {
-    navigate(`/find-dentist/${dentistId}`);
+  const handleNavigate = () => {
+    navigate(`/find-dentist/${data.id}`);
   };
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-all duration-200 hover:shadow-lg">
+    <div
+      className="w-full cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      role="button"
+      tabIndex={0}
+      onClick={handleNavigate}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleNavigate();
+        }
+      }}
+    >
       <div className="relative">
         <img
           src={
@@ -84,7 +95,10 @@ export default function DentistCard({ data }: { data: dentist }) {
 
           <button
             className="w-full rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-all duration-150 hover:bg-blue-800 active:scale-95 sm:w-auto"
-            onClick={() => handleNavigate(data.id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleNavigate();
+            }}
           >
             Book Appointment
           </button>
