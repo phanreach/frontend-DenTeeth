@@ -5,6 +5,8 @@ import DentistCard from "@/landing/dentist-card";
 import Scan from "../components/scan";
 import { MoveRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import NextVisit from "../components/next-visit";
+import useAppointmentQuery from "@/components/hook/use-appointment-query";
 
 export default function Home() {
   const username = getCookie(COOKIE_KEYS.username);
@@ -33,6 +35,8 @@ export default function Home() {
     navigate("/find-dentist");
   };
 
+  const { data: appointments = [] } = useAppointmentQuery();
+
   return (
     <div className="space-y-8 p-4 sm:p-6 lg:p-8">
       {/* HEADER */}
@@ -56,6 +60,7 @@ export default function Home() {
         <div className="lg:col-span-2">
           <Scan />
         </div>
+        <NextVisit data={appointments[0]} />
       </div>
 
       {/* DENTIST SECTION */}
