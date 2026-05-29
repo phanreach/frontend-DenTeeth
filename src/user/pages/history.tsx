@@ -17,10 +17,11 @@ import {
   CalendarOff,
   Pencil,
   Trash,
+  Search,
 } from "lucide-react";
 import EditAppointment from "../components/edit-appointment";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useAppointmentDelete from "@/components/hook/use-appointment-delete";
 import { DeleteDialog } from "@/components/delete-dialog";
 const formatTime = (time: string) => {
@@ -121,6 +122,7 @@ export default function History() {
 
   const isEmpty = !isLoading && !isError && appointments.length === 0;
   const hasData = !isLoading && !isError && appointments.length > 0;
+  const [searchTerm, setSearchTerm] = useState("");
   const [openEdit, setOpenEdit] = useState(false);
 
   const [selectedAppointment, setSelectedAppointment] =
@@ -131,6 +133,24 @@ export default function History() {
 
   const { mutate: deleteAppointment, isPending: isDeleting } =
     useAppointmentDelete();
+
+  const filteredAppointments = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+
+    if (!query) return appointments;
+
+    return appointments.filter((appointment) =>
+      [
+        appointment.dentistName,
+        appointment.serviceName,
+        appointment.patientName,
+        appointment.status,
+        appointment.remarks,
+      ].some((value) => value?.toLowerCase().includes(query)),
+    );
+  }, [appointments, searchTerm]);
+
+  const hasFilteredAppointments = filteredAppointments.length > 0;
 
   const handleEdit = (appointment: AppointmentData) => {
     setSelectedAppointment(appointment);
@@ -222,23 +242,47 @@ export default function History() {
 
         {hasData && (
           <>
-            <div className="space-y-3 md:hidden">
-              {appointments.map((appointment) => (
-                <AppointmentCard
-                  key={appointment.id}
-                  appointment={appointment}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
+            <div className="mb-4 flex justify-end">
+              <div className="relative w-full sm:max-w-sm">
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search dentist, service, patient..."
+                  className="h-11 w-full rounded-2xl border border-gray-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
                 />
-              ))}
-              <p className="pt-1 text-center text-xs text-gray-400">
-                {appointments.length} appointment
-                {appointments.length !== 1 ? "s" : ""} total
-              </p>
+              </div>
             </div>
 
-            <div className="hidden md:block">
-              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            {!hasFilteredAppointments && (
+              <div className="flex flex-col items-center gap-1.5 rounded-xl border border-gray-200 bg-white py-16 text-gray-400">
+                <CalendarOff className="h-7 w-7" />
+                <p className="text-sm font-medium">No matching appointments</p>
+                <p className="text-xs">Try another dentist or service name</p>
+              </div>
+            )}
+
+            {hasFilteredAppointments && (
+              <div className="space-y-3 md:hidden">
+                {filteredAppointments.map((appointment) => (
+                  <AppointmentCard
+                    key={appointment.id}
+                    appointment={appointment}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+                <p className="pt-1 text-center text-xs text-gray-400">
+                  {filteredAppointments.length} appointment
+                  {filteredAppointments.length !== 1 ? "s" : ""} shown
+                </p>
+              </div>
+            )}
+
+            {hasFilteredAppointments && (
+              <div className="hidden md:block">
+                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -263,7 +307,7 @@ export default function History() {
                     </TableHeader>
 
                     <TableBody>
-                      {appointments.map((appointment) => {
+                      {filteredAppointments.map((appointment) => {
                         const status = statusConfig[appointment.status];
 
                         return (
@@ -330,12 +374,13 @@ export default function History() {
 
                 <div className="border-t border-gray-100 bg-gray-50 px-4 py-2.5">
                   <p className="text-xs text-gray-400">
-                    {appointments.length} appointment
-                    {appointments.length !== 1 ? "s" : ""} total
+                    {filteredAppointments.length} appointment
+                    {filteredAppointments.length !== 1 ? "s" : ""} shown
                   </p>
                 </div>
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>

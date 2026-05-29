@@ -85,9 +85,13 @@ export default function Appointments() {
       const query = searchTerm.toLowerCase();
       result = result.filter(
         (item) =>
+          item.id.toLowerCase().includes(query) ||
           item.name.toLowerCase().includes(query) ||
           item.service.toLowerCase().includes(query) ||
-          item.note.toLowerCase().includes(query),
+          item.note.toLowerCase().includes(query) ||
+          item.status.toLowerCase().includes(query) ||
+          item.date.toLowerCase().includes(query) ||
+          item.time.toLowerCase().includes(query),
       );
     }
 
@@ -256,7 +260,7 @@ export default function Appointments() {
           <input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search patient name, condition..."
+            placeholder="Search patient, service, status..."
             className="h-10 w-full rounded-2xl bg-slate-100 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200"
           />
         </div>
