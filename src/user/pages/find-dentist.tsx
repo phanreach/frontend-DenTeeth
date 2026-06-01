@@ -47,7 +47,8 @@ export default function FindDentist() {
 
     return data.filter((dentist) => {
       const dentistSpecialty = dentist.specialty ?? dentist.profession;
-      const serviceNames = dentist.services?.map((service) => service.name) ?? [];
+      const serviceNames =
+        dentist.services?.map((service) => service.name) ?? [];
 
       const matchesSearch =
         !query ||
@@ -112,10 +113,8 @@ export default function FindDentist() {
         </div>
       </div>
 
-      {/* CONTENT */}
       <div className="mx-auto px-6 py-8">
         <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-          {/* FILTER SIDEBAR */}
           <div className="h-fit lg:sticky lg:top-24">
             <Filter
               availableSpecialties={availableSpecialties}
@@ -161,7 +160,6 @@ export default function FindDentist() {
                 ))}
               </div>
 
-              {/* PAGINATION */}
               <div className="mt-10">
                 <Pagination
                   currentPage={visiblePage}

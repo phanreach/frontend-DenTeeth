@@ -3,6 +3,7 @@ import ServiceCard from "./service-card";
 import { Award, HeartHandshake, Star, UsersRound } from "lucide-react";
 import { useState, useRef } from "react";
 import AppointmentForm from "./appointment-form";
+import ReviewCard from "./review-card";
 
 export default function DentistBio({ data }: { data: dentist }) {
   const [selectedService, setSelectedService] = useState<number | null>(null);
@@ -153,6 +154,10 @@ export default function DentistBio({ data }: { data: dentist }) {
       <div ref={appointmentRef}>
         <AppointmentForm data={data} selectedService={selectedService} />
       </div>
+      <ReviewCard
+        key={selectedService ?? "no-selected-service"}
+        selectedService={selectedService}
+      />
     </div>
   );
 }
