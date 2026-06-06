@@ -1,25 +1,28 @@
-import { AlertTriangle, CalendarClock, Sparkles } from "lucide-react";
-import type { OverviewCardData } from "../constants/dentist-appointments-data";
+import { AlertCircle, CalendarClock, CheckCircle2 } from "lucide-react";
+import type { OverviewCardData } from "../../dentist/constants/dentist-appointments-data";
 
 const kindStyle = {
   next: {
-    card: "bg-white border-black/10",
-    iconWrap: "bg-indigo-700/10 text-indigo-700",
+    card: "bg-white border-black/5 hover:border-indigo-700/20",
+    iconWrap: "bg-indigo-50 text-indigo-700",
+    label: "text-indigo-700",
   },
   action: {
-    card: "bg-amber-50 border-amber-100",
-    iconWrap: "bg-amber-100 text-amber-700",
+    card: "bg-white border-black/5 hover:border-amber-700/20",
+    iconWrap: "bg-amber-50 text-amber-700",
+    label: "text-amber-700",
   },
   week: {
-    card: "bg-white border-black/10",
-    iconWrap: "bg-violet-100 text-indigo-700",
+    card: "bg-white border-black/5 hover:border-emerald-700/20",
+    iconWrap: "bg-emerald-50 text-emerald-700",
+    label: "text-emerald-700",
   },
 } as const;
 
 const kindIcon = {
   next: CalendarClock,
-  action: AlertTriangle,
-  week: Sparkles,
+  action: AlertCircle,
+  week: CheckCircle2,
 } as const;
 
 export default function AppointmentsOverviewCard({ item }: { item: OverviewCardData }) {
@@ -27,17 +30,38 @@ export default function AppointmentsOverviewCard({ item }: { item: OverviewCardD
   const styles = kindStyle[item.kind];
 
   return (
-    <article className={`rounded-2xl border p-4 ${styles.card}`}>
-      <div className="inline-flex items-center gap-2">
-        <span className={`grid size-7 place-items-center rounded-xl ${styles.iconWrap}`}>
-          <Icon className="size-4" />
+    <article
+      className={`group cursor-default rounded-2xl border p-5 transition-all hover:shadow-lg hover:shadow-black/5 ${styles.card}`}
+    >
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            {item.title}
+          </p>
+          <p className="text-2xl font-black text-neutral-900">{item.value}</p>
+        </div>
+        <span className={`grid size-10 place-items-center rounded-xl transition-transform group-hover:scale-110 ${styles.iconWrap}`}>
+          <Icon className="size-5" />
         </span>
-        <p className="text-xs font-semibold uppercase tracking-tight text-slate-500">{item.title}</p>
       </div>
 
-      <p className="mt-3 text-xl font-bold text-neutral-900">{item.value}</p>
-      {item.subtitle ? <p className="mt-1 text-xs font-medium text-teal-600">{item.subtitle}</p> : null}
-      {item.meta ? <p className="mt-2 text-xs text-slate-500">{item.meta}</p> : null}
+      <div className="mt-4 flex items-center justify-between border-t border-black/5 pt-4">
+        <div>
+          {item.subtitle && (
+            <p className={`text-xs font-bold ${styles.label}`}>
+              {item.subtitle}
+            </p>
+          )}
+          {item.meta && (
+            <p className="mt-0.5 text-[10px] font-medium text-slate-400">
+              {item.meta}
+            </p>
+          )}
+        </div>
+        <button className="h-7 cursor-pointer rounded-lg bg-slate-50 px-3 text-[10px] font-bold text-slate-500 transition hover:bg-slate-100 active:scale-95">
+          View Detail
+        </button>
+      </div>
     </article>
   );
 }

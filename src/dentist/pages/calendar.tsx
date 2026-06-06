@@ -7,6 +7,7 @@ import {
   Clock3,
   Search,
 } from "lucide-react";
+import { toast } from "sonner";
 import AppointmentDetailModal from "../../components/dentist/appointment-detail-modal";
 import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
 import RescheduleAppointmentModal from "../../components/dentist/reschedule-appointment-modal";
@@ -110,6 +111,8 @@ export default function Calendar() {
   const updateAppointmentStatus = (status: AppointmentStatus) => {
     if (!activeAppointmentId) return;
 
+    const patientName = activeAppointment?.patientName;
+
     setAppointmentsByDate((prev) => {
       const dayAppointments = prev[selectedIso] ?? [];
       const updatedDayAppointments = dayAppointments.map((appointment) =>
@@ -121,10 +124,18 @@ export default function Calendar() {
         [selectedIso]: updatedDayAppointments,
       };
     });
+
+    if (status === "confirmed") {
+      toast.success(`Appointment for ${patientName} confirmed.`);
+    } else if (status === "completed") {
+      toast.success(`Appointment for ${patientName} marked as completed.`);
+    }
   };
 
   const rejectAppointment = () => {
     if (!activeAppointmentId) return;
+
+    const patientName = activeAppointment?.patientName;
 
     setAppointmentsByDate((prev) => {
       const dayAppointments = prev[selectedIso] ?? [];
@@ -138,11 +149,14 @@ export default function Calendar() {
       };
     });
 
+    toast.error(`Appointment for ${patientName} rejected.`);
     setActiveAppointmentId(null);
   };
 
   const handleRescheduleSuggest = (newDateIso: string, newTime: string) => {
     if (!rescheduleTarget) return;
+
+    const patientName = rescheduleTarget.appointment.patientName;
 
     setAppointmentsByDate((prev) => {
       const fromList = prev[rescheduleTarget.fromIso] ?? [];
@@ -162,31 +176,34 @@ export default function Calendar() {
       };
     });
 
+    toast.info(`Reschedule suggestion sent to ${patientName}.`);
     setSelectedIso(newDateIso);
     setRescheduleTarget(null);
   };
 
   return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
-      <section className="flex flex-wrap items-center justify-between gap-3">
-        <h1
-          className="text-3xl font-bold leading-8 text-neutral-900 lg:text-4xl"
-          style={{ fontFamily: "'Fraunces', 'DM Serif Display', Georgia, serif" }}
-        >
-          Calendar
-        </h1>
+    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pt-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
+      <section className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+          <input
+            type="search"
+            placeholder="Search patient or condition..."
+            className="h-10 w-full rounded-xl bg-white pl-10 pr-4 text-sm text-neutral-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </div>
 
-        <div className="flex items-center rounded-2xl bg-slate-100 p-1">
+        <div className="flex shrink-0 items-center self-start rounded-2xl bg-white p-1 sm:self-auto">
           <button
             onClick={() =>
               setVisibleMonth(
                 (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
               )
             }
-            className="grid size-8 place-items-center rounded-xl text-slate-500 transition hover:bg-white"
+            className="grid size-8 cursor-pointer place-items-center rounded-xl text-slate-500 transition hover:bg-[#432DD7]"
             aria-label="Previous month"
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-4 hover:text-white" />
           </button>
 
           <p className="min-w-28 px-4 text-center text-sm font-semibold text-neutral-900">
@@ -199,25 +216,16 @@ export default function Calendar() {
                 (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
               )
             }
-            className="grid size-8 place-items-center rounded-xl text-slate-500 transition hover:bg-white"
+            className="grid size-8 cursor-pointer place-items-center rounded-xl text-slate-500 transition hover:bg-[#432DD7]"
             aria-label="Next month"
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-4 hover:text-white" />
           </button>
         </div>
       </section>
 
-      <div className="relative">
-        <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
-        <input
-          type="search"
-          placeholder="Search patient or condition..."
-          className="h-10 w-full rounded-2xl bg-slate-100 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-        />
-      </div>
-
-      <section className="overflow-hidden rounded-2xl border border-black/10 bg-white">
-        <div className="grid grid-cols-7 border-b border-black/10">
+      <section className="overflow-hidden rounded-2xl border border-black/5 bg-white">
+        <div className="grid grid-cols-7 border-b border-black/5">
           {WEEKDAY_LABELS.map((day) => (
             <div key={day} className="py-2 text-center text-xs font-semibold text-slate-500">
               {day}
@@ -236,7 +244,7 @@ export default function Calendar() {
                 key={day.iso}
                 type="button"
                 onClick={() => setSelectedIso(day.iso)}
-                className={`h-14 border-r border-b border-black/10 p-1 text-center transition last:border-r-0 hover:bg-slate-50 lg:h-16 lg:p-1.5 ${
+                className={`h-14 cursor-pointer border-r border-b border-black/5 p-1 text-center transition last:border-r-0 hover:bg-slate-50 lg:h-16 lg:p-1.5 ${
                   isSelected ? "bg-violet-100" : "bg-white"
                 }`}
               >
@@ -280,7 +288,7 @@ export default function Calendar() {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-neutral-900" style={{ fontFamily: "'Fraunces', 'DM Serif Display', Georgia, serif" }}>
+          <h2 className="text-2xl font-bold text-neutral-900">
             {formatLongDate(selectedDate)}
           </h2>
           <p className="text-sm text-slate-500">
@@ -296,7 +304,7 @@ export default function Calendar() {
                 key={appointment.id}
                 type="button"
                 onClick={() => setActiveAppointmentId(appointment.id)}
-                className="flex w-full items-center gap-3 rounded-2xl border border-black/10 bg-white p-4 text-left transition hover:border-indigo-200 hover:shadow-sm"
+                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-black/10 bg-white p-4 text-left transition hover:border-indigo-200 hover:shadow-sm"
               >
                 <div
                   className={`grid size-10 place-items-center rounded-full text-sm font-bold text-white ${

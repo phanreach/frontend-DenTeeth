@@ -17,24 +17,20 @@ export default function AppointmentsChart({
     Math.max(v, Math.round((max / 4) * (v / step))),
   );
 
-  const minWidth = Math.max(540, items.length * 34);
   const shouldShowLabel = (index: number) => {
-    if (items.length <= 12) return true;
-    if (items.length <= 24) return index % 2 === 0;
+    if (items.length <= 7) return true;
+    if (items.length <= 12) return index % 2 === 0;
     return index % 3 === 0;
   };
 
   return (
-    <section className="rounded-2xl border border-black/10 bg-white p-4">
-      <h2 className="text-sm font-semibold leading-5 text-neutral-900">{title}</h2>
-      <p className="mt-1 text-xs leading-4 text-slate-500">{subtitle}</p>
+    <section className="overflow-hidden rounded-2xl border border-black/10 bg-white p-5">
+      <h2 className="text-base font-bold text-slate-900">{title}</h2>
+      <p className="text-sm text-slate-500">{subtitle}</p>
 
-      <div className="mt-4 overflow-x-auto">
-        <div
-          className="grid grid-cols-[30px_1fr] gap-2"
-          style={{ minWidth: `${minWidth}px` }}
-        >
-          <div className="flex h-44 flex-col justify-between text-right text-xs text-slate-500">
+      <div className="mt-6">
+        <div className="grid grid-cols-[30px_1fr] gap-2">
+          <div className="flex h-44 flex-col justify-between text-right text-xs text-slate-400">
             {ticks.map((tick, index) => (
               <span key={`${tick}-${index}`}>{tick}</span>
             ))}
@@ -47,7 +43,7 @@ export default function AppointmentsChart({
               ))}
             </div>
 
-            <div className="relative z-10 flex h-full items-end gap-5 px-3">
+            <div className="relative z-10 flex h-full items-end gap-1 px-1 sm:gap-2 sm:px-3">
               {items.map((item, index) => {
                 const appHeight =
                   item.appointments > 0
@@ -59,18 +55,18 @@ export default function AppointmentsChart({
                     : "6%";
 
                 return (
-                  <div key={item.label} className="flex flex-1 flex-col items-center gap-2">
-                  <div className="flex h-36 w-10 items-end justify-center gap-1">
+                  <div key={item.label} className="flex flex-1 flex-col items-center gap-1">
+                    <div className="flex h-36 w-full max-w-12 items-end justify-center gap-0.5 sm:gap-1">
                       <div
                         style={{ height: appHeight }}
-                        className="w-3.5 rounded-t-full rounded-b-sm bg-indigo-700"
+                        className="w-full max-w-5 rounded-t-sm bg-indigo-700"
                       />
                       <div
                         style={{ height: treatedHeight }}
-                        className="w-3.5 rounded-t-full rounded-b-sm bg-teal-600"
+                        className="w-full max-w-5 rounded-t-sm bg-emerald-500"
                       />
                     </div>
-                    <div className="text-[10px] text-slate-500">
+                    <div className="text-[10px] font-medium text-slate-500">
                       {shouldShowLabel(index) ? item.label : ""}
                     </div>
                   </div>
@@ -81,12 +77,12 @@ export default function AppointmentsChart({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-6 text-xs text-slate-500">
+      <div className="mt-6 flex items-center justify-center gap-6 text-xs font-medium text-slate-500">
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-indigo-700" /> Appointments
+          <span className="h-3 w-3 rounded-full bg-indigo-700" /> Appointments
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-teal-600" /> Treated
+          <span className="h-3 w-3 rounded-full bg-emerald-500" /> Treated
         </span>
       </div>
     </section>

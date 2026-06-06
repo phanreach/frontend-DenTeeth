@@ -14,7 +14,7 @@ interface PeriodTabsProps {
 
 export default function PeriodTabs({ value, onChange }: PeriodTabsProps) {
   return (
-    <div className="inline-flex rounded-2xl bg-slate-100 p-1">
+    <div className="inline-flex rounded-xl bg-slate-100/50 p-1">
       {PERIODS.map((period) => {
         const isActive = value === period.key;
 
@@ -22,10 +22,10 @@ export default function PeriodTabs({ value, onChange }: PeriodTabsProps) {
           <button
             key={period.key}
             onClick={() => onChange(period.key)}
-            className={`rounded-xl px-4 py-1.5 text-xs font-semibold leading-4 transition-all ${
+            className={`rounded-lg px-5 py-1.5 text-xs font-bold leading-4 transition-all cursor-pointer ${
               isActive
-                ? "bg-indigo-700 text-white shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-indigo-700 text-white shadow-md shadow-indigo-100"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
             }`}
           >
             {period.label}

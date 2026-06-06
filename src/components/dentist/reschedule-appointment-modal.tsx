@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { RESCHEDULE_TIME_OPTIONS } from "../../dentist/constants/appointment-actions-data";
 import type { Appointment } from "../../dentist/types/calendar";
 
 interface RescheduleAppointmentModalProps {
@@ -15,17 +16,6 @@ interface DateOption {
   dateLabel: string;
   monthLabel: string;
 }
-
-const TIME_OPTIONS = [
-  "09:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "01:00 PM",
-  "02:00 PM",
-  "03:00 PM",
-  "04:00 PM",
-  "05:00 PM",
-];
 
 function toIso(date: Date): string {
   const y = date.getFullYear();
@@ -78,7 +68,7 @@ export default function RescheduleAppointmentModal({
           </div>
           <button
             onClick={onClose}
-            className="grid size-8 place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+            className="grid size-8 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
             aria-label="Close reschedule dialog"
           >
             <X className="size-4" />
@@ -98,7 +88,7 @@ export default function RescheduleAppointmentModal({
                   <button
                     key={item.iso}
                     onClick={() => setSelectedDateIso(item.iso)}
-                    className={`h-16 w-14 shrink-0 rounded-2xl border text-center transition ${
+                    className={`h-16 w-14 shrink-0 cursor-pointer rounded-2xl border text-center transition ${
                       selected
                         ? "border-indigo-700 bg-violet-100"
                         : "border-black/0 bg-slate-100 hover:border-black/10"
@@ -118,14 +108,14 @@ export default function RescheduleAppointmentModal({
               Available Times
             </p>
             <div className="grid grid-cols-4 gap-2">
-              {TIME_OPTIONS.map((time) => {
+              {RESCHEDULE_TIME_OPTIONS.map((time) => {
                 const selected = selectedTime === time;
 
                 return (
                   <button
                     key={time}
                     onClick={() => setSelectedTime(time)}
-                    className={`h-14 rounded-xl border text-center transition ${
+                    className={`h-14 cursor-pointer rounded-xl border text-center transition ${
                       selected
                         ? "border-indigo-700 bg-violet-100"
                         : "border-black/0 bg-slate-100 hover:border-black/10"
@@ -142,7 +132,7 @@ export default function RescheduleAppointmentModal({
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={onClose}
-              className="h-11 rounded-2xl bg-slate-100 text-sm font-semibold text-slate-500 transition hover:bg-slate-200"
+              className="h-11 cursor-pointer rounded-2xl bg-slate-100 text-sm font-semibold text-slate-500 transition hover:bg-slate-200"
             >
               Cancel
             </button>
@@ -152,7 +142,7 @@ export default function RescheduleAppointmentModal({
                 onSuggest(selectedDateIso, selectedTime);
               }}
               disabled={!canSubmit}
-              className="h-11 rounded-2xl bg-indigo-700 text-sm font-semibold text-white transition enabled:hover:bg-indigo-800 disabled:opacity-40"
+              className="h-11 cursor-pointer rounded-2xl bg-indigo-700 text-sm font-semibold text-white transition enabled:hover:bg-indigo-800 disabled:opacity-40"
             >
               Suggest Time
             </button>

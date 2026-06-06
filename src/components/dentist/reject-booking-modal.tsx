@@ -1,20 +1,12 @@
 import { Circle, CircleDot, X } from "lucide-react";
 import { useState } from "react";
+import { REJECT_REASONS } from "../../dentist/constants/appointment-actions-data";
 
 interface RejectBookingModalProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (reason: string) => void;
 }
-
-const REJECT_REASONS = [
-  "Schedule conflict",
-  "Patient no-show",
-  "Emergency situation",
-  "Patient requested cancellation",
-  "Referred to specialist",
-  "Other",
-];
 
 export default function RejectBookingModal({ open, onClose, onConfirm }: RejectBookingModalProps) {
   const [selectedReason, setSelectedReason] = useState(REJECT_REASONS[0]);
@@ -31,10 +23,10 @@ export default function RejectBookingModal({ open, onClose, onConfirm }: RejectB
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
-          <h3 className="text-2base font-semibold text-neutral-900">Reject Booking?</h3>
+          <h3 className="text-base font-semibold text-neutral-900">Reject Booking?</h3>
           <button
             onClick={onClose}
-            className="grid size-8 place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+            className="grid size-8 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
             aria-label="Close reject booking dialog"
           >
             <X className="size-4" />
@@ -52,10 +44,10 @@ export default function RejectBookingModal({ open, onClose, onConfirm }: RejectB
                 <button
                   key={reason}
                   onClick={() => setSelectedReason(reason)}
-                  className={`flex h-11 w-full items-center gap-2 rounded-2xl px-4 text-sm transition ${
+                  className={`flex h-11 w-full cursor-pointer items-center gap-2 rounded-2xl px-4 text-sm transition ${
                     selected
                       ? "border border-red-200 bg-red-50 text-red-600"
-                      : "bg-slate-100 text-neutral-900"
+                      : "bg-slate-100 text-neutral-900 hover:bg-slate-200"
                   }`}
                 >
                   {selected ? <CircleDot className="size-4" /> : <Circle className="size-4 text-slate-400" />}
@@ -68,13 +60,13 @@ export default function RejectBookingModal({ open, onClose, onConfirm }: RejectB
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={onClose}
-              className="h-11 rounded-2xl bg-slate-100 text-sm font-semibold text-slate-500"
+              className="h-11 cursor-pointer rounded-2xl bg-slate-100 text-sm font-semibold text-slate-500 transition hover:bg-slate-200"
             >
               Keep
             </button>
             <button
               onClick={() => onConfirm(selectedReason)}
-              className="h-11 rounded-2xl bg-red-500 text-sm font-semibold text-white"
+              className="h-11 cursor-pointer rounded-2xl bg-red-500 text-sm font-semibold text-white transition hover:bg-red-600"
             >
               Confirm Reject
             </button>

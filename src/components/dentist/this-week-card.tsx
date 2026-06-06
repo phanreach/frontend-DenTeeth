@@ -39,35 +39,43 @@ export default function ThisWeekCard({
   };
 
   return (
-    <section className="rounded-2xl border border-black/10 bg-white p-4">
-      <h3 className="text-sm font-semibold leading-5 text-neutral-900">{title}</h3>
-      <p className="mt-1 text-xs leading-4 text-slate-500">{subtitle}</p>
+    <section className="rounded-2xl border border-black/10 bg-white p-5">
+      <h3 className="text-base font-bold text-slate-900">{title}</h3>
+      <p className="text-sm text-slate-500">{subtitle}</p>
 
-      <div className="mt-3 overflow-x-auto">
-        <div style={{ minWidth: `${w}px` }}>
-          <svg viewBox={`0 0 ${w} ${h + 16}`} className="h-24 w-full">
-          <path d={areaPath} fill="#1d4ed8" opacity="0.12" />
-          <path
-            d={linePath}
-            fill="none"
-            stroke="#1560ab"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          </svg>
+      <div className="mt-6 flex gap-3">
+        <div className="flex h-24 flex-col justify-between text-xs font-medium text-slate-400">
+          <span>8</span>
+          <span>4</span>
+          <span>0</span>
         </div>
-      </div>
 
-      <div
-        className="mt-1 grid text-center text-[10px] text-slate-500"
-        style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
-      >
-        {labels.map((label, index) => (
-          <span key={`${label}-${index}`}>
-            {shouldShowLabel(index) ? label : ""}
-          </span>
-        ))}
+        <div className="flex-1 overflow-x-auto">
+          <div style={{ minWidth: `${w}px` }}>
+            <svg viewBox={`0 0 ${w} ${h}`} className="h-24 w-full overflow-visible">
+              <path d={areaPath} fill="#4338ca" opacity="0.1" />
+              <path
+                d={linePath}
+                fill="none"
+                stroke="#4338ca"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            <div
+              className="mt-3 grid text-center text-[10px] font-medium text-slate-400"
+              style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
+            >
+              {labels.map((label, index) => (
+                <span key={`${label}-${index}`}>
+                  {shouldShowLabel(index) ? label : ""}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

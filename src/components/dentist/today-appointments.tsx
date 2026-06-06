@@ -46,10 +46,10 @@ export default function TodayAppointments({
             <div className="mt-3 flex items-center justify-between">
               <p className="text-xs font-semibold text-slate-500">{appointment.time}</p>
               <div className="flex gap-2">
-                <button className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700">
+                <button className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer">
                   Reschedule
                 </button>
-                <button className="rounded-xl bg-[#4845d2] px-3 py-2 text-xs font-bold text-white">
+                <button className="rounded-xl bg-[#4845d2] px-3 py-2 text-xs font-bold text-white cursor-pointer">
                   Confirm
                 </button>
               </div>

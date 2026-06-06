@@ -53,8 +53,6 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/dentist/dashboard" element={<Dashboard />} />
           <Route path="/dentist/appointments" element={<Appointments />} />
-          <Route path="/dentist/appointment" element={<Appointments />} />
-          <Route path="/dentist/bookings" element={<Appointments />} />
           <Route path="/dentist/calendar" element={<Calendar />} />
           <Route path="/dentist/service-configuration" element={<ServiceConfiguration />} />
         </Route>

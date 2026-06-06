@@ -35,26 +35,22 @@ export default function RevenueCard({
 
   const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
   const isSinglePoint = labels.length === 1;
-  const minWidth = Math.max(520, labels.length * 34);
   const shouldShowLabel = (index: number) => {
-    if (labels.length <= 12) return true;
-    if (labels.length <= 24) return index % 2 === 0;
+    if (labels.length <= 7) return true;
+    if (labels.length <= 12) return index % 2 === 0;
     return index % 3 === 0;
   };
 
   return (
-    <section className="rounded-2xl border border-black/10 bg-white p-4">
-      <h3 className="text-sm font-semibold leading-5 text-neutral-900">Estimated Revenue</h3>
-      <p className="mt-1 text-xs leading-4 text-slate-500">
-        {periodLabel} <span className="font-semibold text-neutral-900">{revenueLabel}</span>
+    <section className="overflow-hidden rounded-2xl border border-black/10 bg-white p-5">
+      <h3 className="text-base font-bold text-slate-900">Estimated Revenue</h3>
+      <p className="text-sm text-slate-500">
+        {periodLabel} <span className="font-bold text-slate-900">{revenueLabel}</span>
       </p>
 
-      <div className="mt-3 overflow-x-auto">
-        <div
-          className="grid grid-cols-[42px_1fr] gap-2"
-          style={{ minWidth: `${minWidth}px` }}
-        >
-        <div className="flex h-40 flex-col justify-between text-right text-xs text-slate-500">
+      <div className="mt-6">
+        <div className="grid grid-cols-[42px_1fr] gap-2">
+        <div className="flex h-40 flex-col justify-between text-right text-xs text-slate-400">
           {yTicks.map((tick) => (
             <span key={tick}>{tick}</span>
           ))}
@@ -69,15 +65,15 @@ export default function RevenueCard({
 
           <svg viewBox={`0 0 ${w} ${h}`} className="relative z-10 h-40 w-full">
             {isSinglePoint ? (
-              <circle cx={w / 2} cy={h * 0.38} r={4} fill="white" stroke="#0d9488" strokeWidth={2} />
+              <circle cx={w / 2} cy={h * 0.38} r={4} fill="white" stroke="#14b8a6" strokeWidth={2} />
             ) : (
               <>
-                <path d={areaPath} fill="#0d9488" opacity="0.1" />
+                <path d={areaPath} fill="#14b8a6" opacity="0.1" />
                 <path
                   d={linePath}
                   fill="none"
-                  stroke="#0d9488"
-                  strokeWidth="2"
+                  stroke="#14b8a6"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -86,7 +82,7 @@ export default function RevenueCard({
           </svg>
 
           <div
-            className="mt-1 grid text-center text-xs text-slate-500"
+            className="mt-3 grid text-center text-xs font-medium text-slate-500"
             style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
           >
             {labels.map((label, index) => (

@@ -17,6 +17,9 @@ import {
   Settings,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import useDentistAppointments, {
+  getPendingDentistAppointmentCount,
+} from "../dentist/hooks/use-dentist-appointments";
 import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
 
 type UserRole = "ADMIN" | "DENTIST" | "PATIENT";
@@ -27,6 +30,7 @@ interface NavItem {
   icon: NavIcon;
   path: string;
   active: boolean;
+  badgeCount?: number;
 }
 
 interface SideBarProps {
@@ -75,9 +79,13 @@ export default function SideBar({
 }: SideBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [dentistAppointments] = useDentistAppointments();
 
   const currentPage = location.pathname;
   const activeRole = getActiveRole(currentPage);
+  const isDentistRole = activeRole === "DENTIST";
+  const pendingDentistAppointments =
+    getPendingDentistAppointmentCount(dentistAppointments);
 
   const username = getCookie(COOKIE_KEYS.username) ?? "User";
   const firstLetter = username.charAt(0).toUpperCase();
@@ -140,6 +148,7 @@ export default function SideBar({
         icon: Users,
         path: "/dentist/appointments",
         active: currentPage.startsWith("/dentist/appointments"),
+        badgeCount: pendingDentistAppointments,
       },
       {
         label: "Calendar",
@@ -202,24 +211,30 @@ export default function SideBar({
 
   return (
     <>
-      {isMobile && (
-        <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl">
+      {isMobile && !isDentistRole && (
+        <div
+          className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl"
+        >
           <button
             onClick={() => setCollapsed(false)}
             className="rounded-xl p-2 transition hover:bg-secondary"
+            aria-label="Open sidebar"
           >
             <Menu className="h-5 w-5 text-slate-700" />
           </button>
 
           <button
             onClick={() => handleNavigate(homePath)}
-            className="font-serif text-xl text-primary"
+            className="text-xl font-bold text-primary"
           >
             DenTeeth
           </button>
 
           <div className="flex items-center gap-3">
-            <button className="relative rounded-xl p-2 transition hover:bg-secondary">
+            <button
+              className="relative rounded-xl p-2 transition hover:bg-secondary"
+              aria-label="Notifications"
+            >
               <Bell className="h-5 w-5 text-slate-600" />
 
               <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
@@ -242,7 +257,11 @@ export default function SideBar({
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 flex h-screen flex-col border-r border-slate-200 bg-white/90 backdrop-blur-xl transition-all duration-300 ${
+        className={`fixed left-0 top-0 flex h-screen flex-col border-r backdrop-blur-xl transition-all duration-300 ${
+          isDentistRole
+            ? "border-slate-200 bg-white/95 text-slate-900"
+            : "border-slate-200 bg-white/90"
+        } ${
           isMobile
             ? collapsed
               ? "-translate-x-full w-72"
@@ -260,7 +279,13 @@ export default function SideBar({
               className="flex items-center gap-3"
             >
               <div className="text-left">
-                <h1 className="font-bold text-xl text-primary">DenTeeth</h1>
+                <h1
+                  className={`text-xl font-bold ${
+                    isDentistRole ? "text-[#432DD7]" : "text-primary"
+                  }`}
+                >
+                  DenTeeth
+                </h1>
 
                 <p className="text-xs tracking-wide text-slate-500">
                   AI Dental Platform
@@ -273,7 +298,12 @@ export default function SideBar({
             onClick={() =>
               isMobile ? setCollapsed(true) : setCollapsed(!collapsed)
             }
-            className="rounded-xl p-2 transition hover:bg-secondary hover:text-primary"
+            className={`rounded-xl p-2 transition ${
+              isDentistRole
+                ? "text-slate-600 hover:bg-slate-100 hover:text-[#432DD7]"
+                : "hover:bg-secondary hover:text-primary"
+            }`}
+            aria-label={isMobile ? "Close sidebar" : "Toggle sidebar"}
           >
             {isMobile ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -291,16 +321,40 @@ export default function SideBar({
                   onClick={() => handleNavigate(item.path)}
                   className={`group relative flex w-full items-center rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-300 ${
                     item.active
-                      ? "bg-primary text-white shadow-lg shadow-primary/20"
-                      : "text-slate-600 hover:bg-secondary hover:text-primary"
+                      ? isDentistRole
+                        ? "bg-[#432DD7] text-white shadow-lg shadow-[#432DD7]/20"
+                        : "bg-primary text-white shadow-lg shadow-primary/20"
+                      : isDentistRole
+                        ? "text-slate-600 hover:bg-[#432DD7]/10 hover:text-[#432DD7]"
+                        : "text-slate-600 hover:bg-secondary hover:text-primary"
                   }`}
                 >
                   <Icon className="h-5 w-5 shrink-0" />
 
-                  {!collapsed && <span className="ml-3">{item.label}</span>}
+                  {!collapsed && <span className="ml-3 min-w-0 flex-1 text-left">{item.label}</span>}
 
-                  {item.active && !collapsed && (
-                    <div className="absolute right-4 h-2 w-2 rounded-full bg-white" />
+                  {item.badgeCount ? (
+                    <span
+                      className={`ml-auto grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-bold tabular-nums ${
+                        item.active
+                          ? isDentistRole
+                            ? "bg-white/20 text-white"
+                            : "bg-white/20 text-white"
+                          : isDentistRole
+                            ? "bg-[#432DD7] text-white"
+                            : "bg-primary text-white"
+                      } ${collapsed ? "absolute right-2 top-2" : ""}`}
+                    >
+                      {item.badgeCount}
+                    </span>
+                  ) : null}
+
+                  {item.active && !collapsed && !item.badgeCount && (
+                    <div
+                      className={`absolute right-4 h-2 w-2 rounded-full ${
+                        isDentistRole ? "bg-white" : "bg-white"
+                      }`}
+                    />
                   )}
                 </button>
               );
@@ -309,7 +363,7 @@ export default function SideBar({
         </div>
 
         {/* Bottom User */}
-        <div className="border-t border-slate-100 p-4">
+        <div className={`border-t border-slate-100 p-4 ${isDentistRole ? "hidden" : ""}`}>
           {!collapsed ? (
             <div className="p-4">
               <div className="flex items-center gap-3">
@@ -339,7 +393,9 @@ export default function SideBar({
           ) : (
             <button
               onClick={() => handleNavigate(homePath)}
-              className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20"
+              className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg ${
+                isDentistRole ? "bg-[#432DD7] shadow-[#432DD7]/20" : "bg-primary shadow-primary/20"
+              }`}
             >
               <UserRound className="h-6 w-6" />
             </button>

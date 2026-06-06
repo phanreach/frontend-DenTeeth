@@ -8,6 +8,14 @@ export interface ClinicIdentity {
   availableHours: string;
 }
 
+export interface ServiceItem {
+  name: string;
+  enabled: boolean;
+  description?: string;
+  price?: number;
+  duration?: number;
+}
+
 export interface ServiceConfigurationData {
   profile: {
     imageHint: string;
@@ -15,7 +23,7 @@ export interface ServiceConfigurationData {
   };
   identity: ClinicIdentity;
   availableDays: Array<{ day: string; enabled: boolean }>;
-  servicesOffered: Array<{ name: string; enabled: boolean }>;
+  servicesOffered: ServiceItem[];
 }
 
 export const SERVICE_CONFIGURATION_DATA: ServiceConfigurationData = {
@@ -42,13 +50,13 @@ export const SERVICE_CONFIGURATION_DATA: ServiceConfigurationData = {
     { day: "Sun", enabled: false },
   ],
   servicesOffered: [
-    { name: "Scaling & Polishing", enabled: true },
-    { name: "Root Canal Treatment", enabled: false },
-    { name: "Teeth Whitening", enabled: true },
-    { name: "Dental Fillings", enabled: false },
-    { name: "Extractions", enabled: false },
-    { name: "Orthodontics", enabled: false },
-    { name: "Dental Implants", enabled: false },
-    { name: "Pediatric Dentistry", enabled: false },
+    { name: "Scaling & Polishing", enabled: true, description: "Professional cleaning of teeth", price: 50, duration: 30 },
+    { name: "Root Canal Treatment", enabled: false, description: "Treatment for infected tooth pulp", price: 300, duration: 60 },
+    { name: "Teeth Whitening", enabled: true, description: "Professional teeth whitening", price: 150, duration: 45 },
+    { name: "Dental Fillings", enabled: false, description: "Restoring decayed teeth", price: 80, duration: 30 },
+    { name: "Extractions", enabled: false, description: "Safe removal of teeth", price: 100, duration: 30 },
+    { name: "Orthodontics", enabled: false, description: "Braces and aligners", price: 2000, duration: 60 },
+    { name: "Dental Implants", enabled: false, description: "Tooth replacement", price: 1500, duration: 90 },
+    { name: "Pediatric Dentistry", enabled: false, description: "Dental care for children", price: 60, duration: 30 },
   ],
 };

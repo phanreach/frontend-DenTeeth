@@ -52,7 +52,7 @@ export default function AppointmentDetailModal({
           <h3 className="text-base font-semibold text-neutral-900">Patient Detail</h3>
           <button
             onClick={onClose}
-            className="grid size-8 place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+            className="grid size-8 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
             aria-label="Close patient detail"
           >
             <X className="size-4" />

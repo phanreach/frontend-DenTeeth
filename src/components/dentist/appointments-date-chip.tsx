@@ -1,4 +1,4 @@
-import type { DateChipData } from "../constants/dentist-appointments-data";
+import type { DateChipData } from "../../dentist/constants/dentist-appointments-data";
 
 export default function AppointmentsDateChip({ item }: { item: DateChipData }) {
   if (item.dayLabel === "All") {

@@ -36,8 +36,9 @@ export type DentistAppointment = {
   avatar: string;
 };
 
-const DAY_LABELS = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+const DAY_LABELS = ["9 AM", "11 AM", "1 PM", "3 PM", "5 PM"];
 const WEEK_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTH_LABELS = ["Week 1", "Week 2", "Week 3", "Week 4"];
 const YEAR_LABELS = [
   "Jan",
   "Feb",
@@ -74,28 +75,28 @@ export const PERIOD_DATA: Record<
     },
     chart: toChartItems(
       DAY_LABELS,
-      [0, 0, 0, 0, 0, 1, 2, 2, 3, 4, 3, 4, 2, 1, 2, 3, 1, 1, 0, 1, 2, 1, 0, 0],
-      [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 2, 1, 1, 2, 1, 1, 0, 1, 1, 1, 0, 0],
+      [4, 6, 8, 4, 2],
+      [3, 5, 4, 2, 0],
     ),
     revenue: {
       labels: DAY_LABELS,
-      values: [0, 0, 0, 0, 0, 20, 50, 70, 90, 120, 100, 80, 65, 50, 40, 30, 25, 20, 15, 10, 10, 5, 0, 0],
+      values: [120, 150, 100, 80, 30],
       yTicks: ["$0.2k", "$0.1k", "$0.1k", "$0.0k"],
       periodLabel: "Today — May 12 —",
     },
     trend: {
       labels: DAY_LABELS,
-      values: [0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 5, 7, 6, 4, 5, 6, 4, 3, 2, 2, 1, 1, 0, 0],
+      values: [4, 7, 6, 5, 2],
     },
   },
   week: {
     kpi: {
-      appointments: 24,
-      treated: 14,
-      pending: 7,
-      completed: 3,
+      appointments: 142,
+      treated: 120,
+      pending: 12,
+      completed: 10,
       satisfaction: "4.8",
-      revenueLabel: "$1,760",
+      revenueLabel: "$2,760",
     },
     chart: toChartItems(
       WEEK_LABELS,
@@ -115,30 +116,30 @@ export const PERIOD_DATA: Record<
   },
   month: {
     kpi: {
-      appointments: 24,
-      treated: 14,
-      pending: 7,
-      completed: 3,
+      appointments: 640,
+      treated: 512,
+      pending: 45,
+      completed: 83,
       satisfaction: "4.8",
-      revenueLabel: "$4,200",
+      revenueLabel: "$12,200",
     },
-    chart: toChartItems(["May"], [24], [10]),
+    chart: toChartItems(MONTH_LABELS, [140, 180, 160, 160], [110, 150, 130, 122]),
     revenue: {
-      labels: ["May"],
-      values: [3200],
-      yTicks: ["$6.0k", "$3.0k", "$1.5k", "$0.0k"],
+      labels: MONTH_LABELS,
+      values: [2800, 3400, 3100, 2900],
+      yTicks: ["$4.0k", "$2.0k", "$1.0k", "$0.0k"],
       periodLabel: "May 2026 —",
     },
-    trend: { labels: ["May"], values: [6] },
+    trend: { labels: MONTH_LABELS, values: [6, 8, 7, 6] },
   },
   year: {
     kpi: {
-      appointments: 110,
-      treated: 85,
-      pending: 7,
-      completed: 18,
+      appointments: 7200,
+      treated: 6100,
+      pending: 120,
+      completed: 980,
       satisfaction: "4.8",
-      revenueLabel: "$20,000",
+      revenueLabel: "$140,000",
     },
     chart: toChartItems(
       YEAR_LABELS,
@@ -174,6 +175,14 @@ export const TODAY_APPOINTMENTS: DentistAppointment[] = [
     time: "11:30 AM",
     status: "confirmed",
     avatar: "SW",
+  },
+  {
+    id: "a3",
+    patient: "Michael Brown",
+    condition: "Orthodontic Consultation",
+    time: "02:15 PM",
+    status: "rescheduled",
+    avatar: "MB",
   },
 ];
 

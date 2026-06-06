@@ -1,0 +1,232 @@
+import {
+  Bell,
+  ChevronDown,
+  KeyRound,
+  LogOut,
+  Menu,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import {
+  DENTIST_HEADER_NOTIFICATIONS,
+  DENTIST_MODULE_LABELS,
+} from "../../dentist/constants/dentist-header-data";
+import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../../utils/cookies";
+import ChangePasswordModal from "./change-password-modal";
+
+interface DentistHeaderProps {
+  collapsed: boolean;
+  isMobile: boolean;
+  setCollapsed: (value: boolean) => void;
+}
+
+function formatSegment(segment: string) {
+  return (
+    DENTIST_MODULE_LABELS[segment] ??
+    segment
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+}
+
+export default function DentistHeader({
+  collapsed,
+  isMobile,
+  setCollapsed,
+}: DentistHeaderProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [openMenu, setOpenMenu] = useState<"notifications" | "profile" | null>(
+    null,
+  );
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const username = getCookie(COOKIE_KEYS.username) || "Laxmi";
+  const firstLetter = username.charAt(0).toUpperCase();
+
+  const breadcrumbs = useMemo(() => {
+    const segments = location.pathname.split("/").filter(Boolean);
+    const dentistSegments = segments[0] === "dentist" ? segments.slice(1) : segments;
+    const fallbackSegments = ["dashboard"];
+    const activeSegments = dentistSegments.length > 0 ? dentistSegments : fallbackSegments;
+
+    return activeSegments.map((segment, index) => ({
+      label: formatSegment(segment),
+      path: `/dentist/${activeSegments.slice(0, index + 1).join("/")}`,
+      current: index === activeSegments.length - 1,
+    }));
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    clearAuthCookies();
+    toast.success("Logged out successfully");
+    navigate("/login");
+  };
+
+  return (
+    <>
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div
+        ref={containerRef}
+        className="flex h-16 items-center justify-between gap-3 px-4 lg:px-6"
+      >
+        <div className="flex min-w-0 items-center gap-3">
+          {isMobile ? (
+            <button
+              type="button"
+              onClick={() => setCollapsed(!collapsed)}
+              className="grid size-9 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+              aria-label="Toggle sidebar"
+            >
+              <Menu className="size-4" />
+            </button>
+          ) : null}
+
+          <div className="min-w-0">
+            <nav
+              aria-label="Breadcrumb"
+              className="flex min-w-0 items-center gap-2 text-lg font-medium leading-7 text-slate-400 sm:text-xl"
+            >
+              {breadcrumbs.map((item) => (
+                <span key={item.path} className="inline-flex min-w-0 items-center gap-2">
+                  {breadcrumbs.length > 1 && item !== breadcrumbs[0] ? (
+                    <span className="shrink-0 text-slate-300">/</span>
+                  ) : null}
+                  {item.current ? (
+                    <span className="truncate font-bold text-slate-950">
+                      {item.label}
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => navigate(item.path)}
+                      className="cursor-pointer truncate transition hover:text-[#432DD7]"
+                    >
+                      {item.label}
+                    </button>
+                  )}
+                </span>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        <div className="relative flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              setOpenMenu((value) =>
+                value === "notifications" ? null : "notifications",
+              )
+            }
+            className="relative grid size-10 cursor-pointer place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-[#432DD7]/30 hover:text-[#432DD7]"
+            aria-label="Open notifications"
+            aria-expanded={openMenu === "notifications"}
+          >
+            <Bell className="size-4" />
+            <span className="absolute right-2 top-2 size-2 rounded-full bg-red-500" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              setOpenMenu((value) => (value === "profile" ? null : "profile"))
+            }
+            className="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 text-sm font-medium text-slate-800 transition hover:border-[#432DD7]/30"
+            aria-label="Open profile menu"
+            aria-expanded={openMenu === "profile"}
+          >
+            <span className="grid size-7 place-items-center rounded-full bg-[#432DD7] text-xs font-bold text-white">
+              {firstLetter}
+            </span>
+            <span className="hidden max-w-28 truncate sm:inline">{username}</span>
+            <ChevronDown className="size-3.5 text-slate-500" />
+          </button>
+
+          {openMenu === "notifications" ? (
+            <div className="absolute right-0 top-12 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+              <div className="border-b border-slate-100 px-4 py-3">
+                <p className="text-sm font-semibold text-slate-950">Notifications</p>
+                <p className="text-xs text-slate-500">Recent dentist updates</p>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {DENTIST_HEADER_NOTIFICATIONS.map((notification) => (
+                  <button
+                    key={notification.id}
+                    type="button"
+                    className="block w-full cursor-pointer border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-slate-50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-sm font-semibold text-slate-900">
+                        {notification.title}
+                      </p>
+                      <span className="shrink-0 text-[11px] text-slate-400">
+                        {notification.time}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      {notification.body}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {openMenu === "profile" ? (
+            <div className="absolute right-0 top-12 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+              <div className="border-b border-slate-100 px-4 py-3">
+                <p className="truncate text-sm font-semibold text-slate-950">
+                  {username}
+                </p>
+                <p className="text-xs text-slate-500">Dentist</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenMenu(null);
+                  setShowChangePassword(true);
+                }}
+                className="flex h-11 w-full cursor-pointer items-center gap-2 px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              >
+                <KeyRound className="size-4 text-slate-500" />
+                Change Password
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex h-11 w-full cursor-pointer items-center gap-2 px-4 text-sm font-medium text-red-600 transition hover:bg-red-50"
+              >
+                <LogOut className="size-4" />
+                Logout
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </header>
+
+    <ChangePasswordModal
+      open={showChangePassword}
+      onClose={() => setShowChangePassword(false)}
+    />
+    </>
+  );
+}

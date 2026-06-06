@@ -1,5 +1,6 @@
 import { Funnel, Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import AppointmentBookingCard from "../../components/dentist/appointment-booking-card";
 import AppointmentDetailModal from "../../components/dentist/appointment-detail-modal";
 import AppointmentsDateChip from "../../components/dentist/appointments-date-chip";
@@ -10,8 +11,9 @@ import RescheduleAppointmentModal from "../../components/dentist/reschedule-appo
 import {
   APPOINTMENTS_PAGE_DATA,
   type AppointmentItem,
-} from "../../components/constants/dentist-appointments-data";
+} from "../constants/dentist-appointments-data";
 import type { Appointment } from "../types/calendar";
+import useDentistAppointments from "../hooks/use-dentist-appointments";
 
 type FilterMode = "day" | "month" | "year";
 type SortMode = "date" | "name";
@@ -25,7 +27,7 @@ function parseAppointmentDate(value: string): Date {
 }
 
 export default function Appointments() {
-  const [appointments, setAppointments] = useState(APPOINTMENTS_PAGE_DATA.appointments);
+  const [appointments, setAppointments] = useDentistAppointments();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -115,7 +117,18 @@ export default function Appointments() {
   }, [appointments, filterMode, searchTerm, selectedDateChip, sortMode, statusFilter]);
 
   const setStatus = (id: string, status: AppointmentItem["status"]) => {
+    const appointment = appointments.find((item) => item.id === id);
+
+    if (!appointment) {
+      toast.error("Appointment was not found. Refresh and try again.");
+      return;
+    }
+
     setAppointments((prev) => prev.map((item) => (item.id === id ? { ...item, status } : item)));
+
+    if (status === "confirmed") {
+      toast.success(`${appointment.name}'s appointment confirmed.`);
+    }
   };
 
   const handleRescheduleSuggest = (newDateIso: string, newTime: string) => {
@@ -134,6 +147,7 @@ export default function Appointments() {
       ),
     );
 
+    toast.warning("Appointment moved. Patient confirmation is still pending.");
     setShowRescheduleModal(false);
     setActiveId(null);
   };
@@ -143,23 +157,19 @@ export default function Appointments() {
     count: statusCounts[tab.key as StatusFilter] ?? tab.count,
   }));
 
-  return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
-      <section className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-700/60">
-            {APPOINTMENTS_PAGE_DATA.heading.eyebrow}
-          </p>
-          <h1
-            className="mt-1 text-2xl font-bold leading-8 text-neutral-900 lg:text-4xl"
-            style={{ fontFamily: "'Fraunces', 'DM Serif Display', Georgia, serif" }}
-          >
-            {APPOINTMENTS_PAGE_DATA.heading.title}
-          </h1>
-          <p className="text-sm text-slate-500">{APPOINTMENTS_PAGE_DATA.heading.dateLabel}</p>
-        </div>
+  const currentDateLabel = new Intl.DateTimeFormat("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Phnom_Penh",
+  }).format(new Date());
 
-        <button className="grid size-9 place-items-center rounded-2xl bg-slate-100 text-slate-500">
+  return (
+    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pt-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
+      <section className="flex items-center justify-between">
+        <p className="text-sm font-medium text-slate-500">{currentDateLabel}</p>
+        <button className="grid size-9 cursor-pointer place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 active:scale-95">
           <SlidersHorizontal className="size-4" />
         </button>
       </section>
@@ -180,8 +190,8 @@ export default function Appointments() {
                 setFilterMode(mode);
                 if (mode !== "day") setSelectedDateChip("all");
               }}
-              className={`rounded-[10px] px-2.5 py-1 capitalize ${
-                filterMode === mode ? "bg-white text-neutral-900 shadow" : "text-slate-500"
+              className={`cursor-pointer rounded-[10px] px-2.5 py-1 capitalize transition ${
+                filterMode === mode ? "bg-white text-neutral-900 shadow" : "text-slate-500 hover:text-slate-700"
               }`}
             >
               {mode}
@@ -196,7 +206,7 @@ export default function Appointments() {
             <button
               key={`${item.dayLabel}-${item.dayNumber}-${index}`}
               onClick={() => setSelectedDateChip(item.dayLabel === "All" ? "all" : item.dayNumber)}
-              className="contents"
+              className="contents cursor-pointer"
             >
               <AppointmentsDateChip
                 item={{
@@ -212,43 +222,54 @@ export default function Appointments() {
         </section>
       ) : null}
 
-      <section className="flex gap-2">
+      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search patient name, condition..."
-            className="h-10 w-full rounded-2xl bg-slate-100 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200"
+            className="h-11 w-full rounded-2xl border border-indigo-700/10 bg-white pl-10 pr-3 text-sm text-neutral-900 outline-none transition focus:border-indigo-700/40 focus:ring-4 focus:ring-indigo-700/5"
           />
         </div>
-        <button
-          onClick={() => setSortMode((prev) => (prev === "date" ? "name" : "date"))}
-          className="inline-flex h-10 items-center gap-1.5 rounded-2xl bg-slate-100 px-3.5 text-xs font-semibold text-slate-500"
-        >
-          <Funnel className="size-3.5" />
-          Sort: {sortMode === "date" ? "Date" : "Name"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSortMode((prev) => (prev === "date" ? "name" : "date"))}
+            className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl bg-violet-100 px-4 text-xs font-bold text-indigo-700 transition hover:bg-violet-200 active:scale-95"
+          >
+            <Funnel className="size-3.5" />
+            Sort: {sortMode === "date" ? "Date" : "Name"}
+          </button>
+          <button className="grid size-11 cursor-pointer place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 active:scale-95">
+            <SlidersHorizontal className="size-4" />
+          </button>
+        </div>
       </section>
 
-      <section className="flex flex-wrap items-center gap-2">
+      <section className="scrollbar-hide flex flex-wrap items-center gap-2">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setStatusFilter(tab.key as StatusFilter)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              statusFilter === tab.key ? "bg-indigo-700 text-white" : "bg-slate-100 text-slate-500"
+            className={`flex h-9 cursor-pointer items-center gap-2 rounded-full px-4 text-xs font-bold transition active:scale-95 ${
+              statusFilter === tab.key
+                ? "bg-indigo-700 text-white shadow-lg shadow-indigo-700/20"
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
             }`}
           >
-            {tab.label}{" "}
-            <span className={`ml-1 rounded-full px-1.5 py-0.5 text-[10px] ${statusFilter === tab.key ? "bg-white/20" : "bg-black/10"}`}>
+            {tab.label}
+            <span
+              className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+                statusFilter === tab.key ? "bg-white/20 text-white" : "bg-black/5 text-slate-400"
+              }`}
+            >
               {tab.count}
             </span>
           </button>
         ))}
       </section>
 
-      <section className="grid gap-3 xl:grid-cols-2">
+      <section className="grid gap-4 xl:grid-cols-2">
         {filteredAppointments.map((item) => (
           <AppointmentBookingCard
             key={item.id}
@@ -284,6 +305,7 @@ export default function Appointments() {
         onMarkComplete={() => {
           if (!activeId) return;
           setAppointments((prev) => prev.filter((item) => item.id !== activeId));
+          toast.success("Appointment marked complete.");
           setActiveId(null);
         }}
       />
@@ -305,8 +327,12 @@ export default function Appointments() {
           setActiveId(null);
         }}
         onConfirm={() => {
-          if (!activeId) return;
+          if (!activeId) {
+            toast.error("Choose an appointment before rejecting.");
+            return;
+          }
           setAppointments((prev) => prev.filter((item) => item.id !== activeId));
+          toast.error("Appointment cancelled.");
           setShowRejectModal(false);
           setActiveId(null);
         }}
