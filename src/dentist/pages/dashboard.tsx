@@ -38,8 +38,13 @@ export default function Dashboard() {
   }, [period]);
 
   return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-6 px-4 pt-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
-      <PeriodTabs value={period} onChange={setPeriod} />
+    <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <PeriodTabs value={period} onChange={setPeriod} />
+        <p className="text-sm font-medium text-muted-foreground">
+          Last updated: <span className="font-bold text-foreground">Just now</span>
+        </p>
+      </div>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
@@ -52,19 +57,19 @@ export default function Dashboard() {
         <KpiCard
           title="Treated Patients"
           value={data.kpi.treated.toLocaleString()}
-          subtitle="3 confirmed"
+          subtitle="3 confirmed today"
           icon={Users}
         />
         <KpiCard
           title="Pending Actions"
           value={data.kpi.pending.toLocaleString()}
-          subtitle="Need your response"
+          subtitle="Requires attention"
           icon={AlertCircle}
         />
         <KpiCard
           title="Avg. Satisfaction"
           value={data.kpi.satisfaction}
-          subtitle="↗ Based on reviews"
+          subtitle="↗ Based on latest reviews"
           icon={Star}
         />
       </section>
@@ -102,8 +107,8 @@ export default function Dashboard() {
           <ThisWeekCard
             points={MOBILE_WEEK_POINTS}
             labels={MOBILE_WEEK_LABELS}
-            title="This Week"
-            subtitle="Daily patients"
+            title="Weekly Activity"
+            subtitle="Patient volume trend"
           />
           <TopConditionsCard items={TOP_CONDITIONS} />
         </div>
@@ -113,4 +118,3 @@ export default function Dashboard() {
     </main>
   );
 }
-

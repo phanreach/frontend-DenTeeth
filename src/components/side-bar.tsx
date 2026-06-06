@@ -257,7 +257,7 @@ export default function SideBar({
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-slate-200 bg-white/90 backdrop-blur-xl transition-all duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border bg-card/90 backdrop-blur-xl transition-all duration-300 dark:bg-background/95 ${
           isMobile
             ? collapsed
               ? "-translate-x-full w-72"
@@ -268,7 +268,7 @@ export default function SideBar({
         }`}
       >
         {/* Logo */}
-        <div className="flex h-20 items-center justify-between border-b border-slate-100 px-5">
+        <div className="flex h-20 items-center justify-between border-b border-border px-5">
           {!collapsed && (
             <button
               onClick={() => handleNavigate(homePath)}
@@ -277,13 +277,13 @@ export default function SideBar({
               <div className="text-left">
                 <h1
                   className={`text-xl font-bold ${
-                    isDentistRole ? "text-[#432DD7]" : "text-primary"
+                    isDentistRole ? "text-indigo-600 dark:text-indigo-400" : "text-primary"
                   }`}
                 >
                   DenTeeth
                 </h1>
 
-                <p className="text-xs tracking-wide text-slate-500">
+                <p className="text-xs tracking-wide text-muted-foreground">
                   AI Dental Platform
                 </p>
               </div>
@@ -296,7 +296,7 @@ export default function SideBar({
             }
             className={`rounded-xl p-2 transition ${
               isDentistRole
-                ? "text-slate-600 hover:bg-slate-100 hover:text-[#432DD7]"
+                ? "text-muted-foreground hover:bg-muted hover:text-indigo-600 dark:hover:text-indigo-400"
                 : "hover:bg-secondary hover:text-primary"
             }`}
             aria-label={isMobile ? "Close sidebar" : "Toggle sidebar"}
@@ -318,10 +318,10 @@ export default function SideBar({
                   className={`group relative flex w-full items-center rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-300 ${
                     item.active
                       ? isDentistRole
-                        ? "bg-[#432DD7] text-white shadow-lg shadow-[#432DD7]/20"
+                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 dark:bg-indigo-500"
                         : "bg-primary text-white shadow-lg shadow-primary/20"
                       : isDentistRole
-                        ? "text-slate-600 hover:bg-[#432DD7]/10 hover:text-[#432DD7]"
+                        ? "text-muted-foreground hover:bg-indigo-600/10 hover:text-indigo-600 dark:hover:text-indigo-400"
                         : "text-slate-600 hover:bg-secondary hover:text-primary"
                   }`}
                 >
@@ -333,11 +333,9 @@ export default function SideBar({
                     <span
                       className={`ml-auto grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-bold tabular-nums ${
                         item.active
-                          ? isDentistRole
-                            ? "bg-white/20 text-white"
-                            : "bg-white/20 text-white"
+                          ? "bg-white/20 text-white"
                           : isDentistRole
-                            ? "bg-[#432DD7] text-white"
+                            ? "bg-indigo-600 text-white dark:bg-indigo-500"
                             : "bg-primary text-white"
                       } ${collapsed ? "absolute right-2 top-2" : ""}`}
                     >
@@ -346,11 +344,7 @@ export default function SideBar({
                   ) : null}
 
                   {item.active && !collapsed && !item.badgeCount && (
-                    <div
-                      className={`absolute right-4 h-2 w-2 rounded-full ${
-                        isDentistRole ? "bg-white" : "bg-white"
-                      }`}
-                    />
+                    <div className="absolute right-4 h-2 w-2 rounded-full bg-white" />
                   )}
                 </button>
               );
@@ -359,7 +353,7 @@ export default function SideBar({
         </div>
 
         {/* Bottom User */}
-        <div className={`border-t border-slate-100 p-4 ${isDentistRole ? "hidden" : ""}`}>
+        <div className={`border-t border-border p-4 ${isDentistRole ? "hidden" : ""}`}>
           {!collapsed ? (
             <div className="p-4">
               <div className="flex items-center gap-3">

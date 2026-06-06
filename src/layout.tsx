@@ -9,6 +9,32 @@ export default function Layout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const isDentistLayout = location.pathname.startsWith("/dentist");
 
+  // Theme state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("dentist-theme");
+    return saved ? saved === "dark" : true; // Default to dark for dentist if no preference
+  });
+
+  useEffect(() => {
+    if (isDentistLayout) {
+      if (isDarkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDentistLayout, isDarkMode]);
+
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      localStorage.setItem("dentist-theme", next ? "dark" : "light");
+      return next;
+    });
+  };
+
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
@@ -32,7 +58,7 @@ export default function Layout() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#f5f7ff]">
+    <div className="flex min-h-screen bg-background transition-colors duration-300">
       <SideBar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -49,6 +75,8 @@ export default function Layout() {
             collapsed={collapsed}
             isMobile={isMobile}
             setCollapsed={setCollapsed}
+            isDarkMode={isDarkMode}
+            onToggleTheme={toggleTheme}
           />
         ) : null}
         <main className="flex-1">

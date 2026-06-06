@@ -29,13 +29,13 @@ interface CalendarDay {
 const STATUS_COLORS: Record<AppointmentStatus, string> = {
   pending: "bg-amber-500",
   confirmed: "bg-emerald-500",
-  completed: "bg-blue-400",
+  completed: "bg-indigo-400",
 };
 
 const STATUS_BADGE: Record<AppointmentStatus, string> = {
-  pending: "bg-amber-50 text-amber-700",
-  confirmed: "bg-emerald-50 text-emerald-700",
-  completed: "bg-blue-50 text-blue-700",
+  pending: "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400",
+  confirmed: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400",
+  completed: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-400",
 };
 
 function toIso(date: Date): string {
@@ -182,31 +182,31 @@ export default function Calendar() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pt-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
-      <section className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
+      <section className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/40" />
           <input
             type="search"
             placeholder="Search patient or condition..."
-            className="h-10 w-full rounded-xl bg-white pl-10 pr-4 text-sm text-neutral-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            className="h-11 w-full rounded-2xl border border-border bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/40 outline-none transition focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5 dark:focus:border-indigo-500"
           />
         </div>
 
-        <div className="flex shrink-0 items-center self-start rounded-2xl bg-white p-1 sm:self-auto">
+        <div className="flex shrink-0 items-center self-start rounded-2xl border border-border bg-card p-1 sm:self-auto shadow-sm">
           <button
             onClick={() =>
               setVisibleMonth(
                 (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
               )
             }
-            className="grid size-8 cursor-pointer place-items-center rounded-xl text-slate-500 transition hover:bg-[#432DD7]"
+            className="grid size-9 cursor-pointer place-items-center rounded-xl bg-muted text-muted-foreground transition hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500"
             aria-label="Previous month"
           >
-            <ChevronLeft className="size-4 hover:text-white" />
+            <ChevronLeft className="size-4" />
           </button>
 
-          <p className="min-w-28 px-4 text-center text-sm font-semibold text-neutral-900">
+          <p className="min-w-32 px-4 text-center text-sm font-bold text-foreground">
             {formatMonthYear(visibleMonth)}
           </p>
 
@@ -216,18 +216,18 @@ export default function Calendar() {
                 (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
               )
             }
-            className="grid size-8 cursor-pointer place-items-center rounded-xl text-slate-500 transition hover:bg-[#432DD7]"
+            className="grid size-9 cursor-pointer place-items-center rounded-xl bg-muted text-muted-foreground transition hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500"
             aria-label="Next month"
           >
-            <ChevronRight className="size-4 hover:text-white" />
+            <ChevronRight className="size-4" />
           </button>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-black/5 bg-white">
-        <div className="grid grid-cols-7 border-b border-black/5">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="grid grid-cols-7 border-b border-border bg-muted/30">
           {WEEKDAY_LABELS.map((day) => (
-            <div key={day} className="py-2 text-center text-xs font-semibold text-slate-500">
+            <div key={day} className="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
               {day}
             </div>
           ))}
@@ -244,75 +244,79 @@ export default function Calendar() {
                 key={day.iso}
                 type="button"
                 onClick={() => setSelectedIso(day.iso)}
-                className={`h-14 cursor-pointer border-r border-b border-black/5 p-1 text-center transition last:border-r-0 hover:bg-slate-50 lg:h-16 lg:p-1.5 ${
-                  isSelected ? "bg-violet-100" : "bg-white"
+                className={`group relative h-16 cursor-pointer border-r border-b border-border p-1 text-center transition last:border-r-0 hover:bg-muted/50 lg:h-20 lg:p-2 ${
+                  isSelected ? "bg-indigo-600/5 dark:bg-indigo-500/5" : ""
                 }`}
               >
                 <div
-                  className={`mx-auto grid size-6 place-items-center rounded-full text-[11px] font-semibold lg:size-7 lg:text-xs ${
+                  className={`mx-auto grid size-7 place-items-center rounded-full text-[11px] font-bold transition lg:size-8 lg:text-xs ${
                     isSelected
-                      ? "bg-indigo-700 text-white"
+                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 dark:bg-indigo-500"
                       : day.inCurrentMonth
-                        ? "text-neutral-900"
-                        : "text-slate-400"
+                        ? "text-foreground"
+                        : "text-muted-foreground/30"
                   }`}
                 >
                   {day.day}
                 </div>
 
-                <div className="mt-1 flex h-1.5 items-center justify-center gap-1">
+                <div className="mt-1.5 flex h-1.5 items-center justify-center gap-1">
                   {statusDots.map((status) => (
                     <span
                       key={status}
-                      className={`size-1.5 rounded-full ${STATUS_COLORS[status]}`}
+                      className={`size-1 rounded-full shadow-sm ${STATUS_COLORS[status]}`}
                     />
                   ))}
                 </div>
+                
+                {isSelected && (
+                  <div className="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600 dark:bg-indigo-500" />
+                )}
               </button>
             );
           })}
         </div>
       </section>
 
-      <div className="flex items-center gap-4 text-xs text-slate-500">
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-amber-500" /> Pending
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-emerald-500" /> Confirmed
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-blue-400" /> Completed
+        <div className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-indigo-500" /> Completed
         </div>
       </div>
 
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-neutral-900">
+      <section className="space-y-4 pt-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <h2 className="text-xl font-black text-foreground">
             {formatLongDate(selectedDate)}
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
             {selectedAppointments.length} appointment
             {selectedAppointments.length === 1 ? "" : "s"}
           </p>
         </div>
 
         {selectedAppointments.length > 0 ? (
-          <div className="grid gap-3 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             {selectedAppointments.map((appointment) => (
               <button
                 key={appointment.id}
                 type="button"
                 onClick={() => setActiveAppointmentId(appointment.id)}
-                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-black/10 bg-white p-4 text-left transition hover:border-indigo-200 hover:shadow-sm"
+                className="group flex w-full cursor-pointer items-center gap-4 rounded-2xl border border-border bg-card p-4 text-left transition hover:border-indigo-600/20 hover:shadow-lg hover:shadow-indigo-600/5 dark:hover:shadow-indigo-500/5"
               >
                 <div
-                  className={`grid size-10 place-items-center rounded-full text-sm font-bold text-white ${
+                  className={`grid size-12 place-items-center rounded-2xl text-base font-black text-white shadow-lg transition-transform group-hover:scale-105 ${
                     appointment.status === "confirmed"
-                      ? "bg-emerald-500"
+                      ? "bg-emerald-500 shadow-emerald-500/20"
                       : appointment.status === "pending"
-                        ? "bg-amber-500"
-                        : "bg-blue-400"
+                        ? "bg-amber-500 shadow-amber-500/20"
+                        : "bg-indigo-500 shadow-indigo-500/20"
                   }`}
                 >
                   {appointment.initials}
@@ -320,31 +324,31 @@ export default function Calendar() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="truncate text-base font-semibold text-neutral-900 lg:text-xl">{appointment.patientName}</p>
+                    <p className="truncate text-base font-bold text-foreground">{appointment.patientName}</p>
                     <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ${STATUS_BADGE[appointment.status]}`}
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${STATUS_BADGE[appointment.status]}`}
                     >
                       {appointment.status}
                     </span>
                   </div>
 
-                  <p className="truncate text-sm font-medium text-teal-600">{appointment.service}</p>
+                  <p className="truncate text-xs font-bold text-indigo-600 dark:text-indigo-400">{appointment.service}</p>
 
-                  <div className="mt-0.5 flex items-center gap-1 text-xs font-medium text-slate-500">
+                  <div className="mt-1 flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/60">
                     <Clock3 className="size-3.5" />
                     {appointment.time}
                   </div>
                 </div>
 
-                <ChevronRight className="size-4 shrink-0 text-slate-500" />
+                <ChevronRight className="size-5 shrink-0 text-muted-foreground/40 transition-transform group-hover:translate-x-1" />
               </button>
             ))}
           </div>
         ) : (
-          <div className="grid min-h-32 place-items-center rounded-2xl border border-black/10 bg-white text-center text-slate-500">
-            <div className="space-y-2">
-              <CalendarX2 className="mx-auto size-8 text-slate-300" />
-              <p className="text-xl">No appointments on this day</p>
+          <div className="grid min-h-48 place-items-center rounded-2xl border border-border bg-card/50 text-center text-muted-foreground/40">
+            <div className="space-y-3">
+              <CalendarX2 className="mx-auto size-12 opacity-20" />
+              <p className="text-lg font-bold uppercase tracking-widest">No appointments</p>
             </div>
           </div>
         )}

@@ -17,40 +17,40 @@ export default function KpiCard({
 }: KpiCardProps) {
   return (
     <article
-      className={`rounded-2xl border p-5 transition-shadow hover:shadow-sm ${
+      className={`rounded-2xl border p-5 transition-all hover:shadow-lg ${
         featured
-          ? "border-indigo-700 bg-indigo-700 text-white shadow-lg shadow-indigo-200"
-          : "border-black/5 bg-white text-slate-900"
+          ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 dark:bg-indigo-500 dark:border-indigo-500"
+          : "border-border bg-card text-foreground"
       }`}
     >
       <div className="mb-4 flex items-center justify-between">
         <p
-          className={`text-sm font-medium leading-4 ${
-            featured ? "text-white/80" : "text-slate-500"
+          className={`text-[11px] font-bold uppercase tracking-wider ${
+            featured ? "text-white/80" : "text-muted-foreground/60"
           }`}
         >
           {title}
         </p>
 
         <span
-          className={`flex h-10 w-10 items-center justify-center rounded-2xl ${
-            featured ? "bg-white/20 text-white" : "bg-indigo-50 text-indigo-700"
+          className={`flex size-10 items-center justify-center rounded-xl transition-transform hover:scale-110 ${
+            featured ? "bg-white/20 text-white" : "bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400"
           }`}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className="size-5" />
         </span>
       </div>
 
       <p
-        className={`text-4xl font-extrabold tracking-tight ${
-          featured ? "text-white" : "text-slate-900"
+        className={`text-3xl font-black tracking-tight ${
+          featured ? "text-white" : "text-foreground"
         }`}
       >
         {value}
       </p>
 
       <div className="mt-3 flex items-center gap-1.5">
-        <p className={`text-xs font-medium ${featured ? "text-white/80" : "text-slate-500"}`}>
+        <p className={`text-xs font-bold ${featured ? "text-white/80" : "text-indigo-600 dark:text-indigo-400"}`}>
           {subtitle}
         </p>
       </div>

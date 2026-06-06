@@ -24,13 +24,17 @@ export default function AppointmentsChart({
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-black/10 bg-white p-5">
-      <h2 className="text-base font-bold text-slate-900">{title}</h2>
-      <p className="text-sm text-slate-500">{subtitle}</p>
+    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-base font-bold text-foreground">{title}</h2>
+          <p className="text-xs font-medium text-muted-foreground">{subtitle}</p>
+        </div>
+      </div>
 
-      <div className="mt-6">
-        <div className="grid grid-cols-[30px_1fr] gap-2">
-          <div className="flex h-44 flex-col justify-between text-right text-xs text-slate-400">
+      <div className="mt-8">
+        <div className="grid grid-cols-[30px_1fr] gap-4">
+          <div className="flex h-44 flex-col justify-between py-1 text-right text-[10px] font-bold text-muted-foreground/40">
             {ticks.map((tick, index) => (
               <span key={`${tick}-${index}`}>{tick}</span>
             ))}
@@ -39,11 +43,11 @@ export default function AppointmentsChart({
           <div className="relative h-44">
             <div className="absolute inset-0 flex flex-col justify-between">
               {ticks.map((_, index) => (
-                <div key={index} className="border-t border-dashed border-black/5" />
+                <div key={index} className="border-t border-dashed border-border" />
               ))}
             </div>
 
-            <div className="relative z-10 flex h-full items-end gap-1 px-1 sm:gap-2 sm:px-3">
+            <div className="relative z-10 flex h-full items-end gap-1.5 px-1 sm:gap-3 sm:px-3">
               {items.map((item, index) => {
                 const appHeight =
                   item.appointments > 0
@@ -55,18 +59,18 @@ export default function AppointmentsChart({
                     : "6%";
 
                 return (
-                  <div key={item.label} className="flex flex-1 flex-col items-center gap-1">
-                    <div className="flex h-36 w-full max-w-12 items-end justify-center gap-0.5 sm:gap-1">
+                  <div key={item.label} className="flex flex-1 flex-col items-center gap-2">
+                    <div className="flex h-32 w-full max-w-10 items-end justify-center gap-0.5 sm:gap-1">
                       <div
                         style={{ height: appHeight }}
-                        className="w-full max-w-5 rounded-t-sm bg-indigo-700"
+                        className="w-full max-w-4 rounded-t-sm bg-indigo-600 dark:bg-indigo-500 shadow-lg shadow-indigo-600/20"
                       />
                       <div
                         style={{ height: treatedHeight }}
-                        className="w-full max-w-5 rounded-t-sm bg-emerald-500"
+                        className="w-full max-w-4 rounded-t-sm bg-emerald-500 shadow-lg shadow-emerald-500/20"
                       />
                     </div>
-                    <div className="text-[10px] font-medium text-slate-500">
+                    <div className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground/60">
                       {shouldShowLabel(index) ? item.label : ""}
                     </div>
                   </div>
@@ -77,12 +81,12 @@ export default function AppointmentsChart({
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-6 text-xs font-medium text-slate-500">
-        <span className="flex items-center gap-1.5">
-          <span className="h-3 w-3 rounded-full bg-indigo-700" /> Appointments
+      <div className="mt-8 flex items-center justify-center gap-8 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+        <span className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 dark:bg-indigo-500" /> Appointments
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-3 w-3 rounded-full bg-emerald-500" /> Treated
+        <span className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Treated
         </span>
       </div>
     </section>

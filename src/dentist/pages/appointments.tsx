@@ -67,8 +67,7 @@ export default function Appointments() {
     return {
       all: appointments.length,
       pending: appointments.filter((item) => item.status === "pending").length,
-      confirmed: appointments.filter((item) => item.status === "confirmed")
-        .length,
+      confirmed: appointments.filter((item) => item.status === "confirmed").length,
       completed: 0,
       rejected: 0,
     };
@@ -85,13 +84,9 @@ export default function Appointments() {
       const query = searchTerm.toLowerCase();
       result = result.filter(
         (item) =>
-          item.id.toLowerCase().includes(query) ||
           item.name.toLowerCase().includes(query) ||
           item.service.toLowerCase().includes(query) ||
-          item.note.toLowerCase().includes(query) ||
-          item.status.toLowerCase().includes(query) ||
-          item.date.toLowerCase().includes(query) ||
-          item.time.toLowerCase().includes(query),
+          item.note.toLowerCase().includes(query),
       );
     }
 
@@ -103,42 +98,23 @@ export default function Appointments() {
     }
 
     if (filterMode === "month") {
-      const month = parseAppointmentDate(
-        appointments[0]?.date ?? "May 8, 2026",
-      ).getMonth();
-      result = result.filter(
-        (item) => parseAppointmentDate(item.date).getMonth() === month,
-      );
+      const month = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getMonth();
+      result = result.filter((item) => parseAppointmentDate(item.date).getMonth() === month);
     }
 
     if (filterMode === "year") {
-      const year = parseAppointmentDate(
-        appointments[0]?.date ?? "May 8, 2026",
-      ).getFullYear();
-      result = result.filter(
-        (item) => parseAppointmentDate(item.date).getFullYear() === year,
-      );
+      const year = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getFullYear();
+      result = result.filter((item) => parseAppointmentDate(item.date).getFullYear() === year);
     }
 
     if (sortMode === "name") {
       result.sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      result.sort(
-        (a, b) =>
-          parseAppointmentDate(a.date).getTime() -
-          parseAppointmentDate(b.date).getTime(),
-      );
+      result.sort((a, b) => parseAppointmentDate(a.date).getTime() - parseAppointmentDate(b.date).getTime());
     }
 
     return result;
-  }, [
-    appointments,
-    filterMode,
-    searchTerm,
-    selectedDateChip,
-    sortMode,
-    statusFilter,
-  ]);
+  }, [appointments, filterMode, searchTerm, selectedDateChip, sortMode, statusFilter]);
 
   const setStatus = (id: string, status: AppointmentItem["status"]) => {
     const appointment = appointments.find((item) => item.id === id);
@@ -167,9 +143,7 @@ export default function Appointments() {
 
     setAppointments((prev) =>
       prev.map((item) =>
-        item.id === activeId
-          ? { ...item, date: formattedDate, time: newTime, status: "pending" }
-          : item,
+        item.id === activeId ? { ...item, date: formattedDate, time: newTime, status: "pending" } : item,
       ),
     );
 
@@ -192,10 +166,10 @@ export default function Appointments() {
   }).format(new Date());
 
   return (
-    <main className="mx-auto w-full max-w-[1134px] space-y-4 px-4 pt-4 pb-24 lg:mx-0 lg:max-w-none lg:px-6 lg:pb-10">
+    <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
       <section className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{currentDateLabel}</p>
-        <button className="grid size-9 cursor-pointer place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 active:scale-95">
+        <p className="text-sm font-medium text-muted-foreground">{currentDateLabel}</p>
+        <button className="grid size-9 cursor-pointer place-items-center rounded-2xl bg-muted text-muted-foreground transition hover:bg-muted/80 active:scale-95">
           <SlidersHorizontal className="size-4" />
         </button>
       </section>
@@ -207,10 +181,8 @@ export default function Appointments() {
       </section>
 
       <section className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-tight text-slate-500">
-          Filter by Date
-        </p>
-        <div className="flex rounded-xl bg-slate-100 p-0.5 text-xs font-semibold">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60">Filter by Date</p>
+        <div className="flex rounded-xl bg-muted p-0.5 text-[11px] font-bold">
           {(["day", "month", "year"] as const).map((mode) => (
             <button
               key={mode}
@@ -218,8 +190,8 @@ export default function Appointments() {
                 setFilterMode(mode);
                 if (mode !== "day") setSelectedDateChip("all");
               }}
-              className={`cursor-pointer rounded-[10px] px-2.5 py-1 capitalize transition ${
-                filterMode === mode ? "bg-white text-neutral-900 shadow" : "text-slate-500 hover:text-slate-700"
+              className={`h-7 cursor-pointer rounded-[10px] px-3 capitalize transition ${
+                filterMode === mode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {mode}
@@ -252,23 +224,23 @@ export default function Appointments() {
 
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/40" />
           <input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search patient name, condition..."
-            className="h-11 w-full rounded-2xl border border-indigo-700/10 bg-white pl-10 pr-3 text-sm text-neutral-900 outline-none transition focus:border-indigo-700/40 focus:ring-4 focus:ring-indigo-700/5"
+            className="h-11 w-full rounded-2xl border border-indigo-600/10 bg-card pl-10 pr-3 text-sm text-foreground outline-none transition focus:border-indigo-600/40 focus:ring-4 focus:ring-indigo-600/5 dark:border-indigo-500/10 dark:focus:border-indigo-500/40"
           />
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSortMode((prev) => (prev === "date" ? "name" : "date"))}
-            className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl bg-violet-100 px-4 text-xs font-bold text-indigo-700 transition hover:bg-violet-200 active:scale-95"
+            className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl bg-indigo-600/10 px-4 text-xs font-bold text-indigo-600 transition hover:bg-indigo-600/20 active:scale-95 dark:bg-indigo-500/20 dark:text-indigo-400"
           >
             <Funnel className="size-3.5" />
             Sort: {sortMode === "date" ? "Date" : "Name"}
           </button>
-          <button className="grid size-11 cursor-pointer place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 active:scale-95">
+          <button className="grid size-11 cursor-pointer place-items-center rounded-2xl bg-muted text-muted-foreground transition hover:bg-muted/80 active:scale-95">
             <SlidersHorizontal className="size-4" />
           </button>
         </div>
@@ -281,14 +253,14 @@ export default function Appointments() {
             onClick={() => setStatusFilter(tab.key as StatusFilter)}
             className={`flex h-9 cursor-pointer items-center gap-2 rounded-full px-4 text-xs font-bold transition active:scale-95 ${
               statusFilter === tab.key
-                ? "bg-indigo-700 text-white shadow-lg shadow-indigo-700/20"
-                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 dark:bg-indigo-500"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
             {tab.label}
             <span
               className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                statusFilter === tab.key ? "bg-white/20 text-white" : "bg-black/5 text-slate-400"
+                statusFilter === tab.key ? "bg-white/20 text-white" : "bg-black/5 text-muted-foreground/60 dark:bg-white/5"
               }`}
             >
               {tab.count}
@@ -317,9 +289,7 @@ export default function Appointments() {
       </section>
 
       <AppointmentDetailModal
-        appointment={
-          showRescheduleModal || showRejectModal ? null : activeAppointment
-        }
+        appointment={showRescheduleModal || showRejectModal ? null : activeAppointment}
         selectedDate={selectedDate}
         onClose={() => setActiveId(null)}
         onConfirm={() => {

@@ -42,15 +42,15 @@ export default function RevenueCard({
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-black/10 bg-white p-5">
-      <h3 className="text-base font-bold text-slate-900">Estimated Revenue</h3>
-      <p className="text-sm text-slate-500">
-        {periodLabel} <span className="font-bold text-slate-900">{revenueLabel}</span>
+    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <h3 className="text-base font-bold text-foreground">Estimated Revenue</h3>
+      <p className="text-xs font-medium text-muted-foreground">
+        {periodLabel} <span className="font-bold text-indigo-600 dark:text-indigo-400">{revenueLabel}</span>
       </p>
 
-      <div className="mt-6">
-        <div className="grid grid-cols-[42px_1fr] gap-2">
-        <div className="flex h-40 flex-col justify-between text-right text-xs text-slate-400">
+      <div className="mt-8">
+        <div className="grid grid-cols-[42px_1fr] gap-4">
+        <div className="flex h-40 flex-col justify-between py-1 text-right text-[10px] font-bold text-muted-foreground/40">
           {yTicks.map((tick) => (
             <span key={tick}>{tick}</span>
           ))}
@@ -59,30 +59,37 @@ export default function RevenueCard({
         <div className="relative">
           <div className="absolute inset-0 flex h-40 flex-col justify-between">
             {yTicks.map((tick) => (
-              <div key={tick} className="border-t border-dashed border-black/5" />
+              <div key={tick} className="border-t border-dashed border-border" />
             ))}
           </div>
 
-          <svg viewBox={`0 0 ${w} ${h}`} className="relative z-10 h-40 w-full">
+          <svg viewBox={`0 0 ${w} ${h}`} className="relative z-10 h-40 w-full overflow-visible">
             {isSinglePoint ? (
-              <circle cx={w / 2} cy={h * 0.38} r={4} fill="white" stroke="#14b8a6" strokeWidth={2} />
+              <circle cx={w / 2} cy={h * 0.38} r={5} fill="white" stroke="#6366f1" strokeWidth={3} />
             ) : (
               <>
-                <path d={areaPath} fill="#14b8a6" opacity="0.1" />
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#6366f1" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <path d={areaPath} fill="url(#revenueGradient)" />
                 <path
                   d={linePath}
                   fill="none"
-                  stroke="#14b8a6"
-                  strokeWidth="2.5"
+                  stroke="#6366f1"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className="drop-shadow-[0_4px_6px_rgba(99,102,241,0.3)]"
                 />
               </>
             )}
           </svg>
 
           <div
-            className="mt-3 grid text-center text-xs font-medium text-slate-500"
+            className="mt-4 grid text-center text-[10px] font-bold uppercase tracking-tight text-muted-foreground/60"
             style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
           >
             {labels.map((label, index) => (

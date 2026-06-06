@@ -31,7 +31,7 @@ function FieldLabel({
   icon?: LucideIcon;
 }) {
   return (
-    <p className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+    <p className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
       {Icon ? <Icon className="size-3.5" /> : null}
       <span>{label}</span>
       <span className="text-rose-500">*</span>
@@ -51,7 +51,7 @@ function ReadonlyField({
   return (
     <div className="space-y-1">
       <FieldLabel label={label} icon={icon} />
-      <div className="h-11 rounded-2xl bg-slate-50 px-3.5 py-3 text-sm text-neutral-900/60 ring-1 ring-black/5">
+      <div className="h-11 rounded-2xl bg-muted px-3.5 py-3 text-sm text-foreground/60 ring-1 ring-border">
         {value}
       </div>
     </div>
@@ -78,7 +78,7 @@ function EditableField({
       <FieldLabel label={label} icon={icon} />
       <div className="relative">
         {prefix ? (
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
             {prefix}
           </span>
         ) : null}
@@ -86,7 +86,7 @@ function EditableField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onPaste={onPaste}
-          className={`h-11 w-full rounded-2xl border border-indigo-700/20 bg-white px-3.5 py-3 text-sm text-neutral-900 outline-none transition focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/20 ${
+          className={`h-11 w-full rounded-2xl border border-indigo-700/20 bg-card px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/20 ${
             prefix ? "pl-8" : ""
           }`}
         />
@@ -210,12 +210,12 @@ export default function ServiceConfiguration() {
   return (
     <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-muted-foreground">
           Click Edit to update your clinic profile.
         </p>
         <button
           onClick={handleSave}
-          className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-100 px-5 text-xs font-bold text-indigo-700 transition active:scale-95"
+          className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl bg-indigo-600/10 px-5 text-xs font-bold text-indigo-600 transition active:scale-95 dark:bg-indigo-500/20 dark:text-indigo-400"
         >
           {isEditing ? <Save className="size-4" /> : <Pencil className="size-4" />}
           {isEditing ? "Save Configuration" : "Edit Profile"}
@@ -225,7 +225,7 @@ export default function ServiceConfiguration() {
       <section className="grid gap-6 lg:grid-cols-3">
         {/* Left Column: Clinic Identity & Profile */}
         <div className="lg:col-span-2">
-          <article className="h-full rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <article className="h-full rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="flex flex-col gap-8 md:flex-row">
               {/* Profile Image Section */}
               <div className="flex flex-col items-center gap-4">
@@ -234,10 +234,10 @@ export default function ServiceConfiguration() {
                     <img
                       src={profileImage}
                       alt="Clinic profile"
-                      className="size-32 rounded-3xl border border-black/5 object-cover shadow-inner"
+                      className="size-32 rounded-3xl border border-border object-cover shadow-inner"
                     />
                   ) : (
-                    <div className="grid size-32 place-items-center rounded-3xl border border-black/5 bg-slate-50 text-slate-300">
+                    <div className="grid size-32 place-items-center rounded-3xl border border-border bg-muted text-slate-300">
                       <ImageIcon className="size-12" />
                     </div>
                   )}
@@ -258,18 +258,18 @@ export default function ServiceConfiguration() {
                     onChange={handleProfileUpload}
                     className="hidden"
                   />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Clinic Logo
                   </p>
-                  <p className="mt-1 text-[10px] text-slate-500">JPG, PNG up to 2MB</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground/60">JPG, PNG up to 2MB</p>
                 </div>
               </div>
 
               {/* Identity Fields */}
               <div className="flex-1 space-y-6">
                 <div>
-                  <h2 className="text-base font-bold text-neutral-900">Clinic Identity</h2>
-                  <p className="text-xs text-slate-400">Basic information about your practice.</p>
+                  <h2 className="text-base font-bold text-foreground">Clinic Identity</h2>
+                  <p className="text-xs text-muted-foreground">Basic information about your practice.</p>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
@@ -370,8 +370,8 @@ export default function ServiceConfiguration() {
                 </div>
 
                 {/* Available Days */}
-                <div className="border-t border-black/5 pt-4">
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="border-t border-border pt-4">
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Available Days
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -382,8 +382,8 @@ export default function ServiceConfiguration() {
                         onClick={() => toggleDay(item.day)}
                         className={`h-8 cursor-pointer rounded-xl border px-4 text-[11px] font-bold transition active:scale-95 disabled:cursor-default ${
                           item.enabled
-                            ? "border-indigo-700 bg-indigo-700 text-white shadow-lg shadow-indigo-700/20"
-                            : "border-transparent bg-slate-50 text-slate-400 ring-1 ring-black/5"
+                            ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 dark:bg-indigo-500"
+                            : "border-transparent bg-muted text-muted-foreground ring-1 ring-border"
                         }`}
                       >
                         {item.day}
@@ -398,25 +398,25 @@ export default function ServiceConfiguration() {
 
         {/* Right Column: Location Preview */}
         <div>
-          <article className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-            <div className="flex h-14 items-center justify-between border-b border-black/5 px-4 py-3">
+          <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="flex h-14 items-center justify-between border-b border-border px-4 py-3">
               <div className="flex items-center gap-2.5">
-                <div className="grid size-8 place-items-center rounded-xl bg-violet-100 text-indigo-700">
+                <div className="grid size-8 place-items-center rounded-xl bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400">
                   <MapPin className="size-4" />
                 </div>
-                <span className="text-sm font-bold text-neutral-900">Clinic Location</span>
+                <span className="text-sm font-bold text-foreground">Clinic Location</span>
               </div>
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${identity.latitude},${identity.longitude}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-8 items-center gap-1.5 rounded-full bg-slate-50 px-3 text-[10px] font-bold text-slate-500 ring-1 ring-black/5 transition hover:bg-slate-100"
+                className="inline-flex h-8 items-center gap-1.5 rounded-full bg-muted px-3 text-[10px] font-bold text-muted-foreground ring-1 ring-border transition hover:bg-muted/80"
               >
                 <Compass className="size-3.5" />
                 Open Maps
               </a>
             </div>
-            <div className="relative h-[477px] w-full bg-slate-50">
+            <div className="relative h-[436px] w-full bg-muted">
               <iframe
                 title="Clinic Location Map"
                 width="100%"
@@ -425,6 +425,7 @@ export default function ServiceConfiguration() {
                 style={{ border: 0 }}
                 src={`https://www.google.com/maps?q=${identity.latitude},${identity.longitude}&z=15&output=embed`}
                 allowFullScreen
+                className="dark:invert dark:grayscale dark:brightness-90"
               />
             </div>
           </article>
@@ -432,18 +433,18 @@ export default function ServiceConfiguration() {
       </section>
 
       {/* Services Section */}
-      <article className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+      <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-neutral-900">Services Offered</h2>
-            <p className="text-xs text-slate-400">
+            <h2 className="text-base font-bold text-foreground">Services Offered</h2>
+            <p className="text-xs text-muted-foreground">
               Manage the treatments and services provided by your clinic.
             </p>
           </div>
           <button
             disabled={!isEditing}
             onClick={openAddModal}
-            className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl bg-violet-100 px-5 text-xs font-bold text-indigo-700 transition active:scale-95 disabled:cursor-default disabled:opacity-50"
+            className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl bg-indigo-600/10 px-5 text-xs font-bold text-indigo-600 transition active:scale-95 disabled:cursor-default disabled:opacity-50 dark:bg-indigo-500/20 dark:text-indigo-400"
           >
             <Plus className="size-4" />
             Add New Service
@@ -456,37 +457,37 @@ export default function ServiceConfiguration() {
               key={service.name}
               className={`group flex flex-col rounded-2xl border p-4 transition ${
                 service.enabled
-                  ? "border-indigo-700/20 bg-indigo-700/5 shadow-sm shadow-indigo-700/5"
-                  : "border-black/5 bg-slate-50/50"
+                  ? "border-indigo-700/20 bg-indigo-700/5 shadow-sm shadow-indigo-700/5 dark:bg-indigo-500/5"
+                  : "border-border bg-muted/50"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1 space-y-1">
                   <p
                     className={`truncate text-sm font-bold ${
-                      service.enabled ? "text-indigo-700" : "text-neutral-900"
+                      service.enabled ? "text-indigo-600 dark:text-indigo-400" : "text-foreground"
                     }`}
                   >
                     {service.name}
                   </p>
                   {service.description && (
-                    <p className="line-clamp-2 leading-relaxed text-[11px] font-medium text-slate-400">
+                    <p className="line-clamp-2 leading-relaxed text-[11px] font-medium text-muted-foreground">
                       {service.description}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
                   {isEditing && (
                     <>
                       <button
                         onClick={() => openEditModal(index)}
-                        className="grid size-8 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-700"
+                        className="grid size-8 cursor-pointer place-items-center rounded-xl bg-muted text-muted-foreground transition hover:bg-indigo-600/10 hover:text-indigo-600 dark:hover:text-indigo-400"
                       >
                         <Pencil className="size-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteService(index)}
-                        className="grid size-8 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                        className="grid size-8 cursor-pointer place-items-center rounded-xl bg-muted text-muted-foreground transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"
                       >
                         <Trash2 className="size-3.5" />
                       </button>
@@ -497,8 +498,8 @@ export default function ServiceConfiguration() {
                     onClick={() => toggleService(service.name)}
                     className={`grid size-8 shrink-0 cursor-pointer place-items-center rounded-xl transition disabled:cursor-default ${
                       service.enabled
-                        ? "bg-indigo-700 text-white shadow-lg shadow-indigo-700/30"
-                        : "bg-slate-100 text-slate-400"
+                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 dark:bg-indigo-500"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {service.enabled ? (
@@ -510,15 +511,15 @@ export default function ServiceConfiguration() {
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center gap-4 border-t border-black/5 pt-3">
+              <div className="mt-4 flex items-center gap-4 border-t border-border pt-3">
                 {service.price !== undefined && (
-                  <div className="flex items-center gap-1.5 text-xs font-black text-neutral-900">
-                    <span className="text-[10px] text-slate-400">$</span>
+                  <div className="flex items-center gap-1.5 text-xs font-black text-foreground">
+                    <span className="text-[10px] text-muted-foreground">$</span>
                     <span>{service.price}</span>
                   </div>
                 )}
                 {service.duration !== undefined && (
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground">
                     <Clock3 className="size-3.5" />
                     <span>{service.duration} min</span>
                   </div>

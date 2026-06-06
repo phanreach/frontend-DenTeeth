@@ -4,6 +4,8 @@ import {
   KeyRound,
   LogOut,
   Menu,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,6 +21,8 @@ interface DentistHeaderProps {
   collapsed: boolean;
   isMobile: boolean;
   setCollapsed: (value: boolean) => void;
+  isDarkMode: boolean;
+  onToggleTheme: () => void;
 }
 
 function formatSegment(segment: string) {
@@ -35,6 +39,8 @@ export default function DentistHeader({
   collapsed,
   isMobile,
   setCollapsed,
+  isDarkMode,
+  onToggleTheme,
 }: DentistHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,7 +88,7 @@ export default function DentistHeader({
 
   return (
     <>
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur dark:bg-background/95">
       <div
         ref={containerRef}
         className="flex h-16 items-center justify-between gap-3 px-4 lg:px-6"
@@ -92,7 +98,7 @@ export default function DentistHeader({
             <button
               type="button"
               onClick={() => setCollapsed(!collapsed)}
-              className="grid size-9 cursor-pointer place-items-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+              className="grid size-9 cursor-pointer place-items-center rounded-xl bg-muted text-muted-foreground transition hover:bg-muted/80"
               aria-label="Toggle sidebar"
             >
               <Menu className="size-4" />
@@ -102,22 +108,22 @@ export default function DentistHeader({
           <div className="min-w-0">
             <nav
               aria-label="Breadcrumb"
-              className="flex min-w-0 items-center gap-2 text-lg font-medium leading-7 text-slate-400 sm:text-xl"
+              className="flex min-w-0 items-center gap-2 text-lg font-medium leading-7 text-muted-foreground sm:text-xl"
             >
               {breadcrumbs.map((item) => (
                 <span key={item.path} className="inline-flex min-w-0 items-center gap-2">
                   {breadcrumbs.length > 1 && item !== breadcrumbs[0] ? (
-                    <span className="shrink-0 text-slate-300">/</span>
+                    <span className="shrink-0 text-slate-300 dark:text-slate-700">/</span>
                   ) : null}
                   {item.current ? (
-                    <span className="truncate font-bold text-slate-950">
+                    <span className="truncate font-bold text-foreground">
                       {item.label}
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={() => navigate(item.path)}
-                      className="cursor-pointer truncate transition hover:text-[#432DD7]"
+                      className="cursor-pointer truncate transition hover:text-indigo-600 dark:hover:text-indigo-400"
                     >
                       {item.label}
                     </button>
@@ -129,6 +135,16 @@ export default function DentistHeader({
         </div>
 
         <div className="relative flex shrink-0 items-center gap-2">
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            className="grid size-10 cursor-pointer place-items-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-indigo-600/30 hover:text-indigo-600 dark:hover:text-indigo-400"
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+
           <button
             type="button"
             onClick={() =>
@@ -136,7 +152,7 @@ export default function DentistHeader({
                 value === "notifications" ? null : "notifications",
               )
             }
-            className="relative grid size-10 cursor-pointer place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-[#432DD7]/30 hover:text-[#432DD7]"
+            className="relative grid size-10 cursor-pointer place-items-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-indigo-600/30 hover:text-indigo-600 dark:hover:text-indigo-400"
             aria-label="Open notifications"
             aria-expanded={openMenu === "notifications"}
           >
@@ -149,39 +165,39 @@ export default function DentistHeader({
             onClick={() =>
               setOpenMenu((value) => (value === "profile" ? null : "profile"))
             }
-            className="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 text-sm font-medium text-slate-800 transition hover:border-[#432DD7]/30"
+            className="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-border bg-card px-2 text-sm font-medium text-foreground transition hover:border-indigo-600/30"
             aria-label="Open profile menu"
             aria-expanded={openMenu === "profile"}
           >
-            <span className="grid size-7 place-items-center rounded-full bg-[#432DD7] text-xs font-bold text-white">
+            <span className="grid size-7 place-items-center rounded-full bg-indigo-600 text-xs font-bold text-white">
               {firstLetter}
             </span>
             <span className="hidden max-w-28 truncate sm:inline">{username}</span>
-            <ChevronDown className="size-3.5 text-slate-500" />
+            <ChevronDown className="size-3.5 text-muted-foreground" />
           </button>
 
           {openMenu === "notifications" ? (
-            <div className="absolute right-0 top-12 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
-              <div className="border-b border-slate-100 px-4 py-3">
-                <p className="text-sm font-semibold text-slate-950">Notifications</p>
-                <p className="text-xs text-slate-500">Recent dentist updates</p>
+            <div className="absolute right-0 top-12 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+              <div className="border-b border-border px-4 py-3">
+                <p className="text-sm font-semibold text-foreground">Notifications</p>
+                <p className="text-xs text-muted-foreground">Recent dentist updates</p>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {DENTIST_HEADER_NOTIFICATIONS.map((notification) => (
                   <button
                     key={notification.id}
                     type="button"
-                    className="block w-full cursor-pointer border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-slate-50"
+                    className="block w-full cursor-pointer border-b border-border px-4 py-3 text-left transition last:border-b-0 hover:bg-muted"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-foreground">
                         {notification.title}
                       </p>
-                      <span className="shrink-0 text-[11px] text-slate-400">
+                      <span className="shrink-0 text-[11px] text-muted-foreground">
                         {notification.time}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
                       {notification.body}
                     </p>
                   </button>
@@ -191,12 +207,12 @@ export default function DentistHeader({
           ) : null}
 
           {openMenu === "profile" ? (
-            <div className="absolute right-0 top-12 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
-              <div className="border-b border-slate-100 px-4 py-3">
-                <p className="truncate text-sm font-semibold text-slate-950">
+            <div className="absolute right-0 top-12 w-56 overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+              <div className="border-b border-border px-4 py-3">
+                <p className="truncate text-sm font-semibold text-foreground">
                   {username}
                 </p>
-                <p className="text-xs text-slate-500">Dentist</p>
+                <p className="text-xs text-muted-foreground">Dentist</p>
               </div>
               <button
                 type="button"
@@ -204,15 +220,15 @@ export default function DentistHeader({
                   setOpenMenu(null);
                   setShowChangePassword(true);
                 }}
-                className="flex h-11 w-full cursor-pointer items-center gap-2 px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="flex h-11 w-full cursor-pointer items-center gap-2 px-4 text-sm font-medium text-foreground transition hover:bg-muted"
               >
-                <KeyRound className="size-4 text-slate-500" />
+                <KeyRound className="size-4 text-muted-foreground" />
                 Change Password
               </button>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex h-11 w-full cursor-pointer items-center gap-2 px-4 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                className="flex h-11 w-full cursor-pointer items-center gap-2 px-4 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:hover:bg-red-950/30"
               >
                 <LogOut className="size-4" />
                 Logout

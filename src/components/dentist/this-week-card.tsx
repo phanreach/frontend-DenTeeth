@@ -39,33 +39,40 @@ export default function ThisWeekCard({
   };
 
   return (
-    <section className="rounded-2xl border border-black/10 bg-white p-5">
-      <h3 className="text-base font-bold text-slate-900">{title}</h3>
-      <p className="text-sm text-slate-500">{subtitle}</p>
+    <article className="rounded-2xl border border-border bg-card p-5 shadow-sm overflow-hidden">
+      <h3 className="text-base font-bold text-foreground">{title}</h3>
+      <p className="text-xs font-medium text-muted-foreground">{subtitle}</p>
 
-      <div className="mt-6 flex gap-3">
-        <div className="flex h-24 flex-col justify-between text-xs font-medium text-slate-400">
+      <div className="mt-8 flex gap-4">
+        <div className="flex h-24 flex-col justify-between py-1 text-[10px] font-bold text-muted-foreground/40">
           <span>8</span>
           <span>4</span>
           <span>0</span>
         </div>
 
-        <div className="flex-1 overflow-x-auto">
+        <div className="flex-1 overflow-x-auto scrollbar-hide">
           <div style={{ minWidth: `${w}px` }}>
             <svg viewBox={`0 0 ${w} ${h}`} className="h-24 w-full overflow-visible">
-              <path d={areaPath} fill="#4338ca" opacity="0.1" />
+              <defs>
+                <linearGradient id="weekGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d={areaPath} fill="url(#weekGradient)" />
               <path
                 d={linePath}
                 fill="none"
-                stroke="#4338ca"
-                strokeWidth="2.5"
+                stroke="#6366f1"
+                strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="drop-shadow-[0_4px_6px_rgba(99,102,241,0.3)]"
               />
             </svg>
 
             <div
-              className="mt-3 grid text-center text-[10px] font-medium text-slate-400"
+              className="mt-4 grid text-center text-[10px] font-bold uppercase tracking-tight text-muted-foreground/60"
               style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
             >
               {labels.map((label, index) => (
@@ -77,6 +84,6 @@ export default function ThisWeekCard({
           </div>
         </div>
       </div>
-    </section>
+    </article>
   );
 }
