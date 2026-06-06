@@ -21,7 +21,6 @@ import ServiceModal, { type ServiceSchema } from "../../components/dentist/servi
 import {
   SERVICE_CONFIGURATION_DATA,
   type ClinicIdentity,
-  type ServiceItem,
 } from "../constants/service-configuration-data";
 
 function FieldLabel({

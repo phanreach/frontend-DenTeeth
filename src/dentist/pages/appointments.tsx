@@ -67,7 +67,8 @@ export default function Appointments() {
     return {
       all: appointments.length,
       pending: appointments.filter((item) => item.status === "pending").length,
-      confirmed: appointments.filter((item) => item.status === "confirmed").length,
+      confirmed: appointments.filter((item) => item.status === "confirmed")
+        .length,
       completed: 0,
       rejected: 0,
     };
@@ -84,9 +85,13 @@ export default function Appointments() {
       const query = searchTerm.toLowerCase();
       result = result.filter(
         (item) =>
+          item.id.toLowerCase().includes(query) ||
           item.name.toLowerCase().includes(query) ||
           item.service.toLowerCase().includes(query) ||
-          item.note.toLowerCase().includes(query),
+          item.note.toLowerCase().includes(query) ||
+          item.status.toLowerCase().includes(query) ||
+          item.date.toLowerCase().includes(query) ||
+          item.time.toLowerCase().includes(query),
       );
     }
 
@@ -98,23 +103,42 @@ export default function Appointments() {
     }
 
     if (filterMode === "month") {
-      const month = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getMonth();
-      result = result.filter((item) => parseAppointmentDate(item.date).getMonth() === month);
+      const month = parseAppointmentDate(
+        appointments[0]?.date ?? "May 8, 2026",
+      ).getMonth();
+      result = result.filter(
+        (item) => parseAppointmentDate(item.date).getMonth() === month,
+      );
     }
 
     if (filterMode === "year") {
-      const year = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getFullYear();
-      result = result.filter((item) => parseAppointmentDate(item.date).getFullYear() === year);
+      const year = parseAppointmentDate(
+        appointments[0]?.date ?? "May 8, 2026",
+      ).getFullYear();
+      result = result.filter(
+        (item) => parseAppointmentDate(item.date).getFullYear() === year,
+      );
     }
 
     if (sortMode === "name") {
       result.sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      result.sort((a, b) => parseAppointmentDate(a.date).getTime() - parseAppointmentDate(b.date).getTime());
+      result.sort(
+        (a, b) =>
+          parseAppointmentDate(a.date).getTime() -
+          parseAppointmentDate(b.date).getTime(),
+      );
     }
 
     return result;
-  }, [appointments, filterMode, searchTerm, selectedDateChip, sortMode, statusFilter]);
+  }, [
+    appointments,
+    filterMode,
+    searchTerm,
+    selectedDateChip,
+    sortMode,
+    statusFilter,
+  ]);
 
   const setStatus = (id: string, status: AppointmentItem["status"]) => {
     const appointment = appointments.find((item) => item.id === id);
@@ -143,7 +167,9 @@ export default function Appointments() {
 
     setAppointments((prev) =>
       prev.map((item) =>
-        item.id === activeId ? { ...item, date: formattedDate, time: newTime, status: "pending" } : item,
+        item.id === activeId
+          ? { ...item, date: formattedDate, time: newTime, status: "pending" }
+          : item,
       ),
     );
 
@@ -181,7 +207,9 @@ export default function Appointments() {
       </section>
 
       <section className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-tight text-slate-500">Filter by Date</p>
+        <p className="text-xs font-semibold uppercase tracking-tight text-slate-500">
+          Filter by Date
+        </p>
         <div className="flex rounded-xl bg-slate-100 p-0.5 text-xs font-semibold">
           {(["day", "month", "year"] as const).map((mode) => (
             <button
@@ -289,7 +317,9 @@ export default function Appointments() {
       </section>
 
       <AppointmentDetailModal
-        appointment={showRescheduleModal || showRejectModal ? null : activeAppointment}
+        appointment={
+          showRescheduleModal || showRejectModal ? null : activeAppointment
+        }
         selectedDate={selectedDate}
         onClose={() => setActiveId(null)}
         onConfirm={() => {

@@ -1,5 +1,5 @@
 import { Eye, EyeOff, X } from "lucide-react";
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -135,40 +135,37 @@ interface PasswordFieldProps
   error?: string;
 }
 
-const PasswordField = ({
-  label,
-  show,
-  onToggle,
-  error,
-  ref,
-  ...rest
-}: PasswordFieldProps) => (
-  <div>
-    <label className="mb-1.5 block text-sm font-medium text-slate-700">
-      {label} <span className="text-red-500">*</span>
-    </label>
-    <div className="relative">
-      <input
-        ref={ref}
-        type={show ? "text" : "password"}
-        className={`h-11 w-full rounded-xl border bg-slate-50 px-4 pr-11 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700 ${
-          error ? "border-red-400" : "border-slate-200"
-        }`}
-        placeholder={`Enter ${label.toLowerCase()}`}
-        {...rest}
-      />
-      <button
-        type="button"
-        onClick={onToggle}
-        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition hover:text-slate-600"
-        tabIndex={-1}
-        aria-label={show ? "Hide password" : "Show password"}
-      >
-        {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-      </button>
+const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
+  ({ label, show, onToggle, error, ...rest }, ref) => (
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-slate-700">
+        {label} <span className="text-red-500">*</span>
+      </label>
+      <div className="relative">
+        <input
+          ref={ref}
+          type={show ? "text" : "password"}
+          className={`h-11 w-full rounded-xl border bg-slate-50 px-4 pr-11 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700 ${
+            error ? "border-red-400" : "border-slate-200"
+          }`}
+          placeholder={`Enter ${label.toLowerCase()}`}
+          {...rest}
+        />
+        <button
+          type="button"
+          onClick={onToggle}
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition hover:text-slate-600"
+          tabIndex={-1}
+          aria-label={show ? "Hide password" : "Show password"}
+        >
+          {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+        </button>
+      </div>
+      {error ? (
+        <p className="mt-1 text-xs text-red-500">{error}</p>
+      ) : null}
     </div>
-    {error ? (
-      <p className="mt-1 text-xs text-red-500">{error}</p>
-    ) : null}
-  </div>
+  )
 );
+
+PasswordField.displayName = "PasswordField";

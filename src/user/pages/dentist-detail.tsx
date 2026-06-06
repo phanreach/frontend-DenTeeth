@@ -1,8 +1,11 @@
 import UseDentistQuery from "@/components/hook/use-dentist-query";
 import DentistBio from "../components/dentist-bio";
+import { useParams } from "react-router-dom";
 
 export default function DentistDetail() {
   const { data = [] } = UseDentistQuery();
+  const { dentistId } = useParams();
+  const dentist = data.find((item) => item.id === Number(dentistId));
   return (
     <div>
       <div className="border-b bg-white">
@@ -19,9 +22,11 @@ export default function DentistDetail() {
       </div>
 
       <div className="p-8">
-        {data.map((dentist) => (
-          <DentistBio data={dentist} key={dentist.id} />
-        ))}
+        {dentist ? (
+          <DentistBio data={dentist} />
+        ) : (
+          <p className="text-sm text-gray-500">Dentist not found.</p>
+        )}
       </div>
     </div>
   );

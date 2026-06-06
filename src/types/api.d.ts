@@ -3,13 +3,14 @@ export type service = {
   name: string;
   description: string;
   price: number;
-  durationInMinutes: string;
-  imageUrl: string;
+  durationInMinutes: number;
+  orderIndex?: number;
+  imageUrl: string | null;
 };
 
 export type operationHours = {
   id: number;
-  status: boolean;
+  status: boolean | null;
   dayOfWeek: string;
   startAt: string;
   endAt: string;
@@ -18,18 +19,18 @@ export type operationHours = {
 export type dentist = {
   id: number;
   name: string;
-  gender: string;
-  photoUrl: string;
-  biography: string;
-  clinicName: string;
-  profession: string;
-  yearsOfExperience: number;
-  priceRange: string[];
-  specialty: string;
-  rating: string;
-  address: string;
-  hours: string;
-  availability: string;
+  gender: string | null;
+  photoUrl: string | null;
+  biography: string | null;
+  clinicName: string | null;
+  profession: string | null;
+  yearsOfExperience: number | null;
+  priceRange: number[];
+  specialty?: string;
+  rating?: string;
+  address?: string;
+  hours?: string;
+  availability?: string;
   services: service[];
   operationHours: operationHours[];
 };
@@ -51,6 +52,9 @@ export type Appointment = {
 
 export type AppointmentData = {
   id: number;
+  dentistId?: number;
+  serviceId?: number;
+  hourId?: number;
   appointmentDate: string;
   price: number;
   patientName: string;

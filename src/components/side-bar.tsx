@@ -225,7 +225,7 @@ export default function SideBar({
 
           <button
             onClick={() => handleNavigate(homePath)}
-            className="text-xl font-bold text-primary"
+            className="font-bold text-xl text-primary"
           >
             DenTeeth
           </button>
@@ -251,17 +251,13 @@ export default function SideBar({
       {isMobile && !collapsed && (
         <div
           onClick={() => setCollapsed(true)}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-40"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 flex h-screen flex-col border-r backdrop-blur-xl transition-all duration-300 ${
-          isDentistRole
-            ? "border-slate-200 bg-white/95 text-slate-900"
-            : "border-slate-200 bg-white/90"
-        } ${
+        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-slate-200 bg-white/90 backdrop-blur-xl transition-all duration-300 ${
           isMobile
             ? collapsed
               ? "-translate-x-full w-72"

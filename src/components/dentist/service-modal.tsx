@@ -11,7 +11,12 @@ const serviceSchema = z.object({
   duration: z.coerce.number().int().positive("Duration must be a positive integer"),
 });
 
-export type ServiceSchema = z.infer<typeof serviceSchema>;
+export type ServiceSchema = {
+  name: string;
+  description: string;
+  price: number;
+  duration: number;
+};
 
 interface ServiceModalProps {
   isOpen: boolean;
@@ -52,7 +57,7 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
 
   if (!isOpen) return null;
 
-  const onSubmit = (data: ServiceSchema) => {
+  const handleFormSubmit = (data: ServiceSchema) => {
     onSave(data);
     reset();
     onClose();
@@ -85,7 +90,7 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-5">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 p-5">
           <div className="space-y-1">
             <label className="text-xs font-medium text-slate-500">
               Service Name <span className="text-rose-500">*</span>
