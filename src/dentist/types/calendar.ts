@@ -7,10 +7,11 @@ export interface Appointment {
   service: string;
   time: string;
   status: AppointmentStatus;
+  price: number;
   age: number;
   patientId: string;
   phone: string;
   email: string;
-  visitType: "In-clinic visit" | "Teleconsultation";
+  visitType: string;
   notes: string;
 }

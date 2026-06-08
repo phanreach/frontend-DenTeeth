@@ -10,10 +10,12 @@ import RejectBookingModal from "../../components/dentist/reject-booking-modal";
 import RescheduleAppointmentModal from "../../components/dentist/reschedule-appointment-modal";
 import {
   APPOINTMENTS_PAGE_DATA,
-  type AppointmentItem,
 } from "../constants/dentist-appointments-data";
 import type { Appointment } from "../types/calendar";
-import useDentistAppointments from "../hooks/use-dentist-appointments";
+import useMyAppointments from "../hooks/use-my-appointments";
+import useUpdateAppointmentStatus from "../hooks/use-update-appointment-status";
+import useRescheduleAppointment from "../hooks/use-reschedule-appointment";
+import type { AppointmentStatus as ApiStatus } from "../types/appointment";
 
 type FilterMode = "day" | "month" | "year";
 type SortMode = "date" | "name";
@@ -23,11 +25,34 @@ type StatusFilter = "all" | "pending" | "confirmed" | "completed" | "rejected";
 function parseAppointmentDate(value: string): Date {
   const date = new Date(value);
   if (!Number.isNaN(date.getTime())) return date;
-  return new Date(2026, 4, 8);
+  return new Date();
 }
 
 export default function Appointments() {
-  const [appointments, setAppointments] = useDentistAppointments();
+  const { data: apiAppointments, isLoading } = useMyAppointments();
+  const updateStatusMutation = useUpdateAppointmentStatus();
+  const rescheduleMutation = useRescheduleAppointment();
+
+  const appointments = useMemo(() => {
+    if (!apiAppointments) return [];
+    return apiAppointments.map((item) => ({
+      id: String(item.id),
+      initials: item.patientName.split(" ").map(n => n[0]).join("").toUpperCase(),
+      name: item.patientName,
+      patientId: `P-${item.id}`,
+      age: 25, 
+      service: item.serviceName,
+      date: item.appointmentDate,
+      time: item.startAt,
+      price: item.price,
+      phone: "+1 234 567 890", 
+      email: "patient@example.com", 
+      visitType: "In-clinic visit" as const,
+      note: item.remarks || "",
+      status: item.status.toLowerCase() as any,
+    }));
+  }, [apiAppointments]);
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -49,6 +74,7 @@ export default function Appointments() {
       service: activeItem.service,
       time: activeItem.time,
       status: activeItem.status,
+      price: activeItem.price,
       age: activeItem.age,
       patientId: activeItem.patientId,
       phone: activeItem.phone,
@@ -59,7 +85,7 @@ export default function Appointments() {
   }, [activeItem]);
 
   const selectedDate = useMemo(() => {
-    if (!activeItem) return new Date(2026, 4, 8);
+    if (!activeItem) return new Date();
     return parseAppointmentDate(activeItem.date);
   }, [activeItem]);
 
@@ -98,12 +124,12 @@ export default function Appointments() {
     }
 
     if (filterMode === "month") {
-      const month = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getMonth();
+      const month = new Date().getMonth();
       result = result.filter((item) => parseAppointmentDate(item.date).getMonth() === month);
     }
 
     if (filterMode === "year") {
-      const year = parseAppointmentDate(appointments[0]?.date ?? "May 8, 2026").getFullYear();
+      const year = new Date().getFullYear();
       result = result.filter((item) => parseAppointmentDate(item.date).getFullYear() === year);
     }
 
@@ -116,40 +142,26 @@ export default function Appointments() {
     return result;
   }, [appointments, filterMode, searchTerm, selectedDateChip, sortMode, statusFilter]);
 
-  const setStatus = (id: string, status: AppointmentItem["status"]) => {
-    const appointment = appointments.find((item) => item.id === id);
-
-    if (!appointment) {
-      toast.error("Appointment was not found. Refresh and try again.");
-      return;
-    }
-
-    setAppointments((prev) => prev.map((item) => (item.id === id ? { ...item, status } : item)));
-
-    if (status === "confirmed") {
-      toast.success(`${appointment.name}'s appointment confirmed.`);
-    }
+  const setStatus = (id: string, status: "confirmed" | "rejected") => {
+    const apiStatus: ApiStatus = status.toUpperCase() as ApiStatus;
+    updateStatusMutation.mutate({ id: Number(id), status: apiStatus });
   };
 
-  const handleRescheduleSuggest = (newDateIso: string, newTime: string) => {
+  const handleRescheduleSuggest = (newDateIso: string, hourId: number) => {
     if (!activeId) return;
 
-    const nextDate = new Date(`${newDateIso}T00:00:00`);
-    const formattedDate = nextDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+    rescheduleMutation.mutate({
+      id: Number(activeId),
+      data: {
+        appointmentDate: newDateIso,
+        hourId: hourId,
+      },
+    }, {
+      onSuccess: () => {
+        setShowRescheduleModal(false);
+        setActiveId(null);
+      }
     });
-
-    setAppointments((prev) =>
-      prev.map((item) =>
-        item.id === activeId ? { ...item, date: formattedDate, time: newTime, status: "pending" } : item,
-      ),
-    );
-
-    toast.warning("Appointment moved. Patient confirmation is still pending.");
-    setShowRescheduleModal(false);
-    setActiveId(null);
   };
 
   const tabs = APPOINTMENTS_PAGE_DATA.tabs.map((tab) => ({
@@ -164,6 +176,16 @@ export default function Appointments() {
     year: "numeric",
     timeZone: "Asia/Phnom_Penh",
   }).format(new Date());
+
+  if (isLoading) {
+    return (
+      <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-700 border-t-transparent" />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
@@ -304,8 +326,7 @@ export default function Appointments() {
         }}
         onMarkComplete={() => {
           if (!activeId) return;
-          setAppointments((prev) => prev.filter((item) => item.id !== activeId));
-          toast.success("Appointment marked complete.");
+          toast.warning("Mark complete is not implemented yet.");
           setActiveId(null);
         }}
       />
@@ -331,8 +352,7 @@ export default function Appointments() {
             toast.error("Choose an appointment before rejecting.");
             return;
           }
-          setAppointments((prev) => prev.filter((item) => item.id !== activeId));
-          toast.error("Appointment cancelled.");
+          setStatus(activeId, "rejected");
           setShowRejectModal(false);
           setActiveId(null);
         }}

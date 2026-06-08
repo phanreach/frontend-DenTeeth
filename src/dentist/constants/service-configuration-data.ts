@@ -6,6 +6,13 @@ export interface ClinicIdentity {
   longitude: string;
   telegramUsername: string;
   availableHours: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  phoneNumber?: string;
+  biography?: string;
+  licenseNumber?: string;
+  yearsOfExperience?: number;
 }
 
 export interface ServiceItem {
@@ -14,6 +21,7 @@ export interface ServiceItem {
   description?: string;
   price?: number;
   duration?: number;
+  id?: number;
 }
 
 export interface ServiceConfigurationData {
@@ -39,6 +47,13 @@ export const SERVICE_CONFIGURATION_DATA: ServiceConfigurationData = {
     longitude: "-74.0060",
     telegramUsername: "yourusername",
     availableHours: "09:00 AM - 06:00 PM",
+    firstName: "",
+    lastName: "",
+    gender: "MALE",
+    phoneNumber: "",
+    biography: "",
+    licenseNumber: "",
+    yearsOfExperience: 0,
   },
   availableDays: [
     { day: "Mon", enabled: true },

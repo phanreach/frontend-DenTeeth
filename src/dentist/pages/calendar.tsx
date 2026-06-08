@@ -13,11 +13,14 @@ import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
 import RescheduleAppointmentModal from "../../components/dentist/reschedule-appointment-modal";
 import type { Appointment, AppointmentStatus } from "../types/calendar";
 import {
-  APPOINTMENTS_BY_DATE,
   INITIAL_SELECTED_DATE_ISO,
   INITIAL_VISIBLE_MONTH,
   WEEKDAY_LABELS,
 } from "../constants/calendar-data";
+import useMyAppointments from "../hooks/use-my-appointments";
+import useUpdateAppointmentStatus from "../hooks/use-update-appointment-status";
+import useRescheduleAppointment from "../hooks/use-reschedule-appointment";
+import type { AppointmentStatus as ApiStatus } from "../types/appointment";
 
 interface CalendarDay {
   date: Date;
@@ -89,12 +92,41 @@ function formatLongDate(date: Date): string {
 export default function Calendar() {
   const [visibleMonth, setVisibleMonth] = useState(INITIAL_VISIBLE_MONTH);
   const [selectedIso, setSelectedIso] = useState(INITIAL_SELECTED_DATE_ISO);
-  const [appointmentsByDate, setAppointmentsByDate] = useState(APPOINTMENTS_BY_DATE);
   const [activeAppointmentId, setActiveAppointmentId] = useState<string | null>(null);
   const [rescheduleTarget, setRescheduleTarget] = useState<{
     appointment: Appointment;
     fromIso: string;
   } | null>(null);
+
+  const { data: apiAppointments, isLoading } = useMyAppointments();
+  const updateStatusMutation = useUpdateAppointmentStatus();
+  const rescheduleMutation = useRescheduleAppointment();
+
+  const appointmentsByDate = useMemo(() => {
+    const map: Record<string, Appointment[]> = {};
+    if (!apiAppointments) return map;
+
+    apiAppointments.forEach((item) => {
+      const date = item.appointmentDate;
+      if (!map[date]) map[date] = [];
+      map[date].push({
+        id: String(item.id),
+        patientName: item.patientName,
+        initials: item.patientName.split(" ").map(n => n[0]).join("").toUpperCase(),
+        service: item.serviceName,
+        time: item.startAt,
+        status: item.status.toLowerCase() as any,
+        price: item.price,
+        age: 25,
+        patientId: `P-${item.id}`,
+        phone: "+1 234 567 890",
+        email: "patient@example.com",
+        visitType: "In-clinic visit",
+        notes: item.remarks || "",
+      });
+    });
+    return map;
+  }, [apiAppointments]);
 
   const monthDays = useMemo(() => getMonthGrid(visibleMonth), [visibleMonth]);
 
@@ -110,76 +142,42 @@ export default function Calendar() {
 
   const updateAppointmentStatus = (status: AppointmentStatus) => {
     if (!activeAppointmentId) return;
-
-    const patientName = activeAppointment?.patientName;
-
-    setAppointmentsByDate((prev) => {
-      const dayAppointments = prev[selectedIso] ?? [];
-      const updatedDayAppointments = dayAppointments.map((appointment) =>
-        appointment.id === activeAppointmentId ? { ...appointment, status } : appointment,
-      );
-
-      return {
-        ...prev,
-        [selectedIso]: updatedDayAppointments,
-      };
-    });
-
-    if (status === "confirmed") {
-      toast.success(`Appointment for ${patientName} confirmed.`);
-    } else if (status === "completed") {
-      toast.success(`Appointment for ${patientName} marked as completed.`);
-    }
+    const apiStatus: ApiStatus = status.toUpperCase() as ApiStatus;
+    updateStatusMutation.mutate({ id: Number(activeAppointmentId), status: apiStatus });
   };
 
   const rejectAppointment = () => {
     if (!activeAppointmentId) return;
-
-    const patientName = activeAppointment?.patientName;
-
-    setAppointmentsByDate((prev) => {
-      const dayAppointments = prev[selectedIso] ?? [];
-      const updatedDayAppointments = dayAppointments.filter(
-        (appointment) => appointment.id !== activeAppointmentId,
-      );
-
-      return {
-        ...prev,
-        [selectedIso]: updatedDayAppointments,
-      };
-    });
-
-    toast.error(`Appointment for ${patientName} rejected.`);
+    updateStatusMutation.mutate({ id: Number(activeAppointmentId), status: "REJECTED" });
     setActiveAppointmentId(null);
   };
 
-  const handleRescheduleSuggest = (newDateIso: string, newTime: string) => {
+  const handleRescheduleSuggest = (newDateIso: string, hourId: number) => {
     if (!rescheduleTarget) return;
 
-    const patientName = rescheduleTarget.appointment.patientName;
-
-    setAppointmentsByDate((prev) => {
-      const fromList = prev[rescheduleTarget.fromIso] ?? [];
-      const moved = fromList.find((item) => item.id === rescheduleTarget.appointment.id);
-      if (!moved) return prev;
-
-      const updatedFrom = fromList.filter((item) => item.id !== moved.id);
-      const updatedTo = [
-        ...(prev[newDateIso] ?? []),
-        { ...moved, time: newTime, status: "pending" as AppointmentStatus },
-      ];
-
-      return {
-        ...prev,
-        [rescheduleTarget.fromIso]: updatedFrom,
-        [newDateIso]: updatedTo,
-      };
+    rescheduleMutation.mutate({
+      id: Number(rescheduleTarget.appointment.id),
+      data: {
+        appointmentDate: newDateIso,
+        hourId: hourId,
+      },
+    }, {
+      onSuccess: () => {
+        setRescheduleTarget(null);
+        setSelectedIso(newDateIso);
+      }
     });
-
-    toast.info(`Reschedule suggestion sent to ${patientName}.`);
-    setSelectedIso(newDateIso);
-    setRescheduleTarget(null);
   };
+
+  if (isLoading) {
+    return (
+      <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-700 border-t-transparent" />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">

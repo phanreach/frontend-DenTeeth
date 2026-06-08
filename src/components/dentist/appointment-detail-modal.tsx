@@ -121,9 +121,9 @@ export default function AppointmentDetailModal({
                 value={appointment.service}
               />
               <InfoTile
-                icon={<CalendarClock className="size-3 text-muted-foreground" />}
-                label="Type"
-                value={appointment.visitType}
+                icon={<div className="text-[10px] font-bold text-muted-foreground">$</div>}
+                label="Price"
+                value={`$${appointment.price}`}
               />
             </div>
           </div>
