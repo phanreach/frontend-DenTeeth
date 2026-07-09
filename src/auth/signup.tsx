@@ -68,12 +68,6 @@ export default function SignUp() {
             Create Your Account
           </h1>
 
-          <p className="text-sm font-medium transition-all duration-500 text-primary">
-            {isDentist
-              ? "Join as a dental professional"
-              : "Clinical intelligence with a human touch"}
-          </p>
-
           <div className="flex justify-center pt-2">
             <div className="bg-gray-100 p-1 rounded-2xl flex gap-1 shadow-inner">
               <button
@@ -280,23 +274,6 @@ export default function SignUp() {
           >
             Log in
           </a>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4">
-          {[
-            { icon: <Shield className="w-4 h-4" />, label: "Secure Data" },
-            { icon: <Zap className="w-4 h-4" />, label: "AI Powered" },
-          ].map(({ icon, label }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2.5 px-5 py-3 bg-white/70 backdrop-blur-sm rounded-xl border transition-all duration-500 text-primary"
-            >
-              {icon}
-              <span className="text-xs font-bold tracking-widest uppercase text-gray-600">
-                {label}
-              </span>
-            </div>
-          ))}
         </div>
       </div>
     </div>

@@ -7,9 +7,9 @@ export default function Vision() {
       <div className="pointer-events-none absolute -bottom-20 -left-20 h-[300px] w-[300px] rounded-full bg-primary/5" />
 
       <div className="relative z-10 mx-auto max-w-6xl">
-        <h2 className="mb-4 font-serif text-4xl font-semibold leading-tight text-gray-900 md:text-5xl lg:text-6xl">
-          Our <span className="italic text-primary">Vision</span> &{" "}
-          <span className="italic text-primary">Mission</span>
+        <h2 className="mb-4 text-4xl font-semibold leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+          Our <span className="text-primary">Vision</span> &{" "}
+          <span className="text-primary">Mission</span>
         </h2>
 
         <p className="mb-14 max-w-2xl text-base leading-7 text-gray-600">
@@ -30,7 +30,7 @@ export default function Vision() {
               Our Vision
             </p>
 
-            <h3 className="mb-4 font-serif text-2xl font-semibold leading-snug text-gray-900">
+            <h3 className="mb-4 text-2xl font-semibold leading-snug text-gray-900">
               A world of confident, healthy smiles
             </h3>
 
@@ -52,7 +52,7 @@ export default function Vision() {
               Our Mission
             </p>
 
-            <h3 className="mb-4 font-serif text-2xl font-semibold leading-snug">
+            <h3 className="mb-4 text-2xl font-semibold leading-snug">
               Exceptional care, every single visit
             </h3>
 

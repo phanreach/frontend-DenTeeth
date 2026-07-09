@@ -43,7 +43,7 @@ export default function Dentist() {
 
       <div className="mx-auto w-full max-w-7xl px-6 py-10">
         <div className="mb-8 space-y-3">
-          <h1 className="text-4xl font-bold text-slate-900 font-serif">
+          <h1 className="text-4xl font-bold text-slate-900">
             Recommended Dental Care
           </h1>
 

@@ -30,28 +30,23 @@ export default function AIScan() {
               AI Powered Dental Screening
             </div>
 
-            <h1
-              className="text-5xl font-bold leading-tight text-slate-900 md:text-6xl"
-              style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
-            >
+            <h1 className="text-5xl font-bold leading-tight text-slate-900 md:text-6xl">
               A precise scan
               <br />
               for a{" "}
-              <span className="relative inline-block italic text-primary">
+              <span className="relative inline-block text-primary">
                 healthier
               </span>
               <br />
               smile.
             </h1>
 
-            {/* Description */}
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
               Upload your dental image and let our AI provide a fast preliminary
               screening. Designed to help detect visible concerns with clarity
               and convenience.
             </p>
 
-            {/* Feature Cards */}
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {[
                 {
@@ -118,7 +113,6 @@ export default function AIScan() {
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );

@@ -48,7 +48,6 @@ export default function Login() {
       <Navbar />
 
       <div className="max-w-xl mx-auto space-y-10 py-20 px-4">
-        {/* Header */}
         <div className="text-center space-y-3">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg rotate-6 transition-all duration-500 ease-in-out">
@@ -61,20 +60,14 @@ export default function Login() {
           <h1 className="font-bold text-3xl tracking-tight text-gray-900">
             Welcome Back
           </h1>
-
-          <p className="text-sm font-medium text-primary transition-all duration-500">
-            Clinical intelligence with a human touch
-          </p>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white/80 backdrop-blur-sm border shadow-xl rounded-3xl p-8 space-y-6 transition-all duration-500"
         >
           <div className="h-1 w-12 rounded-full mx-auto bg-primary transition-all duration-500" />
 
-          {/* Username */}
           <div className="group">
             <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">
               Username <span className="text-red-500">*</span>
@@ -101,7 +94,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Password */}
           <div className="group">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -145,7 +137,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loginMutation.isPending}
@@ -183,7 +174,6 @@ export default function Login() {
             )}
           </button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200" />
 
@@ -194,7 +184,6 @@ export default function Login() {
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
-          {/* Google Login */}
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 border bg-white hover:bg-gray-50 rounded-xl py-3 text-sm font-medium text-gray-700 transition-all duration-300"
@@ -221,7 +210,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Footer */}
         <div className="text-center text-sm text-gray-500">
           Don't have an account?{" "}
           <a
@@ -230,31 +218,6 @@ export default function Login() {
           >
             Sign up
           </a>
-        </div>
-
-        {/* Badges */}
-        <div className="flex flex-wrap justify-center gap-4">
-          {[
-            {
-              icon: <Shield className="w-4 h-4" />,
-              label: "Secure Data",
-            },
-            {
-              icon: <Zap className="w-4 h-4" />,
-              label: "AI Powered",
-            },
-          ].map(({ icon, label }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2.5 px-5 py-3 bg-white/70 backdrop-blur-sm rounded-xl border transition-all duration-500 text-primary"
-            >
-              {icon}
-
-              <span className="text-xs font-bold tracking-widest uppercase text-gray-600">
-                {label}
-              </span>
-            </div>
-          ))}
         </div>
       </div>
     </div>

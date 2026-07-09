@@ -9,10 +9,7 @@ export default function Feature() {
             Smart Dental Technology
           </div>
 
-          <h1
-            className="text-5xl font-bold leading-tight text-slate-900 md:text-6xl"
-            style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
-          >
+          <h1 className="text-5xl font-bold leading-tight text-slate-900 md:text-6xl">
             Understand
             <br />
             your <span className="italic text-primary">smile.</span>

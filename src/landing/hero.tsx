@@ -34,7 +34,7 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <h1 className="text-6xl sm:text-7xl font-extrabold leading-[1.02] tracking-tight text-slate-900 font-serif">
+            <h1 className="text-6xl sm:text-7xl font-extrabold leading-[1.02] tracking-tight text-slate-900">
               Spot{" "}
               <span className="relative inline-block text-primary">Issues</span>
               <br />

@@ -24,7 +24,7 @@ function Footer() {
           <div className="lg:col-span-2">
             <div className="mb-5 flex items-center gap-3">
               <div>
-                <h3 className="font-serif text-2xl text-white">DenTeeth</h3>
+                <h3 className="text-2xl text-white">DenTeeth</h3>
               </div>
             </div>
 

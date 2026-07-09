@@ -7,10 +7,7 @@ export default function AboutUs() {
             About DenTeeth
           </div>
 
-          <h1
-            className="text-5xl font-bold leading-tight text-slate-900"
-            style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
-          >
+          <h1 className="text-5xl font-bold leading-tight text-slate-900">
             Building smarter
             <br />
             dental care.

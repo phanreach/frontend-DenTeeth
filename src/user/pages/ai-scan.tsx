@@ -5,7 +5,7 @@ export default function AiScan() {
         <div className="flex justify-between p-6">
           <div>
             <h1 className="text-3xl font-bold text-jci-primary-dark">
-              My Appointments
+              AI Scan
             </h1>
             <p className="text-sm text-gray-500">
               Manage your upcoming visits and professional consultations.
