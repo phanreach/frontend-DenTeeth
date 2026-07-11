@@ -3,9 +3,7 @@ import {
   Eye,
   EyeClosed,
   Lock,
-  Shield,
   User,
-  Zap,
   MoveRight,
   Stethoscope,
 } from "lucide-react";

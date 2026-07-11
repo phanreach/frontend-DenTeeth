@@ -204,9 +204,6 @@ export default function History() {
       <div className="border-b bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-jci-primary-dark/10 sm:h-10 sm:w-10">
-              <CalendarDays className="h-4 w-4 text-jci-primary-dark sm:h-5 sm:w-5" />
-            </div>
             <div>
               <h1 className="text-xl font-bold text-jci-primary-dark sm:text-2xl">
                 Appointment History
@@ -283,101 +280,101 @@ export default function History() {
             {hasFilteredAppointments && (
               <div className="hidden md:block">
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50 hover:bg-gray-50">
-                        {[
-                          "ID",
-                          "Date",
-                          "Time",
-                          "Dentist",
-                          "Service",
-                          "Status",
-                          "Actions",
-                        ].map((h) => (
-                          <TableHead
-                            key={h}
-                            className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-gray-400"
-                          >
-                            {h}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-50 hover:bg-gray-50">
+                          {[
+                            "ID",
+                            "Date",
+                            "Time",
+                            "Dentist",
+                            "Service",
+                            "Status",
+                            "Actions",
+                          ].map((h) => (
+                            <TableHead
+                              key={h}
+                              className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-gray-400"
+                            >
+                              {h}
+                            </TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
 
-                    <TableBody>
-                      {filteredAppointments.map((appointment) => {
-                        const status = statusConfig[appointment.status];
+                      <TableBody>
+                        {filteredAppointments.map((appointment) => {
+                          const status = statusConfig[appointment.status];
 
-                        return (
-                          <TableRow
-                            key={appointment.id}
-                            className="transition-colors hover:bg-slate-50/70"
-                          >
-                            <TableCell className="w-[80px] font-mono text-xs text-gray-400">
-                              #{appointment.id}
-                            </TableCell>
+                          return (
+                            <TableRow
+                              key={appointment.id}
+                              className="transition-colors hover:bg-slate-50/70"
+                            >
+                              <TableCell className="w-[80px] font-mono text-xs text-gray-400">
+                                #{appointment.id}
+                              </TableCell>
 
-                            <TableCell className="whitespace-nowrap text-sm text-gray-700">
-                              {appointment.appointmentDate}
-                            </TableCell>
+                              <TableCell className="whitespace-nowrap text-sm text-gray-700">
+                                {appointment.appointmentDate}
+                              </TableCell>
 
-                            <TableCell className="whitespace-nowrap text-sm text-gray-500">
-                              {formatTime(appointment.startAt)}
-                              <span className="mx-1 text-gray-300">–</span>
-                              {formatTime(appointment.endAt)}
-                            </TableCell>
+                              <TableCell className="whitespace-nowrap text-sm text-gray-500">
+                                {formatTime(appointment.startAt)}
+                                <span className="mx-1 text-gray-300">–</span>
+                                {formatTime(appointment.endAt)}
+                              </TableCell>
 
-                            <TableCell>
-                              <div className="flex items-center gap-2.5">
-                                <span className="whitespace-nowrap text-sm font-medium text-gray-800">
-                                  {appointment.dentistName}
+                              <TableCell>
+                                <div className="flex items-center gap-2.5">
+                                  <span className="whitespace-nowrap text-sm font-medium text-gray-800">
+                                    {appointment.dentistName}
+                                  </span>
+                                </div>
+                              </TableCell>
+
+                              <TableCell className="whitespace-nowrap text-sm text-gray-600">
+                                {appointment.serviceName}
+                              </TableCell>
+
+                              <TableCell>
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
+                                >
+                                  {status.icon}
+                                  {status.label}
                                 </span>
-                              </div>
-                            </TableCell>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    className="rounded p-1 transition hover:bg-gray-100"
+                                    onClick={() => handleEdit(appointment)}
+                                  >
+                                    <Pencil className="h-4 w-4 text-primary" />
+                                  </button>
+                                  <button
+                                    className="rounded p-1 transition hover:bg-red-50"
+                                    onClick={() => handleDelete(appointment)}
+                                  >
+                                    <Trash className="h-4 w-4 text-red-500" />
+                                  </button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
 
-                            <TableCell className="whitespace-nowrap text-sm text-gray-600">
-                              {appointment.serviceName}
-                            </TableCell>
-
-                            <TableCell>
-                              <span
-                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
-                              >
-                                {status.icon}
-                                {status.label}
-                              </span>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  className="rounded p-1 transition hover:bg-gray-100"
-                                  onClick={() => handleEdit(appointment)}
-                                >
-                                  <Pencil className="h-4 w-4 text-primary" />
-                                </button>
-                                <button
-                                  className="rounded p-1 transition hover:bg-red-50"
-                                  onClick={() => handleDelete(appointment)}
-                                >
-                                  <Trash className="h-4 w-4 text-red-500" />
-                                </button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <div className="border-t border-gray-100 bg-gray-50 px-4 py-2.5">
-                  <p className="text-xs text-gray-400">
-                    {filteredAppointments.length} appointment
-                    {filteredAppointments.length !== 1 ? "s" : ""} shown
-                  </p>
-                </div>
+                  <div className="border-t border-gray-100 bg-gray-50 px-4 py-2.5">
+                    <p className="text-xs text-gray-400">
+                      {filteredAppointments.length} appointment
+                      {filteredAppointments.length !== 1 ? "s" : ""} shown
+                    </p>
+                  </div>
                 </div>
               </div>
             )}

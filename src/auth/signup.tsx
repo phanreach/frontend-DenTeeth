@@ -3,8 +3,6 @@ import {
   Lock,
   Mail,
   User,
-  Shield,
-  Zap,
   MoveRight,
   Eye,
   EyeClosed,

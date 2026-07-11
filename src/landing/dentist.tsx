@@ -4,6 +4,8 @@ import Footer from "../components/footer";
 import Navbar from "../components/nav-bar";
 import Pagination from "../components/pagination";
 import UseDentistQuery from "../components/hook/use-dentist-query";
+import DentistCardSkeleton from "@/components/dentist-card-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Dentist() {
   const itemsPerPage = 6;
@@ -23,8 +25,23 @@ export default function Dentist() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        Loading...
+      <div className="min-h-screen bg-[#eef3ff]">
+        <Navbar />
+
+        <div className="mx-auto w-full max-w-7xl px-6 py-10">
+          <div className="mb-8 space-y-3">
+            <Skeleton className="h-10 w-96 max-w-full" />
+            <Skeleton className="h-5 w-60" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: itemsPerPage }).map((_, index) => (
+              <DentistCardSkeleton key={index} />
+            ))}
+          </div>
+        </div>
+
+        <Footer />
       </div>
     );
   }

@@ -8,7 +8,7 @@ import ReviewCard from "./review-card";
 export default function DentistBio({ data }: { data: dentist }) {
   const [selectedService, setSelectedService] = useState<number | null>(null);
   const [showAllServices, setShowAllServices] = useState(false);
-
+  const firstLetter = data.name?.trim().charAt(0).toUpperCase() ?? "?";
   const appointmentRef = useRef<HTMLDivElement | null>(null);
   const displayedServices = showAllServices
     ? data.services
@@ -19,14 +19,18 @@ export default function DentistBio({ data }: { data: dentist }) {
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="p-6">
             <div className="flex items-end gap-4 mb-5">
-              <img
-                src={
-                  data.photoUrl ||
-                  "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=400&auto=format&fit=crop"
-                }
-                alt={data.name}
-                className="h-20 w-20 flex-shrink-0 rounded-full border-[3px] border-white object-cover"
-              />
+              {data.photoUrl ? (
+                <img
+                  src={data.photoUrl}
+                  alt={data.name}
+                  className="h-20 w-20 flex-shrink-0 rounded-full border-[3px] border-white object-cover"
+                />
+              ) : (
+                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-3xl font-bold text-primary">
+                  {" "}
+                  {firstLetter}
+                </div>
+              )}
               <div className="flex-1 min-w-0 pb-1">
                 <h1 className="truncate text-xl font-semibold text-gray-900">
                   {data.name}

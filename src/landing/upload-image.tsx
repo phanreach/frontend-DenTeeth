@@ -70,10 +70,6 @@ export default function UploadImage({
 
           <div>
             <h2 className="text-lg font-bold text-white">Teeth AI Analysis</h2>
-
-            <p className="mt-1 text-sm text-blue-100">
-              Upload a clear dental image for instant AI scanning
-            </p>
           </div>
         </div>
       </div>
