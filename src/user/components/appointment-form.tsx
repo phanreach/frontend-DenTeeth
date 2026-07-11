@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { dentist } from "@/types/api";
-import { MoveRight, ShieldCheck } from "lucide-react";
+import { MoveRight } from "lucide-react";
 import { toast } from "sonner";
 import useAppointmentMutation from "@/components/hook/use-appointment-mutation";
 import {
@@ -197,15 +197,6 @@ export default function AppointmentForm({
           {errors.remarks && (
             <p className="mt-2 text-sm text-red-500">{errors.remarks}</p>
           )}
-        </div>
-
-        <div className="flex items-center gap-4 rounded-xl bg-secondary p-4 text-sm text-primary">
-          <ShieldCheck className="shrink-0" />
-
-          <p>
-            DenTeeth Secure Booking. Your medical data is encrypted with
-            HIPAA-compliant clinical intelligence.
-          </p>
         </div>
 
         <button
