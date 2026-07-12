@@ -62,6 +62,6 @@ export type AppointmentData = {
   serviceName: string;
   startAt: string;
   endAt: string;
-  status: "PENDING" | "COMPLETED" | "CANCELLED";
+  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
   remarks: string;
 };
