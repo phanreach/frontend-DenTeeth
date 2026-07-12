@@ -1,58 +1,59 @@
 import type { LucideIcon } from "lucide-react";
 
 interface KpiCardProps {
-  title: string;
-  value: string;
-  subtitle: string;
-  icon: LucideIcon;
-  featured?: boolean;
+ title: string;
+ value: string;
+ subtitle: string;
+ icon: LucideIcon;
+ featured?: boolean;
 }
 
 export default function KpiCard({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  featured = false,
+ title,
+ value,
+ subtitle,
+ icon: Icon,
+ featured = false,
 }: KpiCardProps) {
-  return (
-    <article
-      className={`rounded-2xl border p-4 ${
-        featured
-          ? "border-indigo-700/20 bg-indigo-700 text-white"
-          : "border-black/10 bg-white text-slate-900"
-      }`}
-    >
-      <div className="mb-2 flex items-center justify-between">
-        <p
-          className={`text-xs font-medium leading-4 ${
-            featured ? "text-white/70" : "text-slate-500"
-          }`}
-        >
-          {title}
-        </p>
+ return (
+ <article
+ className={`rounded-2xl border p-5 transition-all hover:shadow-lg ${
+ featured
+ ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 "
+ : "border-border bg-card text-foreground"
+ }`}
+ >
+ <div className="mb-4 flex items-center justify-between">
+ <p
+ className={`text-[11px] font-semibold uppercase tracking-wider ${
+ featured ? "text-white/80" : "text-muted-foreground/60"
+ }`}
+ >
+ {title}
+ </p>
 
-        <span
-          className={`flex h-8 w-8 items-center justify-center rounded-2xl ${
-            featured ? "bg-white/20" : "bg-violet-100 text-indigo-700"
-          }`}
-        >
-          <Icon className="h-4 w-4" />
-        </span>
-      </div>
+ <span
+ className={`flex size-10 items-center justify-center rounded-xl transition-transform hover:scale-110 ${
+ featured ? "bg-white/20 text-white" : "bg-indigo-600/10 text-indigo-600 "
+ }`}
+ >
+ <Icon className="size-5" />
+ </span>
+ </div>
 
-      <p
-        className={`text-4xl font-bold leading-8 ${
-          featured ? "text-white" : "text-neutral-900"
-        }`}
-        style={{ fontFamily: "'Fraunces', 'DM Serif Display', Georgia, serif" }}
-      >
-        {value}
-      </p>
+ <p
+ className={`text-3xl font-semibold tracking-tight ${
+ featured ? "text-white" : "text-foreground"
+ }`}
+ >
+ {value}
+ </p>
 
-      <p className={`mt-2 text-xs leading-4 ${featured ? "text-white/70" : "text-slate-500"}`}>
-        {subtitle}
-      </p>
-    </article>
-  );
+ <div className="mt-3 flex items-center gap-1.5">
+ <p className={`text-xs font-semibold ${featured ? "text-white/80" : "text-indigo-600 "}`}>
+ {subtitle}
+ </p>
+ </div>
+ </article>
+ );
 }

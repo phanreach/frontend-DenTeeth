@@ -1,74 +1,98 @@
+import { Activity } from "lucide-react";
+
 interface ThisWeekCardProps {
-  points: number[];
-  labels: string[];
-  title?: string;
-  subtitle?: string;
+ points: number[];
+ labels: string[];
+ title?: string;
+ subtitle?: string;
 }
 
 export default function ThisWeekCard({
-  points,
-  labels,
-  title = "This Week",
-  subtitle = "Daily patients",
+ points,
+ labels,
+ title = "This Week",
+ subtitle = "Daily patients",
 }: ThisWeekCardProps) {
-  const max = Math.max(...points, 1);
-  const w = Math.max(300, labels.length * 26);
-  const h = 90;
-  const step = w / Math.max(points.length - 1, 1);
+ const max = Math.max(...points, 1);
+ const w = Math.max(300, labels.length * 26);
+ const h = 90;
+ const step = w / Math.max(points.length - 1, 1);
 
-  const coords = points.map((p, i) => {
-    const x = i * step;
-    const y = h - (p / max) * (h - 8);
-    return { x, y };
-  });
+ const coords = points.map((p, i) => {
+ const x = i * step;
+ const y = h - (p / max) * (h - 8);
+ return { x, y };
+ });
 
-  const linePath = coords
-    .map((p, i, arr) => {
-      if (i === 0) return `M ${p.x} ${p.y}`;
-      const prev = arr[i - 1];
-      const cx = (prev.x + p.x) / 2;
-      return `Q ${cx} ${prev.y}, ${p.x} ${p.y}`;
-    })
-    .join(" ");
+ const linePath = coords
+ .map((p, i, arr) => {
+ if (i === 0) return `M ${p.x} ${p.y}`;
+ const prev = arr[i - 1];
+ const cx = (prev.x + p.x) / 2;
+ return `Q ${cx} ${prev.y}, ${p.x} ${p.y}`;
+ })
+ .join(" ");
 
-  const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
-  const shouldShowLabel = (index: number) => {
-    if (labels.length <= 12) return true;
-    if (labels.length <= 24) return index % 2 === 0;
-    return index % 3 === 0;
-  };
+ const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
+ const shouldShowLabel = (index: number) => {
+ if (labels.length <= 12) return true;
+ if (labels.length <= 24) return index % 2 === 0;
+ return index % 3 === 0;
+ };
 
-  return (
-    <section className="rounded-2xl border border-black/10 bg-white p-4">
-      <h3 className="text-sm font-semibold leading-5 text-neutral-900">{title}</h3>
-      <p className="mt-1 text-xs leading-4 text-slate-500">{subtitle}</p>
+ return (
+ <article className="rounded-2xl border border-border bg-card p-5 shadow-sm overflow-hidden">
+ <h3 className="text-base font-semibold text-foreground">{title}</h3>
+ <p className="text-xs font-medium text-muted-foreground">{subtitle}</p>
 
-      <div className="mt-3 overflow-x-auto">
-        <div style={{ minWidth: `${w}px` }}>
-          <svg viewBox={`0 0 ${w} ${h + 16}`} className="h-24 w-full">
-          <path d={areaPath} fill="#1d4ed8" opacity="0.12" />
-          <path
-            d={linePath}
-            fill="none"
-            stroke="#1560ab"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          </svg>
-        </div>
-      </div>
+ {points.length === 0 || labels.length === 0 ? (
+ <div className="mt-8 flex h-24 flex-col items-center justify-center text-muted-foreground">
+ <Activity className="size-8 opacity-20 mb-2" />
+ <p className="text-xs font-medium">No activity data yet</p>
+ </div>
+ ) : (
+ <div className="mt-8 flex gap-4">
+ <div className="flex h-24 flex-col justify-between py-1 text-[10px] font-semibold text-muted-foreground/40">
+ <span>8</span>
+ <span>4</span>
+ <span>0</span>
+ </div>
 
-      <div
-        className="mt-1 grid text-center text-[10px] text-slate-500"
-        style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
-      >
-        {labels.map((label, index) => (
-          <span key={`${label}-${index}`}>
-            {shouldShowLabel(index) ? label : ""}
-          </span>
-        ))}
-      </div>
-    </section>
-  );
+ <div className="flex-1 overflow-x-auto scrollbar-hide">
+ <div style={{ minWidth: `${w}px` }}>
+ <svg viewBox={`0 0 ${w} ${h}`} className="h-24 w-full overflow-visible">
+ <defs>
+ <linearGradient id="weekGradient" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stopColor="#6366f1" stopOpacity="0.2" />
+ <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+ </linearGradient>
+ </defs>
+ <path d={areaPath} fill="url(#weekGradient)" />
+ <path
+ d={linePath}
+ fill="none"
+ stroke="#6366f1"
+ strokeWidth="3"
+ strokeLinecap="round"
+ strokeLinejoin="round"
+ className="drop-shadow-[0_4px_6px_rgba(99,102,241,0.3)]"
+ />
+ </svg>
+
+ <div
+ className="mt-4 grid text-center text-[10px] font-semibold uppercase tracking-tight text-muted-foreground/60"
+ style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
+ >
+ {labels.map((label, index) => (
+ <span key={`${label}-${index}`}>
+ {shouldShowLabel(index) ? label : ""}
+ </span>
+ ))}
+ </div>
+ </div>
+ </div>
+ </div>
+ )}
+ </article>
+ );
 }

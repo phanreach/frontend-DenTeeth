@@ -1,52 +1,60 @@
+import { CalendarX } from "lucide-react";
 import type { DentistAppointment } from "../../dentist/constants/dashboard-data";
 
 interface TodayScheduleCardProps {
-  dateLabel: string;
-  appointments: DentistAppointment[];
+ dateLabel: string;
+ appointments: DentistAppointment[];
 }
 
 export default function TodayScheduleCard({
-  dateLabel,
-  appointments,
+ dateLabel,
+ appointments,
 }: TodayScheduleCardProps) {
-  return (
-    <section className="rounded-2xl border border-black/10 bg-white p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold leading-5 text-neutral-900">Today's Schedule</h3>
-        <p className="text-xs text-slate-500">{dateLabel}</p>
-      </div>
+ return (
+ <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+ <div className="mb-6 flex items-center justify-between">
+ <h3 className="text-base font-semibold text-foreground">Today's Schedule</h3>
+ <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">{dateLabel}</p>
+ </div>
 
-      <div className="space-y-2">
-        {appointments.map((appointment) => (
-          <article key={appointment.id} className="rounded-2xl bg-slate-100/50 p-2.5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-indigo-700">
-                {appointment.avatar}
-              </div>
+ {appointments.length === 0 ? (
+ <div className="flex h-32 flex-col items-center justify-center text-muted-foreground border border-dashed border-border rounded-xl bg-muted/10">
+ <CalendarX className="size-8 opacity-20 mb-2" />
+ <p className="text-xs font-medium">No appointments scheduled</p>
+ </div>
+ ) : (
+ <div className="space-y-3">
+ {appointments.map((appointment) => (
+ <div key={appointment.id} className="group cursor-pointer rounded-2xl border border-border bg-muted/30 p-4 transition hover:border-indigo-600/20 hover:bg-muted/50 ">
+ <div className="flex items-center gap-4">
+ <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-indigo-600/10 text-xs font-semibold text-indigo-600 ">
+ {appointment.avatar}
+ </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-neutral-900">{appointment.patient}</p>
-                <p className="truncate text-xs text-slate-500">{appointment.condition}</p>
-              </div>
+ <div className="min-w-0 flex-1">
+ <p className="truncate text-sm font-semibold text-foreground">{appointment.patient}</p>
+ <p className="truncate text-[11px] font-medium text-muted-foreground/60">{appointment.condition}</p>
+ </div>
 
-              <div className="text-right">
-                <p className="text-xs font-medium text-neutral-900">{appointment.time}</p>
-                <span
-                  className={`inline-block rounded-full px-2.5 py-1 text-xs capitalize ${
-                    appointment.status === "pending"
-                      ? "bg-amber-50 text-amber-700"
-                      : appointment.status === "rescheduled"
-                        ? "bg-orange-50 text-orange-700"
-                        : "bg-emerald-50 text-emerald-700"
-                  }`}
-                >
-                  {appointment.status}
-                </span>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
+ <div className="text-right">
+ <p className="text-sm font-semibold text-foreground">{appointment.time}</p>
+ <p
+ className={`mt-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+ appointment.status === "pending"
+ ? "text-amber-500"
+ : appointment.status === "rescheduled"
+ ? "text-orange-500"
+ : "text-emerald-500"
+ }`}
+ >
+ {appointment.status}
+ </p>
+ </div>
+ </div>
+ </div>
+ ))}
+ </div>
+ )}
+ </article>
+ );
 }
