@@ -107,7 +107,7 @@ export const refreshToken = async (): Promise<string | null> => {
 };
 
 export const logoutApi = () =>
-  api.post<{ message: string }>(API_ENDPOINT.LOGOUT);
+  api.patch<{ message: string }>(API_ENDPOINT.LOGOUT);
 
 export const getMyAppointmentsApi = (params?: GetMyAppointmentsParams) =>
   api.get<AppointmentSuccessResponse>(API_ENDPOINT.GET_MY_APPOINTMENTS, { params });
@@ -117,6 +117,9 @@ export const updateAppointmentStatusApi = (id: number, status: AppointmentStatus
 
 export const rescheduleAppointmentApi = (id: number, data: AppointmentRescheduleRequest) =>
   api.patch(API_ENDPOINT.RESCHEDULE_APPOINTMENT(id), data);
+
+export const getAppointmentStatusApi = () =>
+  api.get(API_ENDPOINT.GET_ALL_APPOINTMENTS_STATUS);
 
 export const createServicesApi = (services: ServiceCreateRequest[]) => {
   return api.post<ServiceSuccessResponse>(API_ENDPOINT.CREATE_SERVICE, services);
@@ -147,5 +150,57 @@ export const uploadProfilePhotoApi = (photo: File) => {
   formData.append("photo", photo);
   return api.post<{ success: boolean; data: ImageStorageResponse | string }>(API_ENDPOINT.UPLOAD_PROFILE_PICTURE, formData);
 };
+
+export interface DentistProfileUpdateRequest {
+  userId?: number;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  phoneNumber?: string;
+  clinicName?: string;
+  biography?: string;
+  licenseNumber?: string;
+  yearsOfExperience?: number;
+}
+
+export const updateDentistProfileApi = (data: DentistProfileUpdateRequest) =>
+  api.patch(API_ENDPOINT.UPDATE_DENTIST_PROFILE, data, { params: data });
+
+export interface OperationHourEntry {
+  dayOfWeek: number;
+  startAt: string;
+  endAt: string;
+}
+
+export interface OperationHourRequest {
+  hours: OperationHourEntry[];
+}
+
+export const createOperationHoursApi = (data: OperationHourRequest) =>
+  api.post(API_ENDPOINT.SET_OPERATION_HOURS, data);
+
+export const getOperationHoursApi = (dentistId: number) =>
+  api.get(API_ENDPOINT.GET_OPERATION_HOURS(dentistId));
+
+export const deleteProfilePhotoApi = () =>
+  api.delete(API_ENDPOINT.DELETE_PROFILE_PICTURE);
+
+export const updateOperationHourApi = (id: number, data: OperationHourEntry) =>
+  api.patch(API_ENDPOINT.UPDATE_OPERATION_HOUR(id), data);
+
+export const deleteOperationHourApi = (id: number) =>
+  api.delete(API_ENDPOINT.DELETE_OPERATION_HOUR(id));
+
+export const getAppointmentDetailsApi = (id: number) =>
+  api.get(API_ENDPOINT.GET_APPOINTMENT_DETAILS(id));
+
+export const getDentistDashboardDataApi = (dateRange: string) =>
+  api.get(API_ENDPOINT.GET_DENTIST_DASHBOARD, { params: { dateRange } });
+
+export const getDentistReviewsApi = () =>
+  api.get(API_ENDPOINT.GET_DENTIST_REVIEWS);
+
+export const getMySessionsApi = () =>
+  api.get(API_ENDPOINT.GET_MY_SESSIONS);
 
 export default api;

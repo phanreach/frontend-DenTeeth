@@ -9,112 +9,199 @@ import TodayScheduleCard from "../../components/dentist/today-schedule-card";
 import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
 import KpiCard from "../../components/dentist/kpi-card";
 import PeriodTabs from "../../components/dentist/period-tabs";
-import {
-  MOBILE_WEEK_LABELS,
-  MOBILE_WEEK_POINTS,
-  PERIOD_DATA,
-  TODAY_APPOINTMENTS,
-  TOP_CONDITIONS,
-  type AnalyticsPeriod,
-} from "../constants/dashboard-data";
+import type { AnalyticsPeriod } from "../constants/dashboard-data";
+import useDentistDashboard from "../hooks/use-dentist-dashboard";
+import useMyAppointments from "../hooks/use-my-appointments";
 
 export default function Dashboard() {
-  const [period, setPeriod] = useState<AnalyticsPeriod>("month");
-  const data = useMemo(() => PERIOD_DATA[period], [period]);
+ const [period, setPeriod] = useState<AnalyticsPeriod>("1m");
+ const { data: dashboardData } = useDentistDashboard(period);
+ const { data: apiAppointments } = useMyAppointments();
 
-  const chartSubtitle = useMemo(() => {
-    switch (period) {
-      case "day":
-        return "May 12, 2026";
-      case "week":
-        return "May 11 — May 17, 2026";
-      case "month":
-        return "May 2026";
-      case "year":
-        return "2026 YTD";
-      default:
-        return "";
-    }
-  }, [period]);
+ // Map live KPI metrics safely
+ const liveKpi = useMemo(() => {
+ const kpi = {
+ appointments: 0,
+ treated: 0,
+ pending: 0,
+ completed: 0,
+ satisfaction: "0.0",
+ revenueLabel: "$0",
+ };
+ if (!dashboardData) return kpi;
 
-  return (
-    <main className="mx-auto w-full space-y-6 px-4 pt-4 pb-24 lg:px-6 lg:pb-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <PeriodTabs value={period} onChange={setPeriod} />
-        <p className="text-sm font-medium text-muted-foreground">
-          Last updated: <span className="font-bold text-foreground">Just now</span>
-        </p>
-      </div>
+ console.log("[Dashboard] Live Backend Data:", dashboardData);
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          title="Total Appointments"
-          value={data.kpi.appointments.toLocaleString()}
-          subtitle="↗ +9% vs last period"
-          icon={Calendar}
-          featured
-        />
-        <KpiCard
-          title="Treated Patients"
-          value={data.kpi.treated.toLocaleString()}
-          subtitle="3 confirmed today"
-          icon={Users}
-        />
-        <KpiCard
-          title="Pending Actions"
-          value={data.kpi.pending.toLocaleString()}
-          subtitle="Requires attention"
-          icon={AlertCircle}
-        />
-        <KpiCard
-          title="Avg. Satisfaction"
-          value={data.kpi.satisfaction}
-          subtitle="↗ Based on latest reviews"
-          icon={Star}
-        />
-      </section>
+ const appointments =
+ dashboardData.totalAppointments ??
+ dashboardData.appointmentsCount ??
+ dashboardData.appointments ??
+ dashboardData.data?.totalAppointments ??
+ kpi.appointments;
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
-        {/* Left Column */}
-        <div className="space-y-6">
-          <AppointmentsChart
-            title="Appointments Overview"
-            subtitle={chartSubtitle}
-            items={data.chart}
-          />
+ const treated =
+ dashboardData.treatedPatients ??
+ dashboardData.treatedCount ??
+ dashboardData.treated ??
+ dashboardData.data?.treatedPatients ??
+ kpi.treated;
 
-          <RevenueCard
-            periodLabel={data.revenue.periodLabel}
-            revenueLabel={data.kpi.revenueLabel}
-            labels={data.revenue.labels}
-            values={data.revenue.values}
-            yTicks={data.revenue.yTicks}
-          />
+ const pending =
+ dashboardData.pendingActions ??
+ dashboardData.pendingCount ??
+ dashboardData.pending ??
+ dashboardData.data?.pendingActions ??
+ kpi.pending;
 
-          <TodayScheduleCard
-            dateLabel="May 12, 2026"
-            appointments={TODAY_APPOINTMENTS}
-          />
-        </div>
+ const completed =
+ dashboardData.completedActions ??
+ dashboardData.completedCount ??
+ dashboardData.completed ??
+ dashboardData.data?.completedActions ??
+ kpi.completed;
 
-        {/* Right Column */}
-        <div className="space-y-6">
-          <StatusSplitCard
-            confirmed={data.kpi.treated}
-            pending={data.kpi.pending}
-            completed={data.kpi.completed}
-          />
-          <ThisWeekCard
-            points={MOBILE_WEEK_POINTS}
-            labels={MOBILE_WEEK_LABELS}
-            title="Weekly Activity"
-            subtitle="Patient volume trend"
-          />
-          <TopConditionsCard items={TOP_CONDITIONS} />
-        </div>
-      </div>
+ const satisfaction =
+ dashboardData.avgSatisfaction ??
+ dashboardData.satisfaction ??
+ dashboardData.rating ??
+ dashboardData.data?.avgSatisfaction ??
+ kpi.satisfaction;
 
-      <MobileBottomNav active="dashboard" />
-    </main>
-  );
+ const revenueLabel = 
+ dashboardData.revenueLabel ?? 
+ dashboardData.data?.revenueLabel ?? 
+ kpi.revenueLabel;
+
+ return {
+ appointments,
+ treated,
+ pending,
+ completed,
+ satisfaction: String(satisfaction),
+ revenueLabel,
+ };
+ }, [dashboardData]);
+
+ // Filter and map today's appointments dynamically
+ const todayAppointments = useMemo(() => {
+ if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
+ 
+ // Get today's local date in yyyy-MM-dd format
+ const todayStr = new Date().toLocaleDateString("en-CA"); // Gets local date in yyyy-MM-dd format safely
+ 
+ const filtered = apiAppointments.filter((app: any) => app.appointmentDate === todayStr);
+
+ if (filtered.length === 0) {
+ return [];
+ }
+
+ return filtered.map((app: any) => ({
+ id: String(app.id),
+ patient: `${app.patientFirstName || ""} ${app.patientLastName || ""}`.trim() || app.patientUsername || "Patient",
+ condition: app.serviceName || "Dental Treatment",
+ time: app.appointmentTime || "09:00 AM",
+ status: (app.status?.toLowerCase() === "rescheduled" ? "rescheduled" : app.status?.toLowerCase() === "confirmed" ? "confirmed" : "pending") as any,
+ avatar: (app.patientFirstName || "P").substring(0, 1).toUpperCase(),
+ }));
+ }, [apiAppointments]);
+
+ const chartSubtitle = useMemo(() => {
+ switch (period) {
+ case "24h":
+ return "Today";
+ case "1w":
+ return "This Week";
+ case "1m":
+ return "This Month";
+ case "3m":
+ return "Last 3 Months";
+ case "6m":
+ return "Last 6 Months";
+ case "1y":
+ return "This Year";
+ default:
+ return "";
+ }
+ }, [period]);
+
+ return (
+ <main className="space-y-8 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-10">
+ <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+ <PeriodTabs value={period} onChange={setPeriod} />
+ <p className="text-sm font-medium text-muted-foreground">
+ Last updated: <span className="font-semibold text-foreground">Just now</span>
+ </p>
+ </div>
+
+ <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+ <KpiCard
+ title="Total Appointments"
+ value={liveKpi.appointments.toLocaleString()}
+ subtitle="↗ +9% vs last period"
+ icon={Calendar}
+ featured
+ />
+ <KpiCard
+ title="Treated Patients"
+ value={liveKpi.treated.toLocaleString()}
+ subtitle="Confirmed & Completed"
+ icon={Users}
+ />
+ <KpiCard
+ title="Pending Actions"
+ value={liveKpi.pending.toLocaleString()}
+ subtitle="Requires attention"
+ icon={AlertCircle}
+ />
+ <KpiCard
+ title="Avg. Satisfaction"
+ value={liveKpi.satisfaction}
+ subtitle="↗ Based on latest reviews"
+ icon={Star}
+ />
+ </section>
+
+ <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
+ {/* Left Column */}
+ <div className="space-y-6">
+ <AppointmentsChart
+ title="Appointments Overview"
+ subtitle={chartSubtitle}
+ items={dashboardData?.chart ?? dashboardData?.data?.chart ?? []}
+ />
+
+ <RevenueCard
+ periodLabel={dashboardData?.revenue?.periodLabel ?? dashboardData?.data?.revenue?.periodLabel ?? ""}
+ revenueLabel={liveKpi.revenueLabel}
+ labels={dashboardData?.revenue?.labels ?? dashboardData?.data?.revenue?.labels ?? []}
+ values={dashboardData?.revenue?.values ?? dashboardData?.data?.revenue?.values ?? []}
+ yTicks={dashboardData?.revenue?.yTicks ?? dashboardData?.data?.revenue?.yTicks ?? []}
+ />
+
+ <TodayScheduleCard
+ dateLabel={new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+ appointments={todayAppointments}
+ />
+ </div>
+
+ {/* Right Column */}
+ <div className="space-y-6">
+ <StatusSplitCard
+ confirmed={liveKpi.treated}
+ pending={liveKpi.pending}
+ completed={liveKpi.completed}
+ />
+ <ThisWeekCard
+ points={dashboardData?.trend?.values ?? dashboardData?.data?.trend?.values ?? []}
+ labels={dashboardData?.trend?.labels ?? dashboardData?.data?.trend?.labels ?? []}
+ title="Activity Trend"
+ subtitle="Patient volume trend"
+ />
+ <TopConditionsCard items={dashboardData?.topConditions ?? dashboardData?.data?.topConditions ?? []} />
+ </div>
+ </div>
+
+ <MobileBottomNav active="dashboard" />
+ </main>
+ );
 }

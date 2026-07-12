@@ -1,6 +1,5 @@
 import {
   Bell,
-  Calendar,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -149,12 +148,6 @@ export default function SideBar({
         path: "/dentist/appointments",
         active: currentPage.startsWith("/dentist/appointments"),
         badgeCount: pendingDentistAppointments,
-      },
-      {
-        label: "Calendar",
-        icon: Calendar,
-        path: "/dentist/calendar",
-        active: currentPage.startsWith("/dentist/calendar"),
       },
       {
         label: "Service Config",

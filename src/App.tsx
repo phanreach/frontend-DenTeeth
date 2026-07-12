@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "./dentist/pages/dashboard";
-import Calendar from "./dentist/pages/calendar";
 import ServiceConfiguration from "./dentist/pages/service-configuration";
 import Appointments from "./dentist/pages/appointments";
 import Home from "./user/pages/home";
@@ -53,7 +52,6 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/dentist/dashboard" element={<Dashboard />} />
           <Route path="/dentist/appointments" element={<Appointments />} />
-          <Route path="/dentist/calendar" element={<Calendar />} />
           <Route
             path="/dentist/service-configuration"
             element={<ServiceConfiguration />}
