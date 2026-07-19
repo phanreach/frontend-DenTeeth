@@ -1,11 +1,5 @@
-import {
-  CloudUpload,
-  X,
-  CheckCircle2,
-  FileImage,
-  Sparkles,
-} from "lucide-react";
-import { useRef, useState, useCallback } from "react";
+import { CloudUpload, FileImage, X } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 
 interface UploadImageProps {
   onImageChange?: (file: File | null, preview?: string | null) => void;
@@ -19,8 +13,7 @@ export default function UploadImage({
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  console.log(file);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(
@@ -31,7 +24,6 @@ export default function UploadImage({
 
       setPreview(url);
       setFileName(file.name);
-      setFile(file);
 
       onImageChange?.(file, url);
     },
@@ -43,7 +35,6 @@ export default function UploadImage({
 
     setPreview(null);
     setFileName(null);
-    setFile(null);
 
     onImageChange?.(null, null);
 
@@ -54,27 +45,26 @@ export default function UploadImage({
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-
     setIsDragging(false);
 
-    handleFile(e.dataTransfer.files[0]);
+    handleFile(e.dataTransfer.files?.[0] ?? null);
   };
 
   return (
-    <div className="w-full max-w-xl overflow-hidden rounded-4xl border border-blue-100 bg-white shadow-md">
-      <div className="relative overflow-hidden bg-primary px-7 py-6">
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-md">
-            <Sparkles className="h-6 w-6 text-white" />
-          </div>
+    <div className="w-full max-w-xl rounded-xl border border-gray-200 bg-white">
+      {/* Header */}
+      <div className="border-b border-gray-200 px-6 py-5">
+        <h2 className="text-xl font-semibold text-primary">
+          Teeth AI Analysis
+        </h2>
 
-          <div>
-            <h2 className="text-lg font-bold text-white">Teeth AI Analysis</h2>
-          </div>
-        </div>
+        <p className="mt-1 text-sm text-gray-500">
+          Upload a dental image to let AI analyze your teeth.
+        </p>
       </div>
 
       <div className="p-6">
+        {/* Upload Area */}
         <div
           onClick={() => !preview && inputRef.current?.click()}
           onDragOver={(e) => {
@@ -83,21 +73,21 @@ export default function UploadImage({
           }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          className={`relative overflow-hidden rounded-3xl border-2 border-dashed transition-all duration-300
-          ${
-            preview
-              ? "border-blue-200 bg-blue-50/40"
-              : isDragging
-                ? "scale-[0.99] border-primary bg-blue-50"
-                : "border-blue-200 bg-gradient-to-b from-blue-50/80 to-white hover:border-primary hover:bg-blue-50/60"
-          }`}
+          className={`cursor-pointer rounded-xl border-2 border-dashed p-6 transition
+            ${
+              preview
+                ? "border-gray-200"
+                : isDragging
+                  ? "border-primary bg-blue-50"
+                  : "border-gray-300 hover:border-primary"
+            }`}
         >
           {preview ? (
-            <div className="relative h-[320px]">
+            <div className="relative">
               <img
                 src={preview}
-                alt="Uploaded preview"
-                className="h-full w-full object-contain p-5"
+                alt="Preview"
+                className="h-80 w-full rounded-lg border border-gray-200 bg-gray-50 object-contain p-4"
               />
 
               <button
@@ -105,95 +95,79 @@ export default function UploadImage({
                   e.stopPropagation();
                   handleClear();
                 }}
-                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition hover:border-red-200 hover:bg-red-50"
+                className="absolute right-3 top-3 rounded-full bg-white p-2 shadow-sm hover:bg-red-50"
               >
-                <X className="h-4 w-4 text-slate-500 hover:text-red-500" />
+                <X className="h-4 w-4 text-gray-600 hover:text-red-500" />
               </button>
-
-              <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow-lg">
-                <CheckCircle2 className="h-4 w-4" />
-                Ready for AI diagnosis
-              </div>
             </div>
           ) : (
-            <div className="flex h-[280px] flex-col items-center justify-center px-8 text-center">
-              <div
-                className={`mb-5 flex h-20 w-20 items-center justify-center rounded-3xl transition-all duration-300
-                ${isDragging ? "scale-110 bg-primary" : "bg-blue-100"}`}
-              >
-                <CloudUpload
-                  className={`h-10 w-10 transition-colors
-                  ${isDragging ? "text-white" : "text-primary"}`}
-                />
-              </div>
+            <div className="py-12 text-center">
+              <CloudUpload className="mx-auto h-12 w-12 text-primary" />
 
-              <h3 className="text-lg font-semibold text-slate-800">
-                {isDragging ? "Drop image here" : "Upload your dental image"}
+              <h3 className="mt-5 text-lg font-medium text-gray-800">
+                Upload Dental Image
               </h3>
 
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
-                Drag & drop your image here or click to browse. Supported
-                formats: JPG, PNG, WEBP.
+              <p className="mt-2 text-sm text-gray-500">
+                Drag & drop your image here, or click to browse.
               </p>
 
-              <div className="mt-6 rounded-xl border border-blue-100 bg-white px-4 py-2 text-xs font-medium text-slate-500 shadow-sm">
-                Maximum file size: 10MB
-              </div>
+              <p className="mt-1 text-xs text-gray-400">
+                JPG, PNG, WEBP • Maximum size 10 MB
+              </p>
             </div>
           )}
         </div>
 
+        {/* File Info */}
         {fileName && (
-          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
+          <div className="mt-4 flex items-center gap-3 rounded-lg border border-gray-200 p-3">
+            <div className="rounded-lg bg-blue-50 p-2">
               <FileImage className="h-5 w-5 text-primary" />
             </div>
 
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-slate-700">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-gray-800">
                 {fileName}
               </p>
 
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 Image uploaded successfully
               </p>
             </div>
           </div>
         )}
 
+        {/* Tips */}
         {!preview && (
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            {[
-              "Clear & bright image",
-              "Close-up preferred",
-              "Upper or lower arch",
-              "Avoid heavy filters",
-            ].map((tip) => (
-              <div
-                key={tip}
-                className="flex items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-              >
-                <div className="h-2 w-2 rounded-full bg-primary" />
-                {tip}
-              </div>
-            ))}
+          <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <h4 className="mb-2 text-sm font-semibold text-gray-700">
+              Tips for best results
+            </h4>
+
+            <ul className="list-disc space-y-1 pl-5 text-sm text-gray-500">
+              <li>Use a clear and well-lit photo.</li>
+              <li>Capture the teeth from a close distance.</li>
+              <li>Keep the image in focus.</li>
+              <li>Avoid filters or edited photos.</li>
+            </ul>
           </div>
         )}
 
+        {/* Actions */}
         {preview && (
-          <div className="mt-4 flex gap-3">
+          <div className="mt-6 flex gap-3">
             <button
               onClick={() => inputRef.current?.click()}
-              className="flex-1 rounded-2xl border border-blue-200 bg-white py-3 text-sm font-semibold text-primary transition hover:bg-blue-50"
+              className="flex-1 rounded-lg border border-primary py-3 text-sm font-medium text-primary transition hover:bg-blue-50"
             >
-              Replace image
+              Replace Image
             </button>
 
             <button
               onClick={onStartScan}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95"
+              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium text-white transition hover:opacity-90"
             >
-              <Sparkles className="h-4 w-4" />
               Start Scan
             </button>
           </div>

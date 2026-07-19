@@ -111,7 +111,7 @@ export default function Hero() {
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-blue-500/70 shadow-[0_0_16px_rgba(59,130,246,0.8)] animate-pulse" />
               </div>
 
-              <div className="bg-white px-5 pt-5 pb-6 flex flex-col gap-4">
+              <div className="bg-white px-5 pt-5 pb-8 flex flex-col gap-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
@@ -144,36 +144,16 @@ export default function Hero() {
                     </div>
                   ))}
                 </div>
-
-                <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                  <span className="text-xs text-primary font-semibold cursor-pointer hover:underline">
-                    View full report →
-                  </span>
-                </div>
               </div>
             </div>
 
-            <div className="absolute -bottom-5 -right-5 z-20 bg-primary text-white rounded-2xl px-6 py-4 shadow-[0_16px_48px_rgba(26,60,255,0.38)]">
+            <div className="absolute -bottom-13 -right-5 z-20 bg-primary text-white rounded-2xl px-6 py-4 shadow-[0_16px_48px_rgba(26,60,255,0.38)]">
               <p className="text-[10px] uppercase tracking-widest opacity-70 font-semibold">
                 Accuracy
               </p>
               <p className="text-4xl font-extrabold leading-none mt-0.5">
                 85%+
               </p>
-            </div>
-
-            <div className="absolute top-1/2 -translate-y-1/2 -right-[4.5rem] z-20 hidden xl:flex flex-col gap-2 bg-white rounded-2xl border border-slate-100 px-4 py-3.5 shadow-lg">
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                Tracked
-              </p>
-              {["Cavities", "Plaque", "Gum"].map((c) => (
-                <div key={c} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                  <span className="text-xs font-semibold text-slate-700">
-                    {c}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
         </div>
