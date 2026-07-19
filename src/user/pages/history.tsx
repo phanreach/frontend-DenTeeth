@@ -51,10 +51,10 @@ const statusConfig: Record<
     icon: <Clock4 className="w-3 h-3" />,
     className: "bg-amber-50 text-amber-700 border border-amber-200",
   },
-  COMPLETED: {
-    label: "Completed",
-    icon: <Clock4 className="w-3 h-3" />,
-    className: "bg-amber-50 text-amber-700 border border-amber-200",
+  REJECTED: {
+    label: "Rejected",
+    icon: <XCircle className="w-3 h-3" />,
+    className: "bg-red-50 text-red-700 border border-red-200",
   },
 };
 
