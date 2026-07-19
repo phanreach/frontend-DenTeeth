@@ -41,6 +41,11 @@ const statusConfig: Record<
     icon: <CheckCircle2 className="w-3 h-3" />,
     className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   },
+  COMPLETED: {
+    label: "Confirmed",
+    icon: <CheckCircle2 className="w-3 h-3" />,
+    className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  },
   CANCELLED: {
     label: "Cancelled",
     icon: <XCircle className="w-3 h-3" />,
