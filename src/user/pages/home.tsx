@@ -11,11 +11,12 @@ import useAppointmentQuery from "@/components/hook/use-appointment-query";
 export default function Home() {
   const username = getCookie(COOKIE_KEYS.username);
 
+  const { data: appointments = [] } = useAppointmentQuery();
   const stats = [
     {
       id: "appointment",
       title: "Total Appointment",
-      value: 5,
+      value: appointments.length,
       icon: "Calendar" as const,
       iconColor: "text-green-500",
     },
@@ -34,8 +35,6 @@ export default function Home() {
   const handleNavigate = () => {
     navigate("/find-dentist");
   };
-
-  const { data: appointments = [] } = useAppointmentQuery();
 
   return (
     <>
