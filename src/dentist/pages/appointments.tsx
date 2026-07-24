@@ -196,48 +196,6 @@ export default function Appointments() {
  </button>
  </section>
 
- <section className="flex items-center justify-between">
- <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">Filter by Date</p>
- <div className="flex rounded-xl bg-muted p-0.5 text-[11px] font-semibold">
- {(["day", "month", "year"] as const).map((mode) => (
- <button
- key={mode}
- onClick={() => {
- setFilterMode(mode);
- if (mode !== "day") setSelectedDateChip("all");
- }}
- className={`h-7 cursor-pointer rounded-[10px] px-3 capitalize transition ${
- filterMode === mode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
- }`}
- >
- {mode}
- </button>
- ))}
- </div>
- </section>
-
- {filterMode === "day" ? (
- <section className="scrollbar-hide flex gap-3 overflow-x-auto pb-2">
- {APPOINTMENTS_PAGE_DATA.dateChips.map((item, index) => (
- <button
- key={`${item.dayLabel}-${item.dayNumber}-${index}`}
- onClick={() => setSelectedDateChip(item.dayLabel === "All" ? "all" : item.dayNumber)}
- className="contents cursor-pointer"
- >
- <AppointmentsDateChip
- item={{
- ...item,
- active:
- item.dayLabel === "All"
- ? selectedDateChip === "all"
- : selectedDateChip === item.dayNumber,
- }}
- />
- </button>
- ))}
- </section>
- ) : null}
-
  <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
  <div className="relative flex-1">
  <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/40" />

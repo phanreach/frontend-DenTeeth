@@ -4,10 +4,13 @@ import { Award, HeartHandshake, Star, UsersRound } from "lucide-react";
 import { useState, useRef } from "react";
 import AppointmentForm from "./appointment-form";
 import ReviewCard from "./review-card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../../components/ui/dialog";
+import type { service } from "@/types/api";
 
 export default function DentistBio({ data }: { data: dentist }) {
   const [selectedService, setSelectedService] = useState<number | null>(null);
   const [showAllServices, setShowAllServices] = useState(false);
+  const [dialogService, setDialogService] = useState<service | null>(null);
   const firstLetter = data.name?.trim().charAt(0).toUpperCase() ?? "?";
   const appointmentRef = useRef<HTMLDivElement | null>(null);
   const displayedServices = showAllServices
@@ -108,14 +111,7 @@ export default function DentistBio({ data }: { data: dentist }) {
               <div
                 key={service.id}
                 onClick={() => {
-                  setSelectedService(service.id);
-
-                  if (window.innerWidth < 1024) {
-                    appointmentRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }
+                  setDialogService(service);
                 }}
                 className={`cursor-pointer rounded-2xl transition ${
                   selectedService === service.id ? "ring-2 ring-primary" : ""
@@ -162,6 +158,59 @@ export default function DentistBio({ data }: { data: dentist }) {
         key={selectedService ?? "no-selected-service"}
         selectedService={selectedService}
       />
+      <Dialog open={!!dialogService} onOpenChange={(open) => !open && setDialogService(null)}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto p-0 border-0 overflow-x-hidden">
+          {dialogService && (
+            <div className="flex flex-col">
+              <img
+                src={
+                  dialogService.imageUrl ||
+                  "https://quintessencedental.com/wp-content/uploads/2025/07/Dental-Clinic-Interior-Design-jpg.webp"
+                }
+                alt={dialogService.name}
+                className="w-full h-56 object-cover rounded-t-xl"
+              />
+              <div className="p-6 pb-2">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold text-gray-900">{dialogService.name}</DialogTitle>
+                  <DialogDescription className="text-sm text-gray-600 whitespace-pre-wrap mt-3 leading-relaxed">
+                    {dialogService.description}
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+              
+              <div className="flex justify-between items-center px-6 py-4 mt-2 border-y border-gray-100 bg-gray-50/50">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Price</p>
+                  <p className="font-bold text-primary text-lg">${dialogService.price}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Duration</p>
+                  <p className="font-semibold text-gray-900">{dialogService.durationInMinutes} mins</p>
+                </div>
+              </div>
+              
+              <DialogFooter className="p-6 bg-white border-t-0 sm:justify-center">
+                <button
+                  onClick={() => {
+                    setSelectedService(dialogService.id);
+                    setDialogService(null);
+                    if (window.innerWidth < 1024) {
+                      appointmentRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }
+                  }}
+                  className="w-full rounded-xl bg-primary py-3.5 font-semibold text-white transition hover:bg-blue-700 active:scale-95 shadow-md shadow-primary/20"
+                >
+                  Select this service
+                </button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

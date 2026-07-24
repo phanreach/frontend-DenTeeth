@@ -3,7 +3,6 @@ import {
  Camera,
  Check,
  Clock3,
- Compass,
  ImageIcon,
  MapPin,
  Pencil,
@@ -18,6 +17,7 @@ import {
  type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
 import ServiceModal, { type ServiceSchema } from "../../components/dentist/service-modal";
@@ -33,23 +33,24 @@ import useDeleteService from "../hooks/use-delete-service";
 import useUploadProfilePhoto from "../hooks/use-upload-profile-photo";
 import useUpdateProfile from "../hooks/use-update-profile";
 import useCreateOperationHours from "../hooks/use-create-operation-hours";
+import { deleteOperationHourApi, updateOperationHourApi } from "../../api/api";
 import useOperationHours from "../hooks/use-operation-hours";
 
 
 
-function formatOperationHoursSummary(days: Array<{ day: string; enabled: boolean; startAt: string; endAt: string }>): string {
- const active = days.filter(d => d.enabled);
+function formatOperationHoursSummary(days: Array<{ day: string; enabled: boolean; slots: Array<{startAt: string; endAt: string}> }>): string {
+ const active = days.filter(d => d.enabled && d.slots.length > 0);
  if (active.length === 0) return "Closed";
 
- const firstHours = `${active[0].startAt} - ${active[0].endAt}`;
- const allSame = active.every(d => `${d.startAt} - ${d.endAt}` === firstHours);
+ const firstHours = active[0].slots.map(s => `${s.startAt} - ${s.endAt}`).join(", ");
+ const allSame = active.every(d => d.slots.map(s => `${s.startAt} - ${s.endAt}`).join(", ") === firstHours);
 
  if (allSame) {
  const dayNames = active.map(d => d.day).join(", ");
  return `${dayNames}: ${firstHours}`;
  }
 
- return active.map(d => `${d.day} (${d.startAt}-${d.endAt})`).join(", ");
+ return active.map(d => `${d.day} (${d.slots.map(s => `${s.startAt}-${s.endAt}`).join(", ")})`).join(", ");
 }
 
 function FieldLabel({
@@ -80,7 +81,7 @@ function ReadonlyField({
  return (
  <div className="space-y-1">
  <FieldLabel label={label} icon={icon} />
- <div className="h-11 rounded-2xl bg-muted px-3.5 py-3 text-sm text-foreground/60 ring-1 ring-border truncate">
+ <div className="h-11 rounded-xl bg-muted px-3.5 py-3 text-sm text-foreground/60 ring-1 ring-border truncate">
  {value}
  </div>
  </div>
@@ -118,7 +119,7 @@ function EditableField({
  value={value}
  onChange={(event) => onChange(event.target.value)}
  onPaste={onPaste}
- className={`h-11 w-full rounded-2xl border border-indigo-600/20 bg-card px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 ${
+ className={`h-11 w-full rounded-xl border border-indigo-600/20 bg-card px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 ${
  prefix ? "pl-8" : ""
  }`}
  />
@@ -128,6 +129,8 @@ function EditableField({
 }
 
 export default function ServiceConfiguration() {
+ const queryClient = useQueryClient();
+ const [activeTab, setActiveTab] = useState<"user-info" | "operation" | "service">("user-info");
  const [isEditingIdentity, setIsEditingIdentity] = useState(false);
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
@@ -137,6 +140,7 @@ export default function ServiceConfiguration() {
  const [profileImage, setProfileImage] = useState<string | null>(null);
  const [isSyncing, setIsSyncing] = useState(false);
  const fileInputRef = useRef<HTMLInputElement | null>(null);
+ const [editingDays, setEditingDays] = useState<Record<string, boolean>>({});
 
  const { data: profile } = useProfile();
  const dentistId = profile?.id || profile?.userId;
@@ -159,6 +163,7 @@ export default function ServiceConfiguration() {
  description: s.description,
  price: s.price,
  duration: s.durationInMinutes,
+ imageUrl: s.imageUrl,
  enabled: s.status === "ACTIVE",
  }))
  );
@@ -216,25 +221,27 @@ export default function ServiceConfiguration() {
  );
 
  if (matchedSlots.length > 0) {
- const latestSlot = matchedSlots.reduce((latest: any, current: any) => {
- return (!latest || current.id > latest.id) ? current : latest;
- }, null);
-
- if (latestSlot && latestSlot.status !== false) {
  const formatTime = (t: string) => t ? t.substring(0, 5) : "09:00";
+ const validSlots = matchedSlots
+   .filter((s: any) => s.status !== false)
+   .map((s: any) => ({
+     id: s.id,
+      startAt: formatTime(s.startAt),
+      endAt: formatTime(s.endAt),
+    }));
+
+ if (validSlots.length > 0) {
  return {
  ...item,
  enabled: true,
- startAt: formatTime(latestSlot.startAt),
- endAt: formatTime(latestSlot.endAt),
+ slots: validSlots,
  };
  }
  }
  return {
  ...item,
  enabled: false,
- startAt: "09:00",
- endAt: "17:00",
+ slots: [],
  };
  });
 
@@ -280,6 +287,7 @@ export default function ServiceConfiguration() {
  description: serviceData.description,
  price: serviceData.price,
  durationInMinutes: serviceData.duration,
+ imageUrl: serviceData.imageUrl,
  }
  });
  }
@@ -289,6 +297,7 @@ export default function ServiceConfiguration() {
  description: serviceData.description,
  price: serviceData.price,
  durationInMinutes: serviceData.duration,
+ imageUrl: serviceData.imageUrl,
  orderIndex: servicesOffered.length + 1
  }]);
  }
@@ -359,58 +368,91 @@ export default function ServiceConfiguration() {
  licenseNumber: identity.licenseNumber || "",
  yearsOfExperience: identity.yearsOfExperience || 0,
  });
-
- // Save operation hours
- const dayToNum: Record<string, number> = {
- "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 7,
- };
- const hoursPayload = availableDays
- .filter(d => d.enabled)
- .map(d => ({
- dayOfWeek: dayToNum[d.day] || 1,
- startAt: d.startAt || "09:00",
- endAt: d.endAt || "17:00",
- }));
-
- if (hoursPayload.length > 0) {
- await createOperationHoursMutation.mutateAsync({
- hours: hoursPayload,
- });
- }
- 
- // Update local formatting summary
  const summary = formatOperationHoursSummary(availableDays);
  setIdentity((prev) => ({ ...prev, availableHours: summary }));
+ queryClient.invalidateQueries({ queryKey: ["dentist-profile-full"] });
  } catch (err) {
- console.error("Profile or hours update failed:", err);
+ console.error("Profile update failed:", err);
  return;
  }
  }
  setIsEditingIdentity((prev) => !prev);
  };
 
- const sanitizeCoordinate = (value: string) => {
- return value
- .replace(/[^0-9.-]/g, "")
- .replace(/(\..*)\./g, "$1")
- .replace(/(?!^)-/g, "");
+ const handleSaveDay = async (day: string) => {
+ setIsSyncing(true);
+ try {
+ const dayToNum: Record<string, number> = {
+ "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 7,
  };
+ const daysMap: Record<string, string> = {
+ "1": "Mon", "MONDAY": "Mon",
+ "2": "Tue", "TUESDAY": "Tue",
+ "3": "Wed", "WEDNESDAY": "Wed",
+ "4": "Thu", "THURSDAY": "Thu",
+ "5": "Fri", "FRIDAY": "Fri",
+ "6": "Sat", "SATURDAY": "Sat",
+ "7": "Sun", "SUNDAY": "Sun",
+ };
+ const dayNum = dayToNum[day];
+ const dayData = availableDays.find(d => d.day === day);
+ if (!dayData) return;
+ 
+ const hoursSource = (apiOperationHours && Array.isArray(apiOperationHours) && apiOperationHours.length > 0)
+ ? apiOperationHours
+ : (profile?.operationHours && Array.isArray(profile.operationHours))
+ ? profile.operationHours
+ : [];
 
- const handleCoordinatePaste = () => (e: React.ClipboardEvent<HTMLInputElement>) => {
- const pasteData = e.clipboardData.getData("text");
- const coords = pasteData.split(/[,\s]+/).map((p) => p.trim()).filter(Boolean);
-
- if (coords.length >= 2) {
- e.preventDefault();
- const lat = sanitizeCoordinate(coords[0]);
- const lng = sanitizeCoordinate(coords[1]);
-
- setIdentity((prev) => ({
- ...prev,
- latitude: lat,
- longitude: lng,
- }));
- toast.info(`Extracted coordinates: Lat ${lat}, Lng ${lng}`);
+ const originalSlotsForDay = hoursSource.filter((s: any) => 
+ daysMap[String(s.dayOfWeek).toUpperCase()] === day
+ ) || [];
+ 
+ const originalSlotIds = originalSlotsForDay.map((s: any) => s.id).filter((id: any) => id);
+ 
+ const currentSlots = dayData.enabled ? dayData.slots.filter(s => s.startAt && s.endAt) : [];
+ const currentSlotIds = currentSlots.map(s => s.id).filter(id => id);
+ 
+ const idsToDelete = originalSlotIds.filter((id: any) => !currentSlotIds.includes(id));
+ if (idsToDelete.length > 0) {
+ await Promise.all(idsToDelete.map((id: any) => deleteOperationHourApi(id)));
+ }
+ 
+ const slotsToUpdate: any[] = [];
+ const slotsToCreate: any[] = [];
+ 
+ for (const slot of currentSlots) {
+ const payload = { dayOfWeek: dayNum, startAt: slot.startAt, endAt: slot.endAt };
+ if (slot.id) {
+ slotsToUpdate.push({ id: slot.id, data: payload });
+ } else {
+ slotsToCreate.push(payload);
+ }
+ }
+ 
+ if (slotsToUpdate.length > 0) {
+ await Promise.all(slotsToUpdate.map(update => updateOperationHourApi(update.id, update.data)));
+ }
+ 
+ if (slotsToCreate.length > 0) {
+ const uniqueNewSlots = slotsToCreate.filter((slot, index, self) => 
+ index === self.findIndex(s => s.startAt === slot.startAt && s.endAt === slot.endAt)
+ );
+ await createOperationHoursMutation.mutateAsync({ hours: uniqueNewSlots });
+ }
+ 
+ toast.success(`Operation hours for ${day} saved`);
+ queryClient.invalidateQueries({ queryKey: ["operation-hours"] });
+ queryClient.invalidateQueries({ queryKey: ["dentist-profile-full"] });
+ setEditingDays(prev => ({ ...prev, [day]: false }));
+ 
+ const summary = formatOperationHoursSummary(availableDays);
+ setIdentity((prev) => ({ ...prev, availableHours: summary }));
+ } catch (err) {
+ console.error(`Failed to save ${day}`, err);
+ toast.error(`Failed to save operation hours for ${day}`);
+ } finally {
+ setIsSyncing(false);
  }
  };
 
@@ -418,13 +460,31 @@ export default function ServiceConfiguration() {
 
  return (
  <main className="space-y-8 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-10">
- <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
- <p className="text-sm font-medium text-muted-foreground">
- View and manage your clinical profile and services.
- </p>
- </section>
+
+ {/* Tabs Navigation */}
+ <div className="flex border-b border-border">
+ <button
+ onClick={() => setActiveTab("user-info")}
+ className={`pb-3 px-4 text-sm font-medium transition-colors border-b-2 ${activeTab === "user-info" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+ >
+ User Info
+ </button>
+ <button
+ onClick={() => setActiveTab("operation")}
+ className={`pb-3 px-4 text-sm font-medium transition-colors border-b-2 ${activeTab === "operation" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+ >
+ Operation
+ </button>
+ <button
+ onClick={() => setActiveTab("service")}
+ className={`pb-3 px-4 text-sm font-medium transition-colors border-b-2 ${activeTab === "service" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+ >
+ Service
+ </button>
+ </div>
 
  {/* Full Width Clinic Identity Card */}
+ {activeTab === "user-info" && (
  <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
  <div className="flex flex-col gap-8 md:flex-row">
  <div className="flex flex-col items-center gap-4">
@@ -508,7 +568,7 @@ export default function ServiceConfiguration() {
  <select
  value={identity.gender}
  onChange={(e) => setIdentity((prev) => ({ ...prev, gender: e.target.value }))}
- className="h-11 w-full rounded-2xl border border-indigo-600/20 bg-card px-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
+ className="h-11 w-full rounded-xl border border-indigo-600/20 bg-card px-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
  >
  <option value="MALE">Male</option>
  <option value="FEMALE">Female</option>
@@ -563,36 +623,6 @@ export default function ServiceConfiguration() {
  onChange={(value) => setIdentity((prev) => ({ ...prev, address: value }))}
  />
  </div>
- <EditableField
- label="Latitude"
- icon={Compass}
- value={identity.latitude}
- onPaste={handleCoordinatePaste()}
- onChange={(value) =>
- setIdentity((prev) => ({ ...prev, latitude: sanitizeCoordinate(value) }))
- }
- />
- <EditableField
- label="Longitude"
- icon={Compass}
- value={identity.longitude}
- onPaste={handleCoordinatePaste()}
- onChange={(value) =>
- setIdentity((prev) => ({ ...prev, longitude: sanitizeCoordinate(value) }))
- }
- />
- <EditableField
- label="Telegram Username"
- icon={Send}
- value={identity.telegramUsername}
- prefix="@"
- onChange={(value) =>
- setIdentity((prev) => ({
- ...prev,
- telegramUsername: value.replace(/^@/, ""),
- }))
- }
- />
  </div>
  </div>
 
@@ -601,7 +631,7 @@ export default function ServiceConfiguration() {
  <textarea
  value={identity.biography || ""}
  onChange={(e) => setIdentity((prev) => ({ ...prev, biography: e.target.value }))}
- className="min-h-24 w-full rounded-2xl border border-indigo-600/20 bg-card px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
+ className="min-h-24 w-full rounded-xl border border-indigo-600/20 bg-card px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
  placeholder="Tell patients about your background and expertise..."
  />
  </div>
@@ -631,19 +661,12 @@ export default function ServiceConfiguration() {
  <div className="md:col-span-2">
  <ReadonlyField label="Clinic Address" icon={MapPin} value={identity.address} />
  </div>
- <ReadonlyField label="Latitude" icon={Compass} value={identity.latitude} />
- <ReadonlyField label="Longitude" icon={Compass} value={identity.longitude} />
- <ReadonlyField
- label="Telegram"
- icon={Send}
- value={`@${identity.telegramUsername}`}
- />
  </div>
  </div>
 
  <div className="md:col-span-3 space-y-1">
  <FieldLabel label="Biography" icon={Pencil} />
- <div className="min-h-20 rounded-2xl bg-muted px-4 py-3 text-sm text-foreground/60 ring-1 ring-border leading-relaxed">
+ <div className="min-h-20 rounded-xl bg-muted px-4 py-3 text-sm text-foreground/60 ring-1 ring-border leading-relaxed">
  {identity.biography || "No biography provided yet."}
  </div>
  </div>
@@ -651,10 +674,22 @@ export default function ServiceConfiguration() {
  )}
  </div>
 
- <div className="border-t border-border pt-6">
- <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-indigo-600 ">
- Operating Days & Hours
- </p>
+ </div>
+ </div>
+ </article>
+ )}
+
+ {/* Operation Section */}
+ {activeTab === "operation" && (
+ <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+ <div>
+ <div className="flex items-center justify-between pb-4">
+ <div>
+ <h2 className="text-base font-semibold text-foreground">Operating Days & Hours</h2>
+ <p className="text-xs text-muted-foreground">Manage your availability for appointments.</p>
+ </div>
+ 
+ </div>
  
  <div className="space-y-4">
  {availableDays.map((item) => {
@@ -662,21 +697,21 @@ export default function ServiceConfiguration() {
  return (
  <div
  key={item.day}
- className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3.5 rounded-2xl border transition ${
+ className={`flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-4 rounded-2xl border transition ${
  isEnabled
  ? "bg-indigo-50 border-indigo-600/20"
  : "bg-muted/30 border-transparent opacity-60"
  }`}
  >
  {/* Left side: Checkbox + Day Name */}
- <div className="flex items-center gap-3">
+ <div className="flex items-center gap-3 pt-2">
  <input
  type="checkbox"
  id={`day-${item.day}`}
  checked={isEnabled}
- disabled={!isEditingIdentity}
+ disabled={!editingDays[item.day]}
  onChange={() => {
- if (isEditingIdentity) {
+ if (editingDays[item.day]) {
  setAvailableDays((days) =>
  days.map((d) => (d.day === item.day ? { ...d, enabled: !d.enabled } : d))
  );
@@ -696,54 +731,116 @@ export default function ServiceConfiguration() {
  item.day === "Sat" ? "Saturday" : "Sunday"}
  </label>
  </div>
-
- {/* Right side: Time Inputs (in edit mode) or static times (in view mode) */}
- <div className="flex items-center gap-2">
- {isEnabled ? (
- isEditingIdentity ? (
- <div className="flex items-center gap-2">
- <input
- type="time"
- value={item.startAt}
- onChange={(e) => {
- setAvailableDays((days) =>
- days.map((d) => (d.day === item.day ? { ...d, startAt: e.target.value } : d))
- );
- }}
- className="h-9 w-28 rounded-xl border border-indigo-600/20 bg-card px-2 text-xs font-semibold text-foreground outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
- />
- <span className="text-xs text-muted-foreground">to</span>
- <input
- type="time"
- value={item.endAt}
- onChange={(e) => {
- setAvailableDays((days) =>
- days.map((d) => (d.day === item.day ? { ...d, endAt: e.target.value } : d))
- );
- }}
- className="h-9 w-28 rounded-xl border border-indigo-600/20 bg-card px-2 text-xs font-semibold text-foreground outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
- />
- </div>
- ) : (
- <div className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-950/40 ">
- <Clock3 className="size-3.5" />
- <span>{item.startAt} - {item.endAt}</span>
- </div>
- )
- ) : (
- <span className="text-xs font-semibold text-muted-foreground">Closed</span>
- )}
- </div>
+  {/* Right side: Time Inputs */}
+  <div className="flex flex-wrap gap-3 w-full sm:w-auto flex-1 sm:justify-end">
+  {isEnabled ? (
+  item.slots.map((slot, slotIndex) => (
+  <div key={slotIndex} className={`flex items-center gap-2 ${editingDays[item.day] ? "p-3 rounded-xl border border-indigo-600/10 bg-background shadow-sm" : ""}`}>
+  {editingDays[item.day] ? (
+  <>
+  <input
+  type="time"
+  value={slot.startAt}
+  onChange={(e) => {
+  setAvailableDays((days) =>
+  days.map((d) => {
+  if (d.day === item.day) {
+  const newSlots = [...d.slots];
+  newSlots[slotIndex].startAt = e.target.value;
+  return { ...d, slots: newSlots };
+  }
+  return d;
+  })
+  );
+  }}
+  className="h-9 w-28 rounded-lg border border-indigo-600/20 bg-muted/30 px-2 text-xs font-semibold text-foreground outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
+  />
+  <span className="text-xs font-medium text-muted-foreground px-1">to</span>
+  <input
+  type="time"
+  value={slot.endAt}
+  onChange={(e) => {
+  setAvailableDays((days) =>
+  days.map((d) => {
+  if (d.day === item.day) {
+  const newSlots = [...d.slots];
+  newSlots[slotIndex].endAt = e.target.value;
+  return { ...d, slots: newSlots };
+  }
+  return d;
+  })
+  );
+  }}
+  className="h-9 w-28 rounded-lg border border-indigo-600/20 bg-muted/30 px-2 text-xs font-semibold text-foreground outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
+  />
+  {item.slots.length > 1 && (
+  <button
+  onClick={() => {
+  setAvailableDays((days) =>
+  days.map((d) => {
+  if (d.day === item.day) {
+  const newSlots = d.slots.filter((_, i) => i !== slotIndex);
+   return { ...d, slots: newSlots };
+  }
+  return d;
+  })
+  );
+  }}
+  className="grid size-8 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition ml-1"
+  >
+  <Trash2 className="size-3.5" />
+  </button>
+  )}
+  </>
+  ) : (
+  <div className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-600/10 bg-background px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm">
+  <Clock3 className="size-4" />
+  <span>{slot.startAt} - {slot.endAt}</span>
+  </div>
+  )}
+  </div>
+  ))
+  ) : (
+  <span className="text-xs font-semibold text-muted-foreground pt-2">Closed</span>
+  )}
+  {isEnabled && editingDays[item.day] && (
+  <button
+  onClick={() => {
+  setAvailableDays((days) =>
+  days.map((d) => {
+  if (d.day === item.day) {
+  return { ...d, slots: [...d.slots, { startAt: "", endAt: "" }] };
+  }
+  return d;
+  })
+  );
+  }}
+  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-dashed border-indigo-600/30 bg-transparent px-4 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 transition"
+  >
+  <Plus className="size-4" /> Add Slot
+  </button>
+  )}
+  </div>
+  <div className="flex items-center sm:ml-4 mt-4 sm:mt-0 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-4">
+    <button
+      onClick={() => editingDays[item.day] ? handleSaveDay(item.day) : setEditingDays(prev => ({...prev, [item.day]: true}))}
+      disabled={isSyncing}
+      className="inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-lg bg-violet-100 px-4 text-[10px] font-semibold text-indigo-600 transition active:scale-95 disabled:opacity-50"
+    >
+      {editingDays[item.day] ? <Save className="size-3.5" /> : <Pencil className="size-3.5" />}
+      {editingDays[item.day] ? "Save" : "Edit"}
+    </button>
+  </div>
  </div>
  );
  })}
  </div>
  </div>
- </div>
- </div>
  </article>
+ )}
 
  {/* Services Section */}
+ {activeTab === "service" && (
  <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
  <div className="flex items-center justify-between">
  <div>
@@ -847,39 +944,7 @@ export default function ServiceConfiguration() {
  </div>
  )}
  </article>
-
- {/* Map Preview at the bottom */}
- <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
- <div className="flex h-14 items-center justify-between border-b border-border px-4 py-3">
- <div className="flex items-center gap-2.5">
- <div className="grid size-8 place-items-center rounded-xl bg-indigo-600/10 text-indigo-600 ">
- <MapPin className="size-4" />
- </div>
- <span className="text-sm font-semibold text-foreground">Clinic Location</span>
- </div>
- <a
- href={`https://www.google.com/maps/search/?api=1&query=${identity.latitude},${identity.longitude}`}
- target="_blank"
- rel="noreferrer"
- className="inline-flex h-8 items-center gap-1.5 rounded-full bg-muted px-3 text-[10px] font-semibold text-muted-foreground ring-1 ring-border transition hover:bg-muted/80"
- >
- <Compass className="size-3.5" />
- Open Maps
- </a>
- </div>
- <div className="relative h-[400px] w-full bg-muted">
- <iframe
- title="Clinic Location Map"
- width="100%"
- height="100%"
- frameBorder="0"
- style={{ border: 0 }}
- src={`https://www.google.com/maps?q=${identity.latitude},${identity.longitude}&z=15&output=embed`}
- allowFullScreen
- className="dark:invert dark:grayscale dark:brightness-90"
- />
- </div>
- </article>
+ )}
 
  <ServiceModal
  isOpen={isModalOpen}
@@ -895,6 +960,7 @@ export default function ServiceConfiguration() {
  description: servicesOffered[editingServiceIndex].description || "",
  price: servicesOffered[editingServiceIndex].price || 0,
  duration: servicesOffered[editingServiceIndex].duration || 0,
+ imageUrl: servicesOffered[editingServiceIndex].imageUrl || "",
  }
  : null
  }
