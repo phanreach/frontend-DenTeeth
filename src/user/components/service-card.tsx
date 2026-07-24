@@ -31,10 +31,6 @@ export default function ServiceCard({ data }: { data: service }) {
               {data.durationInMinutes} mins
             </p>
           </div>
-
-          <button className="mt-4 w-full rounded-lg bg-primary py-2.5 font-medium text-white transition hover:bg-blue-700">
-            Select Service
-          </button>
         </div>
       </div>
     </div>

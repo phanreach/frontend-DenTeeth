@@ -4,6 +4,7 @@ export interface ServiceCreateRequest {
  price: number;
  durationInMinutes: number;
  orderIndex: number;
+ imageUrl?: string;
 }
 
 export interface ServiceAdminResponse {
@@ -14,6 +15,7 @@ export interface ServiceAdminResponse {
  durationInMinutes: number;
  orderIndex: number;
  status: "ACTIVE" | "INACTIVE";
+ imageUrl?: string;
  totalCount: number;
  pendingCount: number;
  acceptCount: number;

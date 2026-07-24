@@ -158,22 +158,32 @@ export default function AppointmentForm({
             AVAILABLE TIME SLOTS <span className="text-red-500">*</span>
           </label>
 
-          <select
-            value={selectedSlot ?? ""}
-            onChange={(e) => {
-              setSelectedSlot(e.target.value ? Number(e.target.value) : null);
-              setErrors((current) => ({ ...current, hourId: undefined }));
-            }}
-            className="w-full rounded-xl border border-gray-200 px-4 py-2.5 outline-none focus:border-primary"
-          >
-            <option value="">Select time slot</option>
-
-            {availableSlots.map((slot) => (
-              <option key={slot.id} value={slot.id}>
-                {formatTime(slot.startAt)} - {formatTime(slot.endAt)}
-              </option>
-            ))}
-          </select>
+          {availableSlots.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {availableSlots.map((slot) => (
+                <button
+                  key={slot.id}
+                  onClick={() => {
+                    setSelectedSlot(slot.id);
+                    setErrors((current) => ({ ...current, hourId: undefined }));
+                  }}
+                  className={`flex items-center justify-center rounded-xl border p-3 text-sm font-medium transition ${
+                    selectedSlot === slot.id
+                      ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
+                      : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {formatTime(slot.startAt)} - {formatTime(slot.endAt)}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center">
+              <p className="text-sm text-gray-400">
+                {selectedDate ? "No available slots for this date." : "Please select a date first."}
+              </p>
+            </div>
+          )}
           {errors.hourId && (
             <p className="mt-2 text-sm text-red-500">{errors.hourId}</p>
           )}

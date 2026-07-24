@@ -30,7 +30,7 @@ export interface ServiceConfigurationData {
  uploadHint: string;
  };
  identity: ClinicIdentity;
- availableDays: Array<{ day: string; enabled: boolean; startAt: string; endAt: string }>;
+ availableDays: Array<{ day: string; enabled: boolean; slots: Array<{ startAt: string; endAt: string; id?: number }> }>;
  servicesOffered: ServiceItem[];
 }
 
@@ -55,15 +55,15 @@ export const SERVICE_CONFIGURATION_DATA: ServiceConfigurationData = {
  licenseNumber: "",
  yearsOfExperience: 0,
  },
- availableDays: [
- { day: "Mon", enabled: true, startAt: "09:00", endAt: "17:00" },
- { day: "Tue", enabled: true, startAt: "09:00", endAt: "17:00" },
- { day: "Wed", enabled: true, startAt: "09:00", endAt: "17:00" },
- { day: "Thu", enabled: true, startAt: "09:00", endAt: "17:00" },
- { day: "Fri", enabled: true, startAt: "09:00", endAt: "17:00" },
- { day: "Sat", enabled: false, startAt: "09:00", endAt: "17:00" },
- { day: "Sun", enabled: false, startAt: "09:00", endAt: "17:00" },
- ],
+  availableDays: [
+    { day: "Mon", enabled: false, slots: [] },
+    { day: "Tue", enabled: false, slots: [] },
+    { day: "Wed", enabled: false, slots: [] },
+    { day: "Thu", enabled: false, slots: [] },
+    { day: "Fri", enabled: false, slots: [] },
+    { day: "Sat", enabled: false, slots: [] },
+    { day: "Sun", enabled: false, slots: [] },
+  ],
  servicesOffered: [
  { name: "Scaling & Polishing", enabled: true, description: "Professional cleaning of teeth", price: 50, duration: 30 },
  { name: "Root Canal Treatment", enabled: false, description: "Treatment for infected tooth pulp", price: 300, duration: 60 },

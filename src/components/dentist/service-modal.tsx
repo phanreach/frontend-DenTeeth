@@ -1,14 +1,16 @@
-import { X } from "lucide-react";
+import { X, UploadCloud, Camera } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
+import { toast } from "sonner";
 
 const serviceSchema = z.object({
  name: z.string().min(1, "Name is required"),
  description: z.string().min(1, "Description is required"),
  price: z.coerce.number().min(0, "Price must be a positive number"),
  duration: z.coerce.number().int().positive("Duration must be a positive integer"),
+ imageUrl: z.string().optional(),
 });
 
 export type ServiceSchema = z.infer<typeof serviceSchema>;
@@ -25,6 +27,8 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  register,
  handleSubmit,
  reset,
+ setValue,
+ watch,
  formState: { errors },
  } = useForm<ServiceSchema>({
  resolver: zodResolver(serviceSchema) as any,
@@ -33,6 +37,7 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  description: "",
  price: 0,
  duration: 30,
+ imageUrl: "",
  },
  });
 
@@ -46,9 +51,14 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  description: "",
  price: 0,
  duration: 30,
+ imageUrl: "",
  });
  }
  }, [initialData, reset]);
+
+ const imageUrl = watch("imageUrl");
+ const [isUploading, setIsUploading] = useState(false);
+ const fileInputRef = useRef<HTMLInputElement>(null);
 
  if (!isOpen) return null;
 
@@ -62,6 +72,38 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  if (["e", "E", "-", "+"].includes(e.key)) {
  e.preventDefault();
  }
+ };
+
+  const handleFileUpload = async (file: File) => {
+  setIsUploading(true);
+  try {
+  const reader = new FileReader();
+  reader.onloadend = () => {
+  const base64String = reader.result as string;
+  setValue("imageUrl", base64String);
+  setIsUploading(false);
+  };
+  reader.onerror = () => {
+  toast.error("Failed to process image");
+  setIsUploading(false);
+  };
+  reader.readAsDataURL(file);
+  } catch (err: any) {
+  console.error("Processing failed", err);
+  toast.error(err.message || "Failed to process photo");
+  setIsUploading(false);
+  }
+  };
+
+ const handleDrop = (e: React.DragEvent) => {
+ e.preventDefault();
+ const file = e.dataTransfer.files?.[0];
+ if (file && file.type.startsWith("image/")) handleFileUpload(file);
+ };
+
+ const handlePaste = (e: React.ClipboardEvent) => {
+ const file = e.clipboardData.files?.[0];
+ if (file && file.type.startsWith("image/")) handleFileUpload(file);
  };
 
  return (
@@ -111,6 +153,52 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  <p className="text-[10px] font-semibold text-rose-500">{errors.description.message}</p>
  )}
  </div>
+
+ <div className="space-y-1.5">
+  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+  Service Image
+  </label>
+  <div
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={handleDrop}
+  onPaste={handlePaste}
+  onClick={() => fileInputRef.current?.click()}
+  className="group relative flex h-24 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition hover:border-indigo-600 hover:bg-indigo-50/50 outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
+  tabIndex={0}
+  >
+  <input
+  ref={fileInputRef}
+  type="file"
+  accept="image/png, image/jpeg, image/jpg"
+  className="hidden"
+  onChange={(e) => {
+  const file = e.target.files?.[0];
+  if (file) handleFileUpload(file);
+  }}
+  />
+  {isUploading ? (
+  <div className="flex flex-col items-center gap-2">
+  <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+  <span className="text-[10px] font-semibold text-indigo-600">Uploading...</span>
+  </div>
+  ) : imageUrl ? (
+  <>
+  <img src={imageUrl} alt="Service preview" className="h-full w-full object-cover" />
+  <div className="absolute inset-0 grid place-items-center bg-black/40 opacity-0 transition group-hover:opacity-100">
+  <Camera className="size-6 text-white" />
+  </div>
+  </>
+  ) : (
+  <div className="flex flex-col items-center gap-1.5 text-muted-foreground group-hover:text-indigo-600">
+  <UploadCloud className="size-6" />
+  <span className="text-xs font-medium">Click, drag, or paste image</span>
+  </div>
+  )}
+  </div>
+  {errors.imageUrl && (
+  <p className="text-[10px] font-semibold text-rose-500">{errors.imageUrl.message}</p>
+  )}
+  </div>
 
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-1.5">

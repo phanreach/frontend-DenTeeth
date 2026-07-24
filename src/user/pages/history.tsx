@@ -61,6 +61,16 @@ const statusConfig: Record<
     icon: <XCircle className="w-3 h-3" />,
     className: "bg-red-50 text-red-700 border border-red-200",
   },
+  COMPLETED: {
+    label: "Completed",
+    icon: <CheckCircle2 className="w-3 h-3" />,
+    className: "bg-blue-50 text-blue-700 border border-blue-200",
+  },
+  RESCHEDULED: {
+    label: "Rescheduled",
+    icon: <Clock4 className="w-3 h-3" />,
+    className: "bg-orange-50 text-orange-700 border border-orange-200",
+  },
 };
 
 function AppointmentCard({
