@@ -84,7 +84,6 @@ export default function DiagnosisCard({ data }: { data: Diagnosis }) {
             </div>
           </div>
 
-          {/* Detection */}
           <div className="space-y-5">
             {findings.length === 0 && (
               <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
@@ -128,7 +127,6 @@ export default function DiagnosisCard({ data }: { data: Diagnosis }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between border-t border-slate-100 pt-4">
           <div className="flex -space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-50">

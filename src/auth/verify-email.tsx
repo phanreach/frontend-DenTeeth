@@ -1,50 +1,124 @@
 import { MailCheck, ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/nav-bar";
 import Footer from "../components/footer";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import checkVerification from "../components/hook/auth/check-verification";
 import { COOKIE_KEYS, getCookie } from "../utils/cookies";
 import useResendVerification from "../components/hook/auth/resend-verification";
+import api from "../api/api";
+import { API_ENDPOINT } from "../api/endpoint";
+import type {
+  LoginApiResponse,
+  LoginPayload,
+} from "../components/hook/auth/use-login";
+import {
+  clearPendingSignupCredentials,
+  getPendingSignupCredentials,
+  navigateToHomeForRoles,
+  saveAuthSession,
+} from "../utils/auth-session";
+import axios from "axios";
+import { toast } from "sonner";
+
+type CheckVerificationResponse = {
+  success?: boolean;
+  status?: number;
+  message?: string;
+  data?: boolean;
+};
+
+function isVerificationSuccessful(response?: CheckVerificationResponse) {
+  return (
+    response?.data === true ||
+    (response?.status === 200 && response.data !== false)
+  );
+}
 
 export default function VerifyEmail() {
   const [countdown, setCountdown] = useState(60);
   const [resendError, setResendError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const hasStartedLogin = useRef(false);
 
   const navigate = useNavigate();
   const { resendVerification, loading, error, success } =
     useResendVerification();
 
   const email = getCookie(COOKIE_KEYS.email);
-  const roles = getCookie(COOKIE_KEYS.roles);
+  const loginAfterVerification = useMutation({
+    mutationFn: async (payload: LoginPayload) => {
+      const res = await api.post<LoginApiResponse>(API_ENDPOINT.LOGIN, payload);
 
-  const { data } = useQuery({
+      return res.data;
+    },
+
+    onSuccess: (response) => {
+      saveAuthSession(response.data);
+      clearPendingSignupCredentials();
+      toast.success("Email verified. You're signed in now.");
+
+      setTimeout(() => {
+        navigateToHomeForRoles(navigate, response.data.roles);
+      }, 1200);
+    },
+
+    onError: (err: unknown) => {
+      let message =
+        "Email verified, but automatic login failed. Please log in manually.";
+
+      if (axios.isAxiosError(err)) {
+        message =
+          (err.response?.data as { message?: string })?.message || message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+
+      setLoginError(message);
+      toast.error(message);
+    },
+  });
+
+  const { data } = useQuery<CheckVerificationResponse>({
     queryKey: ["check-verification", email],
     queryFn: () => checkVerification(email || ""),
     enabled: !!email,
     refetchInterval: (query) => {
       console.log("Polling response:", query.state.data);
-      const verified = query.state.data?.data;
+      const verified = isVerificationSuccessful(query.state.data);
       return verified ? false : 3000;
     },
   });
   console.log("email from cookie:", email);
-  const isVerified = data?.data === true;
+  const isVerified = isVerificationSuccessful(data);
 
   useEffect(() => {
-    if (isVerified) {
-      setTimeout(() => {
-        if (roles?.includes("ADMIN")) {
-          navigate("/admin/dashboard");
-        } else if (roles?.includes("DENTIST")) {
-          navigate("/dentist/dashboard");
-        } else {
-          navigate("/home");
-        }
-      }, 1200);
+    if (!isVerified || hasStartedLogin.current) {
+      return;
     }
-  }, [isVerified, roles, navigate]);
+
+    hasStartedLogin.current = true;
+
+    const credentials = getPendingSignupCredentials();
+
+    if (!credentials) {
+      const message =
+        "Email verified. Please log in to continue because the signup session expired.";
+      toast.info(message);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1200);
+
+      return;
+    }
+
+    loginAfterVerification.mutate({
+      username: credentials.username,
+      password: credentials.password,
+    });
+  }, [isVerified, loginAfterVerification, navigate]);
 
   useEffect(() => {
     if (isVerified || countdown <= 0) return;
@@ -93,7 +167,9 @@ export default function VerifyEmail() {
               <p className="text-md text-neutral-500 leading-relaxed mb-6">
                 Your account has been activated successfully.
                 <br />
-                Redirecting you now...
+                {loginAfterVerification.isPending
+                  ? "Signing you in now..."
+                  : "Redirecting you now..."}
               </p>
             </>
           ) : (
@@ -162,6 +238,12 @@ export default function VerifyEmail() {
                 {(error || resendError) && (
                   <p className="mt-3 text-center text-sm text-red-600">
                     {error || resendError}
+                  </p>
+                )}
+
+                {loginError && (
+                  <p className="mt-3 text-center text-sm text-red-600">
+                    {loginError}
                   </p>
                 )}
               </div>

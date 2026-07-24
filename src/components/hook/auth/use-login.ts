@@ -4,7 +4,10 @@ import api from "../../../api/api";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { COOKIE_KEYS, setCookie } from "../../../utils/cookies";
+import {
+  navigateToHomeForRoles,
+  saveAuthSession,
+} from "../../../utils/auth-session";
 
 export type LoginPayload = {
   username: string;
@@ -40,21 +43,11 @@ export default function useLogin() {
     onSuccess: (response: LoginApiResponse) => {
       const data = response.data;
 
-      setCookie(COOKIE_KEYS.token, data.token);
-      setCookie(COOKIE_KEYS.username, data.username);
-      setCookie(COOKIE_KEYS.roles, data.roles.join(","));
-      setCookie(COOKIE_KEYS.email, data.email);
-      setCookie(COOKIE_KEYS.permissions, data.permissions.join(","));
+      saveAuthSession(data);
 
       toast.success(response.message);
 
-      if (data.roles.includes("ADMIN")) {
-        navigate("/admin/dashboard");
-      } else if (data.roles.includes("DENTIST")) {
-        navigate("/dentist/dashboard");
-      } else {
-        navigate("/home");
-      }
+      navigateToHomeForRoles(navigate, data.roles);
     },
 
     onError: (error: unknown) => {

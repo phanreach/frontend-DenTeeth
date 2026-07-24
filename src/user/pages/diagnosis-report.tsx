@@ -31,7 +31,6 @@ export default function DiagnosisReport() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
       <div className="border-b bg-white">
         <div className=" p-4 sm:p-6">
           <h1 className="text-2xl font-bold text-slate-900">
@@ -39,7 +38,6 @@ export default function DiagnosisReport() {
           </h1>
         </div>
       </div>
-      {/* Content */}
       <div className="space-y-6 p-4 sm:p-6">
         <DiagnosisCard data={diagnosis} />
         <Disease data={diagnosis} />
