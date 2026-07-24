@@ -65,3 +65,33 @@ export type AppointmentData = {
   status: "PENDING" | "COMPLETED" | "CANCELLED" | "REJECTED" | "CONFIRMED";
   remarks: string;
 };
+
+export type Disease = {
+  id: number;
+  name: string;
+  description: string;
+  symptoms: string;
+  causes: string;
+  treatment: string;
+  prevention: string;
+};
+
+export type DiagnosisFinding = {
+  className: string;
+  diseaseId: number;
+  coveragePct: number;
+};
+
+export type Diagnosis = {
+  diagnosisId: number;
+
+  imageUrl: string;
+
+  overlayUrl: string;
+
+  findings: DiagnosisFinding[];
+
+  diseases: Disease[];
+
+  createdAt: string;
+};

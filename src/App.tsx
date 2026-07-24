@@ -19,6 +19,7 @@ import History from "./user/pages/history";
 import FindDentist from "./user/pages/find-dentist";
 import DentistDetail from "./user/pages/dentist-detail";
 import AiScan from "./user/pages/ai-scan";
+import DiagnosisReport from "./user/pages/diagnosis-report";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="/ai-scan" element={<AiScan />} />
           <Route path="/history" element={<History />} />
           <Route path="/find-dentist/:dentistId" element={<DentistDetail />} />
+          <Route path="/report/:id" element={<DiagnosisReport />} />
         </Route>
       </Route>
 
