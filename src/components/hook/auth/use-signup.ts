@@ -5,6 +5,10 @@ import api from "../../../api/api";
 import { COOKIE_KEYS, setCookie } from "../../../utils/cookies";
 import { toast } from "sonner";
 import axios from "axios";
+import {
+  saveAuthSession,
+  savePendingSignupCredentials,
+} from "../../../utils/auth-session";
 
 export type SignupPayload = {
   firstName: string;
@@ -16,14 +20,14 @@ export type SignupPayload = {
 };
 
 export type SignupResponse = {
-  token: string | null;
-  expiration: string | null;
-  userId: number;
-  username: string;
-  email: string;
-  firstLogin: boolean;
-  roles: string[];
-  permissions: string[];
+  token?: string | null;
+  expiration?: string | null;
+  userId?: number;
+  username?: string;
+  email?: string;
+  firstLogin?: boolean;
+  roles?: string[];
+  permissions?: string[];
 };
 
 export type SignupApi = {
@@ -44,21 +48,28 @@ export default function useSignup() {
       return res.data;
     },
 
-    onSuccess: (response: SignupApi) => {
+    onSuccess: (response: SignupApi, payload) => {
       const data = response.data;
 
       if (data.token) {
-        setCookie(COOKIE_KEYS.token, data.token);
+        saveAuthSession({
+          token: data.token,
+          expiration: data.expiration,
+          username: data.username ?? payload.username,
+          email: data.email ?? payload.email,
+          roles: data.roles ?? [],
+          permissions: data.permissions ?? [],
+        });
       }
 
-      if (data.expiration) {
-        setCookie(COOKIE_KEYS.expiration, data.expiration);
-      }
+      savePendingSignupCredentials({
+        username: payload.username,
+        password: payload.password,
+        email: payload.email,
+      });
 
-      setCookie(COOKIE_KEYS.username, data.username);
-      setCookie(COOKIE_KEYS.roles, data.roles.join(","));
-      setCookie(COOKIE_KEYS.email, data.email);
-      setCookie(COOKIE_KEYS.permissions, data.permissions.join(","));
+      setCookie(COOKIE_KEYS.username, data.username ?? payload.username);
+      setCookie(COOKIE_KEYS.email, data.email ?? payload.email);
       toast.success(response.message);
 
       navigate("/verify-email");
