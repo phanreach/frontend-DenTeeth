@@ -19,7 +19,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useDentistAppointments, {
   getPendingDentistAppointmentCount,
 } from "../dentist/hooks/use-dentist-appointments";
-import { clearAuthCookies, COOKIE_KEYS, getCookie } from "../utils/cookies";
+import useLogout from "./hook/auth/use-logout";
+import { COOKIE_KEYS, getCookie } from "../utils/cookies";
 
 type UserRole = "ADMIN" | "DENTIST" | "PATIENT";
 type NavIcon = typeof LayoutDashboard;
@@ -77,6 +78,7 @@ export default function SideBar({
   setCollapsed,
 }: SideBarProps) {
   const navigate = useNavigate();
+  const logout = useLogout();
   const location = useLocation();
   const [dentistAppointments] = useDentistAppointments();
 
@@ -197,17 +199,13 @@ export default function SideBar({
   };
 
   const handleLogout = () => {
-    clearAuthCookies();
-
-    navigate("/login");
+    logout.mutate();
   };
 
   return (
     <>
       {isMobile && !isDentistRole && (
-        <div
-          className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl"
-        >
+        <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl">
           <button
             onClick={() => setCollapsed(false)}
             className="rounded-xl p-2 transition hover:bg-secondary"
@@ -270,7 +268,9 @@ export default function SideBar({
               <div className="text-left">
                 <h1
                   className={`text-xl font-bold ${
-                    isDentistRole ? "text-indigo-600 dark:text-indigo-400" : "text-primary"
+                    isDentistRole
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-primary"
                   }`}
                 >
                   DenTeeth
@@ -320,7 +320,11 @@ export default function SideBar({
                 >
                   <Icon className="h-5 w-5 shrink-0" />
 
-                  {!collapsed && <span className="ml-3 min-w-0 flex-1 text-left">{item.label}</span>}
+                  {!collapsed && (
+                    <span className="ml-3 min-w-0 flex-1 text-left">
+                      {item.label}
+                    </span>
+                  )}
 
                   {item.badgeCount ? (
                     <span
@@ -346,7 +350,9 @@ export default function SideBar({
         </div>
 
         {/* Bottom User */}
-        <div className={`border-t border-border p-4 ${isDentistRole ? "hidden" : ""}`}>
+        <div
+          className={`border-t border-border p-4 ${isDentistRole ? "hidden" : ""}`}
+        >
           {!collapsed ? (
             <div className="p-4">
               <div className="flex items-center gap-3">
@@ -367,17 +373,20 @@ export default function SideBar({
 
               <button
                 onClick={handleLogout}
-                className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-red-500/10 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white"
+                disabled={logout.isPending}
+                className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-red-500/10 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                {logout.isPending ? "Logging out..." : "Logout"}
               </button>
             </div>
           ) : (
             <button
               onClick={() => handleNavigate(homePath)}
               className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg ${
-                isDentistRole ? "bg-[#432DD7] shadow-[#432DD7]/20" : "bg-primary shadow-primary/20"
+                isDentistRole
+                  ? "bg-[#432DD7] shadow-[#432DD7]/20"
+                  : "bg-primary shadow-primary/20"
               }`}
             >
               <UserRound className="h-6 w-6" />

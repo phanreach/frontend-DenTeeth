@@ -6,12 +6,21 @@ import { Progress } from "@/components/ui/progress";
 import { Eye, EyeOff, Verified, ScanSearch } from "lucide-react";
 
 type DiagnosisFinding = Diagnosis["findings"][number] & {
-  coverage?: unknown;
-  coverage_pct?: unknown;
-  confidence?: unknown;
+  class?: string;
+  className?: string;
+  confidence_pct?: number;
+  confidencePct?: number;
+  diseaseId?: number;
+};
+type DiagnosisCardProps = {
+  data: Diagnosis;
+  showScanInfo?: boolean;
 };
 
-export default function DiagnosisCard({ data }: { data: Diagnosis }) {
+export default function DiagnosisCard({
+  data,
+  showScanInfo = true,
+}: DiagnosisCardProps) {
   const [showOverlay, setShowOverlay] = useState(true);
   const findings: DiagnosisFinding[] = data.findings ?? [];
   const diseases = data.diseases ?? [];
@@ -61,29 +70,34 @@ export default function DiagnosisCard({ data }: { data: Diagnosis }) {
         <div>
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
-                Scan ID #{data.diagnosisId}
-              </p>
+              {showScanInfo && data.diagnosisId > 0 && (
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
+                  Scan ID #{data.diagnosisId}
+                </p>
+              )}
 
               <h2 className="mt-1 text-lg font-bold text-slate-900 sm:text-xl">
                 Oral Health Analysis
               </h2>
             </div>
 
-            <div className="text-left sm:text-right">
-              <p className="text-sm font-semibold">
-                {new Date(data.createdAt).toLocaleDateString()}
-              </p>
+            {showScanInfo && data.createdAt && (
+              <div className="text-left sm:text-right">
+                <p className="text-sm font-semibold">
+                  {new Date(data.createdAt).toLocaleDateString()}
+                </p>
 
-              <p className="text-xs text-slate-400">
-                {new Date(data.createdAt).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-            </div>
+                <p className="text-xs text-slate-400">
+                  {new Date(data.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            )}
           </div>
 
+          {/* Detection */}
           <div className="space-y-5">
             {findings.length === 0 && (
               <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
@@ -97,26 +111,30 @@ export default function DiagnosisCard({ data }: { data: Diagnosis }) {
               </div>
             )}
 
-            {findings.map((item) => {
-              const disease = diseases.find((d) => d.id === item.diseaseId);
-              const coveragePct = item.coveragePct;
+            {findings.map((item, index) => {
+              const className = item.className ?? item.class ?? "Unknown";
+
+              const confidencePct =
+                item.confidencePct ?? item.confidence_pct ?? 0;
+
+              const disease =
+                item.diseaseId != null
+                  ? diseases.find((d) => d.id === item.diseaseId)
+                  : undefined;
 
               return (
-                <div
-                  key={`${item.diseaseId}-${item.className}`}
-                  className=" p-4"
-                >
+                <div key={`${className}-${index}`} className="p-4">
                   <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <span className="font-semibold capitalize text-slate-800">
-                      {item.className}
+                      {className}
                     </span>
 
                     <span className="text-sm font-bold text-primary">
-                      {coveragePct.toFixed(0)}% Coverage
+                      {confidencePct.toFixed(0)}% Confidence
                     </span>
                   </div>
 
-                  <Progress value={coveragePct} className="h-2" />
+                  <Progress value={confidencePct} className="h-2" />
 
                   <p className="mt-3 text-sm leading-6 text-slate-500">
                     {disease?.description ?? "No description available."}
@@ -127,6 +145,7 @@ export default function DiagnosisCard({ data }: { data: Diagnosis }) {
           </div>
         </div>
 
+        {/* Footer */}
         <div className="flex items-center justify-between border-t border-slate-100 pt-4">
           <div className="flex -space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-50">

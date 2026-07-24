@@ -79,7 +79,7 @@ export type Disease = {
 export type DiagnosisFinding = {
   className: string;
   diseaseId: number;
-  coveragePct: number;
+  confidencePct: number;
 };
 
 export type Diagnosis = {
