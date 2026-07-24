@@ -46,7 +46,7 @@ function App() {
           <Route path="/ai-scan" element={<AiScan />} />
           <Route path="/history" element={<History />} />
           <Route path="/find-dentist/:dentistId" element={<DentistDetail />} />
-          <Route path="/report/:id" element={<DiagnosisReport />} />
+          <Route path="/ai-scan/report/:id" element={<DiagnosisReport />} />
         </Route>
       </Route>
 
