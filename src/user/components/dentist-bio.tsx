@@ -61,7 +61,9 @@ export default function DentistBio({ data }: { data: dentist }) {
                 <p className="text-[10px] uppercase tracking-widest text-gray-400">
                   Experience
                 </p>
-                <p className="text-base font-semibold text-gray-900">12+ yrs</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {data.yearsOfExperience} years
+                </p>
               </div>
 
               <div className="flex flex-col gap-1.5 rounded-xl bg-gray-50 p-3">
