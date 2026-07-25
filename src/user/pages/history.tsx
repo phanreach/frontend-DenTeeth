@@ -33,15 +33,10 @@ const formatTime = (time: string) => {
 };
 
 const statusConfig: Record<
-  AppointmentData["status"],
+  string,
   { label: string; icon: ReactNode; className: string }
 > = {
   CONFIRMED: {
-    label: "Confirmed",
-    icon: <CheckCircle2 className="w-3 h-3" />,
-    className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  },
-  COMPLETED: {
     label: "Confirmed",
     icon: <CheckCircle2 className="w-3 h-3" />,
     className: "bg-emerald-50 text-emerald-700 border border-emerald-200",

@@ -55,7 +55,7 @@ export default function Dashboard() {
     
     // Appointments Overview
     const appTrend = data.appointmentTrend || {};
-    const chartItems = Object.entries(appTrend).map(([date, statuses]: [string, Record<string, number>]) => {
+    const chartItems = Object.entries(appTrend).map(([date, statuses]: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
       const dateObj = new Date(date);
       const label = dateObj.toLocaleDateString("en-US", { weekday: 'short' });
       const appointments = Object.values(statuses).reduce((sum: number, val: unknown  ) => sum + Number(val), 0);
@@ -68,14 +68,14 @@ export default function Dashboard() {
     const revLabels = Object.keys(revTrend).map(date => new Date(date).toLocaleDateString("en-US", { weekday: 'short' }));
     const revValues = Object.values(revTrend).map(Number);
     const maxRev = Math.max(...revValues, 100);
-    const revTicks = [maxRev, maxRev * 0.75, maxRev * 0.5, maxRev * 0.25, 0].map(Math.round);
+    const revTicks = [maxRev, maxRev * 0.75, maxRev * 0.5, maxRev * 0.25, 0].map(Math.round).map(String);
 
     // Trend (Patient Volume)
     const trendValues = chartItems.map(item => item.appointments);
 
     // Top Services
     const topServices = data.topServices || [];
-    const topConditions = topServices.map((s: unknown  ) => ({ label: s.serviceName, count: s.count }));
+    const topConditions = topServices.map((s: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => ({ label: s.serviceName, count: s.count }));
 
     return { items: chartItems, revLabels, revValues, revTicks, trendLabels: revLabels, trendValues, topConditions };
   }, [dashboardData]);
@@ -87,13 +87,13 @@ export default function Dashboard() {
  // Get today's local date in yyyy-MM-dd format
  const todayStr = new Date().toLocaleDateString("en-CA"); // Gets local date in yyyy-MM-dd format safely
  
- const filtered = apiAppointments.filter((app: unknown  ) => app.appointmentDate === todayStr);
+ const filtered = apiAppointments.filter((app: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => app.appointmentDate === todayStr);
 
  if (filtered.length === 0) {
  return [];
  }
 
- return filtered.map((app: unknown  ) => ({
+ return filtered.map((app: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => ({
  id: String(app.id),
  patient: `${app.patientFirstName || ""} ${app.patientLastName || ""}`.trim() || app.patientUsername || "Patient",
  condition: app.serviceName || "Dental Treatment",

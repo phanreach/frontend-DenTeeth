@@ -58,7 +58,7 @@ api.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const status = error.response?.status;
-    const data = error.response?.data as unknown;
+    const data = error.response?.data as { message?: string };
     
     // Auto-logout if token is expired
     if (status === 401 && data?.message?.toLowerCase().includes("expired")) {

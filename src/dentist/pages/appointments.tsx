@@ -48,7 +48,8 @@ export default function Appointments() {
  email: "patient@example.com", 
  visitType: "In-clinic visit" as const,
  note: item.remarks || "",
- status: item.status.toLowerCase() as unknown,
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ status: item.status.toLowerCase() as any,
  }));
  }, [apiAppointments]);
 
@@ -72,7 +73,8 @@ export default function Appointments() {
  initials: activeItem.initials,
  service: activeItem.service,
  time: activeItem.time,
- status: activeItem.status,
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ status: activeItem.status as any,
  price: activeItem.price,
  age: activeItem.age,
  patientId: activeItem.patientId,

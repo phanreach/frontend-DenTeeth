@@ -415,7 +415,7 @@ export default function ServiceConfiguration() {
  daysMap[String(s.dayOfWeek).toUpperCase()] === day
  ) || [];
  
- const originalSlotIds = originalSlotsForDay.map((s: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => s.id).filter((id: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => id);
+ const originalSlotIds = originalSlotsForDay.map((s: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => s.id).filter((id: any) => id);
  
  const currentSlots = dayData.enabled ? dayData.slots.filter(s => s.startAt && s.endAt) : [];
  const currentSlotIds = currentSlots.map(s => s.id).filter(id => id);
