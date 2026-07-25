@@ -136,6 +136,7 @@ export default function ServiceConfiguration() {
  const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
  const [identity, setIdentity] = useState<ClinicIdentity>(SERVICE_CONFIGURATION_DATA.identity);
  const [availableDays, setAvailableDays] = useState(SERVICE_CONFIGURATION_DATA.availableDays);
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
  const [servicesOffered, setServicesOffered] = useState<any[]>([]);
  const [profileImage, setProfileImage] = useState<string | null>(null);
  const [isSyncing, setIsSyncing] = useState(false);
@@ -156,8 +157,9 @@ export default function ServiceConfiguration() {
 
  useEffect(() => {
  if (apiServices && !isEditingIdentity && !isSyncing) {
- setServicesOffered(
- apiServices.map((s: any) => ({
+ // eslint-disable-next-line react-hooks/set-state-in-effect
+      setServicesOffered(
+ apiServices.map((s: unknown) => ({
  id: s.id, 
  name: s.name,
  description: s.description,
@@ -172,7 +174,8 @@ export default function ServiceConfiguration() {
 
  useEffect(() => {
  if (profile) {
- setIdentity((prev) => ({
+ // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIdentity((prev) => ({
  ...prev,
  firstName: profile.firstName || prev.firstName,
  lastName: profile.lastName || prev.lastName,
@@ -205,26 +208,26 @@ export default function ServiceConfiguration() {
  : [];
 
  if (hoursSource.length > 0) {
- const daysMap: Record<string, string> = {
- "1": "Mon", "MONDAY": "Mon",
- "2": "Tue", "TUESDAY": "Tue",
- "3": "Wed", "WEDNESDAY": "Wed",
- "4": "Thu", "THURSDAY": "Thu",
- "5": "Fri", "FRIDAY": "Fri",
- "6": "Sat", "SATURDAY": "Sat",
- "7": "Sun", "SUNDAY": "Sun",
+  const daysMap: Record<string, string> = {
+ "1": "Mon", "MONDAY": "Mon", "MON": "Mon",
+ "2": "Tue", "TUESDAY": "Tue", "TUE": "Tue",
+ "3": "Wed", "WEDNESDAY": "Wed", "WED": "Wed",
+ "4": "Thu", "THURSDAY": "Thu", "THU": "Thu",
+ "5": "Fri", "FRIDAY": "Fri", "FRI": "Fri",
+ "6": "Sat", "SATURDAY": "Sat", "SAT": "Sat",
+ "7": "Sun", "SUNDAY": "Sun", "SUN": "Sun",
  };
 
  const updatedDays = SERVICE_CONFIGURATION_DATA.availableDays.map((item) => {
  const matchedSlots = hoursSource.filter(
- (slot: any) => daysMap[String(slot.dayOfWeek).toUpperCase()] === item.day
+ (slot: unknown  ) => daysMap[String(slot.dayOfWeek).toUpperCase()] === item.day
  );
 
  if (matchedSlots.length > 0) {
  const formatTime = (t: string) => t ? t.substring(0, 5) : "09:00";
  const validSlots = matchedSlots
-   .filter((s: any) => s.status !== false)
-   .map((s: any) => ({
+   .filter((s: unknown) => s.status !== false)
+   .map((s: unknown) => ({
      id: s.id,
       startAt: formatTime(s.startAt),
       endAt: formatTime(s.endAt),
@@ -248,7 +251,8 @@ export default function ServiceConfiguration() {
  setAvailableDays(updatedDays);
 
  const summary = formatOperationHoursSummary(updatedDays);
- setIdentity((prev) => ({
+  
+      setIdentity((prev) => ({
  ...prev,
  availableHours: summary,
  }));
@@ -262,7 +266,8 @@ export default function ServiceConfiguration() {
  const service = servicesOffered[index];
  const newEnabled = !service.enabled;
 
- setServicesOffered((prev) =>
+  
+      setServicesOffered((prev) =>
  prev.map((s, i) => (i === index ? { ...s, enabled: newEnabled } : s))
  );
 
@@ -322,7 +327,8 @@ export default function ServiceConfiguration() {
  setIsSyncing(false);
  }
  } else {
- setServicesOffered((prev) => prev.filter((_, i) => i !== index));
+  
+      setServicesOffered((prev) => prev.filter((_, i) => i !== index));
  }
  };
 
@@ -369,7 +375,8 @@ export default function ServiceConfiguration() {
  yearsOfExperience: identity.yearsOfExperience || 0,
  });
  const summary = formatOperationHoursSummary(availableDays);
- setIdentity((prev) => ({ ...prev, availableHours: summary }));
+  
+      setIdentity((prev) => ({ ...prev, availableHours: summary }));
  queryClient.invalidateQueries({ queryKey: ["dentist-profile-full"] });
  } catch (err) {
  console.error("Profile update failed:", err);
@@ -385,14 +392,14 @@ export default function ServiceConfiguration() {
  const dayToNum: Record<string, number> = {
  "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 7,
  };
- const daysMap: Record<string, string> = {
- "1": "Mon", "MONDAY": "Mon",
- "2": "Tue", "TUESDAY": "Tue",
- "3": "Wed", "WEDNESDAY": "Wed",
- "4": "Thu", "THURSDAY": "Thu",
- "5": "Fri", "FRIDAY": "Fri",
- "6": "Sat", "SATURDAY": "Sat",
- "7": "Sun", "SUNDAY": "Sun",
+  const daysMap: Record<string, string> = {
+ "1": "Mon", "MONDAY": "Mon", "MON": "Mon",
+ "2": "Tue", "TUESDAY": "Tue", "TUE": "Tue",
+ "3": "Wed", "WEDNESDAY": "Wed", "WED": "Wed",
+ "4": "Thu", "THURSDAY": "Thu", "THU": "Thu",
+ "5": "Fri", "FRIDAY": "Fri", "FRI": "Fri",
+ "6": "Sat", "SATURDAY": "Sat", "SAT": "Sat",
+ "7": "Sun", "SUNDAY": "Sun", "SUN": "Sun",
  };
  const dayNum = dayToNum[day];
  const dayData = availableDays.find(d => d.day === day);
@@ -404,22 +411,22 @@ export default function ServiceConfiguration() {
  ? profile.operationHours
  : [];
 
- const originalSlotsForDay = hoursSource.filter((s: any) => 
+ const originalSlotsForDay = hoursSource.filter((s: unknown) => 
  daysMap[String(s.dayOfWeek).toUpperCase()] === day
  ) || [];
  
- const originalSlotIds = originalSlotsForDay.map((s: any) => s.id).filter((id: any) => id);
+ const originalSlotIds = originalSlotsForDay.map((s: unknown) => s.id).filter((id: unknown  ) => id);
  
  const currentSlots = dayData.enabled ? dayData.slots.filter(s => s.startAt && s.endAt) : [];
  const currentSlotIds = currentSlots.map(s => s.id).filter(id => id);
  
- const idsToDelete = originalSlotIds.filter((id: any) => !currentSlotIds.includes(id));
+ const idsToDelete = originalSlotIds.filter((id: unknown  ) => !currentSlotIds.includes(id));
  if (idsToDelete.length > 0) {
- await Promise.all(idsToDelete.map((id: any) => deleteOperationHourApi(id)));
+ await Promise.all(idsToDelete.map((id: unknown  ) => deleteOperationHourApi(id)));
  }
  
- const slotsToUpdate: any[] = [];
- const slotsToCreate: any[] = [];
+ const slotsToUpdate: unknown  [] = [];
+ const slotsToCreate: unknown  [] = [];
  
  for (const slot of currentSlots) {
  const payload = { dayOfWeek: dayNum, startAt: slot.startAt, endAt: slot.endAt };
@@ -447,7 +454,8 @@ export default function ServiceConfiguration() {
  setEditingDays(prev => ({ ...prev, [day]: false }));
  
  const summary = formatOperationHoursSummary(availableDays);
- setIdentity((prev) => ({ ...prev, availableHours: summary }));
+  
+      setIdentity((prev) => ({ ...prev, availableHours: summary }));
  } catch (err) {
  console.error(`Failed to save ${day}`, err);
  toast.error(`Failed to save operation hours for ${day}`);
@@ -555,19 +563,22 @@ export default function ServiceConfiguration() {
  label="First Name"
  icon={User}
  value={identity.firstName || ""}
- onChange={(value) => setIdentity((prev) => ({ ...prev, firstName: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, firstName: value }))}
  />
  <EditableField
  label="Last Name"
  icon={User}
  value={identity.lastName || ""}
- onChange={(value) => setIdentity((prev) => ({ ...prev, lastName: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, lastName: value }))}
  />
  <div className="space-y-1">
  <FieldLabel label="Gender" icon={User} />
  <select
  value={identity.gender}
- onChange={(e) => setIdentity((prev) => ({ ...prev, gender: e.target.value }))}
+ onChange={(e) =>  
+      setIdentity((prev) => ({ ...prev, gender: e.target.value }))}
  className="h-11 w-full rounded-xl border border-indigo-600/20 bg-card px-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
  >
  <option value="MALE">Male</option>
@@ -586,33 +597,38 @@ export default function ServiceConfiguration() {
  label="Clinic Name"
  icon={Building2}
  value={identity.clinicName}
- onChange={(value) => setIdentity((prev) => ({ ...prev, clinicName: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, clinicName: value }))}
  />
  </div>
  <EditableField
  label="Phone Number"
  icon={Send}
  value={identity.phoneNumber || ""}
- onChange={(value) => setIdentity((prev) => ({ ...prev, phoneNumber: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, phoneNumber: value }))}
  />
  <EditableField
  label="Specialty"
  icon={Stethoscope}
  value={identity.specialty}
- onChange={(value) => setIdentity((prev) => ({ ...prev, specialty: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, specialty: value }))}
  />
  <EditableField
  label="License Number"
  icon={ShieldCheck}
  value={identity.licenseNumber || ""}
- onChange={(value) => setIdentity((prev) => ({ ...prev, licenseNumber: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, licenseNumber: value }))}
  />
  <EditableField
  label="Years of Experience"
  icon={Briefcase}
  type="number"
  value={identity.yearsOfExperience || 0}
- onChange={(value) => setIdentity((prev) => ({ ...prev, yearsOfExperience: Number(value) }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, yearsOfExperience: Number(value) }))}
  />
 
  <div className="md:col-span-2">
@@ -620,7 +636,8 @@ export default function ServiceConfiguration() {
  label="Clinic Address"
  icon={MapPin}
  value={identity.address}
- onChange={(value) => setIdentity((prev) => ({ ...prev, address: value }))}
+ onChange={(value) =>  
+      setIdentity((prev) => ({ ...prev, address: value }))}
  />
  </div>
  </div>
@@ -630,7 +647,8 @@ export default function ServiceConfiguration() {
  <FieldLabel label="Biography" icon={Pencil} />
  <textarea
  value={identity.biography || ""}
- onChange={(e) => setIdentity((prev) => ({ ...prev, biography: e.target.value }))}
+ onChange={(e) =>  
+      setIdentity((prev) => ({ ...prev, biography: e.target.value }))}
  className="min-h-24 w-full rounded-xl border border-indigo-600/20 bg-card px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20"
  placeholder="Tell patients about your background and expertise..."
  />

@@ -6,8 +6,13 @@ export default function useOperationHours(dentistId: number | undefined) {
  queryKey: ["operation-hours", dentistId],
  queryFn: async () => {
  if (!dentistId) return null;
- const response = await getOperationHoursApi(dentistId);
- return response.data.data;
+  const response = await getOperationHoursApi(dentistId);
+ const rawData = response.data;
+ if (Array.isArray(rawData)) return rawData;
+ if (rawData && Array.isArray(rawData.data)) return rawData.data;
+ if (rawData && rawData.data && Array.isArray(rawData.data.hours)) return rawData.data.hours;
+ if (rawData && rawData.data && Array.isArray(rawData.data.operationHours)) return rawData.data.operationHours;
+ return rawData;
  },
  enabled: !!dentistId,
  });

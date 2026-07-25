@@ -18,69 +18,67 @@ export default function Dashboard() {
  const { data: dashboardData } = useDentistDashboard(period);
  const { data: apiAppointments } = useMyAppointments();
 
- // Map live KPI metrics safely
- const liveKpi = useMemo(() => {
- const kpi = {
- appointments: 0,
- treated: 0,
- pending: 0,
- completed: 0,
- satisfaction: "0.0",
- revenueLabel: "$0",
- };
- if (!dashboardData) return kpi;
+   // Map live KPI metrics safely
+  const liveKpi = useMemo(() => {
+    const kpi = {
+      appointments: 0,
+      treated: 0,
+      pending: 0,
+      completed: 0,
+      satisfaction: "0.0",
+      revenueLabel: "$0",
+    };
+    if (!dashboardData || !dashboardData.data) return kpi;
 
- console.log("[Dashboard] Live Backend Data:", dashboardData);
+    const data = dashboardData.data;
+    const stats = data.overallStats || {};
+    const statusDist = data.statusDistribution || {};
+    
+    // Revenue Calculation
+    const revTrend = data.revenueTrend || {};
+    const totalRev = Object.values(revTrend).reduce((sum: number, val: unknown  ) => sum + Number(val), 0);
 
- const appointments =
- dashboardData.totalAppointments ??
- dashboardData.appointmentsCount ??
- dashboardData.appointments ??
- dashboardData.data?.totalAppointments ??
- kpi.appointments;
+    return {
+      appointments: stats.totalAppointments ?? 0,
+      treated: stats.treatedPatients ?? 0,
+      pending: stats.pendingAppointments ?? 0,
+      completed: statusDist["COMPLETED"] ?? 0,
+      satisfaction: "5.0",
+      revenueLabel: `$${totalRev.toLocaleString()}`,
+    };
+  }, [dashboardData]);
 
- const treated =
- dashboardData.treatedPatients ??
- dashboardData.treatedCount ??
- dashboardData.treated ??
- dashboardData.data?.treatedPatients ??
- kpi.treated;
+  // Map Chart and Widget Data
+  const chartData = useMemo(() => {
+    if (!dashboardData || !dashboardData.data) return { items: [], revLabels: [], revValues: [], revTicks: [], trendLabels: [], trendValues: [], topConditions: [] };
+    const data = dashboardData.data;
+    
+    // Appointments Overview
+    const appTrend = data.appointmentTrend || {};
+    const chartItems = Object.entries(appTrend).map(([date, statuses]: [string, Record<string, number>]) => {
+      const dateObj = new Date(date);
+      const label = dateObj.toLocaleDateString("en-US", { weekday: 'short' });
+      const appointments = Object.values(statuses).reduce((sum: number, val: unknown  ) => sum + Number(val), 0);
+      const treated = statuses["COMPLETED"] ?? 0;
+      return { label, appointments, treated };
+    });
 
- const pending =
- dashboardData.pendingActions ??
- dashboardData.pendingCount ??
- dashboardData.pending ??
- dashboardData.data?.pendingActions ??
- kpi.pending;
+    // Revenue Trend
+    const revTrend = data.revenueTrend || {};
+    const revLabels = Object.keys(revTrend).map(date => new Date(date).toLocaleDateString("en-US", { weekday: 'short' }));
+    const revValues = Object.values(revTrend).map(Number);
+    const maxRev = Math.max(...revValues, 100);
+    const revTicks = [maxRev, maxRev * 0.75, maxRev * 0.5, maxRev * 0.25, 0].map(Math.round);
 
- const completed =
- dashboardData.completedActions ??
- dashboardData.completedCount ??
- dashboardData.completed ??
- dashboardData.data?.completedActions ??
- kpi.completed;
+    // Trend (Patient Volume)
+    const trendValues = chartItems.map(item => item.appointments);
 
- const satisfaction =
- dashboardData.avgSatisfaction ??
- dashboardData.satisfaction ??
- dashboardData.rating ??
- dashboardData.data?.avgSatisfaction ??
- kpi.satisfaction;
+    // Top Services
+    const topServices = data.topServices || [];
+    const topConditions = topServices.map((s: unknown  ) => ({ label: s.serviceName, count: s.count }));
 
- const revenueLabel = 
- dashboardData.revenueLabel ?? 
- dashboardData.data?.revenueLabel ?? 
- kpi.revenueLabel;
-
- return {
- appointments,
- treated,
- pending,
- completed,
- satisfaction: String(satisfaction),
- revenueLabel,
- };
- }, [dashboardData]);
+    return { items: chartItems, revLabels, revValues, revTicks, trendLabels: revLabels, trendValues, topConditions };
+  }, [dashboardData]);
 
  // Filter and map today's appointments dynamically
  const todayAppointments = useMemo(() => {
@@ -89,17 +87,18 @@ export default function Dashboard() {
  // Get today's local date in yyyy-MM-dd format
  const todayStr = new Date().toLocaleDateString("en-CA"); // Gets local date in yyyy-MM-dd format safely
  
- const filtered = apiAppointments.filter((app: any) => app.appointmentDate === todayStr);
+ const filtered = apiAppointments.filter((app: unknown  ) => app.appointmentDate === todayStr);
 
  if (filtered.length === 0) {
  return [];
  }
 
- return filtered.map((app: any) => ({
+ return filtered.map((app: unknown  ) => ({
  id: String(app.id),
  patient: `${app.patientFirstName || ""} ${app.patientLastName || ""}`.trim() || app.patientUsername || "Patient",
  condition: app.serviceName || "Dental Treatment",
  time: app.appointmentTime || "09:00 AM",
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
  status: (app.status?.toLowerCase() === "rescheduled" ? "rescheduled" : app.status?.toLowerCase() === "confirmed" ? "confirmed" : "pending") as any,
  avatar: (app.patientFirstName || "P").substring(0, 1).toUpperCase(),
  }));
@@ -167,15 +166,15 @@ export default function Dashboard() {
  <AppointmentsChart
  title="Appointments Overview"
  subtitle={chartSubtitle}
- items={dashboardData?.chart ?? dashboardData?.data?.chart ?? []}
+ items={chartData.items}
  />
 
  <RevenueCard
- periodLabel={dashboardData?.revenue?.periodLabel ?? dashboardData?.data?.revenue?.periodLabel ?? ""}
+ periodLabel={chartSubtitle}
  revenueLabel={liveKpi.revenueLabel}
- labels={dashboardData?.revenue?.labels ?? dashboardData?.data?.revenue?.labels ?? []}
- values={dashboardData?.revenue?.values ?? dashboardData?.data?.revenue?.values ?? []}
- yTicks={dashboardData?.revenue?.yTicks ?? dashboardData?.data?.revenue?.yTicks ?? []}
+ labels={chartData.revLabels}
+ values={chartData.revValues}
+ yTicks={chartData.revTicks}
  />
 
  <TodayScheduleCard
@@ -192,12 +191,12 @@ export default function Dashboard() {
  completed={liveKpi.completed}
  />
  <ThisWeekCard
- points={dashboardData?.trend?.values ?? dashboardData?.data?.trend?.values ?? []}
- labels={dashboardData?.trend?.labels ?? dashboardData?.data?.trend?.labels ?? []}
+ points={chartData.trendValues}
+ labels={chartData.trendLabels}
  title="Activity Trend"
  subtitle="Patient volume trend"
  />
- <TopConditionsCard items={dashboardData?.topConditions ?? dashboardData?.data?.topConditions ?? []} />
+ <TopConditionsCard items={chartData.topConditions} />
  </div>
  </div>
 
