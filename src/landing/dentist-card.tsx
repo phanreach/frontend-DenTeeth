@@ -88,7 +88,7 @@ export default function DentistCard({ data }: { data: dentist }) {
               Consultation fee
             </p>
 
-            <p className="text-lg font-bold text-gray-900">
+            <p className="font-bold text-gray-900">
               ${data.priceRange?.[0] ?? 0} - ${data.priceRange?.[1] ?? 0}
             </p>
           </div>

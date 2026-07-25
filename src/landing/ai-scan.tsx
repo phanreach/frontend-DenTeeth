@@ -9,13 +9,26 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import UploadImage from "./upload-image";
+import DiagnosisCard from "@/components/diagnosis-card";
+import useDiagnosisMutation from "@/components/hook/use-diagnosis-mutation";
+import type { Diagnosis } from "@/types/api";
 
 export default function AIScan() {
+  const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(null);
   const [file, setFile] = useState<File | null>(null);
-
+  const diagnosisMutation = useDiagnosisMutation();
   const handleDiagnosis = () => {
     if (!file) return;
-    console.log("Selected file:", file);
+
+    diagnosisMutation.mutate(
+      { file },
+      {
+        onSuccess: (response) => {
+          console.log(response.data);
+          setDiagnosis(response.data);
+        },
+      },
+    );
   };
 
   return (
@@ -112,6 +125,11 @@ export default function AIScan() {
             </div>
           </div>
         </div>
+        {diagnosis && (
+          <div className="mx-auto max-w-7xl pb-6">
+            <DiagnosisCard data={diagnosis} showScanInfo={false} />
+          </div>
+        )}
       </section>
       <Footer />
     </div>
