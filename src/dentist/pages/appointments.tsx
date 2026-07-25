@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import AppointmentBookingCard from "../../components/dentist/appointment-booking-card";
 import AppointmentDetailModal from "../../components/dentist/appointment-detail-modal";
-import AppointmentsDateChip from "../../components/dentist/appointments-date-chip";
 
 import MobileBottomNav from "../../components/dentist/mobile-bottom-nav";
 import RejectBookingModal from "../../components/dentist/reject-booking-modal";
@@ -49,16 +48,16 @@ export default function Appointments() {
  email: "patient@example.com", 
  visitType: "In-clinic visit" as const,
  note: item.remarks || "",
- status: item.status.toLowerCase() as any,
+ status: item.status.toLowerCase() as unknown,
  }));
  }, [apiAppointments]);
 
  const [activeId, setActiveId] = useState<string | null>(null);
  const [showRejectModal, setShowRejectModal] = useState(false);
  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
- const [filterMode, setFilterMode] = useState<FilterMode>("day");
+ const [filterMode] = useState<FilterMode>("day");
  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
- const [selectedDateChip, setSelectedDateChip] = useState("all");
+ const [selectedDateChip] = useState("all");
  const [sortMode, setSortMode] = useState<SortMode>("date");
  const [searchTerm, setSearchTerm] = useState("");
 

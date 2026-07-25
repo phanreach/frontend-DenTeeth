@@ -31,6 +31,7 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  watch,
  formState: { errors },
  } = useForm<ServiceSchema>({
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
  resolver: zodResolver(serviceSchema) as any,
  defaultValues: {
  name: "",
@@ -56,13 +57,14 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
  }
  }, [initialData, reset]);
 
- const imageUrl = watch("imageUrl");
+ // eslint-disable-next-line react-hooks/incompatible-library
+  const imageUrl = watch("imageUrl");
  const [isUploading, setIsUploading] = useState(false);
  const fileInputRef = useRef<HTMLInputElement>(null);
 
  if (!isOpen) return null;
 
- const handleFormSubmit = (data: any) => {
+ const handleFormSubmit = (data: unknown  ) => {
  onSave(data);
  reset();
  onClose();
@@ -88,7 +90,7 @@ export default function ServiceModal({ isOpen, onClose, onSave, initialData }: S
   setIsUploading(false);
   };
   reader.readAsDataURL(file);
-  } catch (err: any) {
+  } catch (err: unknown  ) {
   console.error("Processing failed", err);
   toast.error(err.message || "Failed to process photo");
   setIsUploading(false);

@@ -14,7 +14,7 @@ export default function useUploadProfilePhoto() {
  queryClient.invalidateQueries({ queryKey: ["dentist-profile"] });
  toast.success("Profile photo uploaded successfully");
  },
- onError: (error: any) => {
+ onError: (error: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
  toast.error(error.response?.data?.message || "Failed to upload photo");
  }
  });

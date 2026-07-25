@@ -48,7 +48,7 @@ export default function ChangePasswordModal({
  onClose();
  };
 
- const onSubmit = async (_data: ChangePasswordForm) => {
+ const onSubmit = async () => {
  // TODO: integrate with API
  handleClose();
  };
